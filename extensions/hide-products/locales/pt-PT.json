@@ -1,0 +1,98 @@
+{
+  "ratings": {
+    "stars": {
+      "label": "Avaliações"
+    },
+    "home": {
+      "recommendationText": "Produto Recomendado!"
+    }
+  },
+  "offer": {
+      "email": "Email",
+  "offer-price": "Preço da oferta",
+  "quantity": "Quantidade",
+  "note": "Nota",
+  "your-offer-request-has-been-sent-successfully": "O seu pedido de oferta foi enviado com sucesso",
+    "billing": "Informações de Faturação",
+    "e-mail-address": "Endereço de e-mail",
+    "first-name": "Nome",
+    "last-name": "Apelido",
+    "company-name-optional": "Nome da Empresa (opcional)",
+    "street": "Rua",
+    "street-name": "Nome da Rua",
+    "number": "Número",
+    "house-number": "Número da Porta",
+    "zip": "Código Postal",
+    "place": "Localidade",
+    "country-region": "País/Região",
+    "netherlands": "Países Baixos",
+    "phone": "Telefone*",
+    "external-reference": "Referência Externa",
+    "external-reference-optional": "Referência Externa (opcional)",
+    "send-to-another-address": "Enviar para outro endereço?",
+    "order-notes-optional": "Notas da Encomenda (opcional)",
+    "notes-about-your-order-for-example-special-notes-for-delivery": "Notas sobre a sua encomenda, por exemplo, notas especiais para a entrega.",
+    "your-offer": "O Seu Orçamento",
+    "rental-period": "Período de Aluguer",
+    "from": "de",
+    "to": "até",
+    "delivery-or-collection": "A entrega ou recolha ocorre um dia antes do período de aluguer. Após o último dia de aluguer, iremos recolher os artigos ou pode devolvê-los",
+    "product": "Produto",
+    "subtotal": "Subtotal",
+    "shipping": "Envio",
+    "pick": "Recolher",
+    "deliver": "Entregar",
+    "desired-collection-time": "Hora de Recolha Desejada*",
+    "desired-return-time": "Hora de Devolução Desejada*",
+    "pick-desired-collection-time": "Escolher Hora de Recolha Desejada",
+    "pick-desired-return-time": "Escolher Hora de Devolução Desejada",
+    "tax": "Imposto",
+    "currency-symbol": "€",
+    "total": "Total",
+    "after-this-quote-request": "Após este pedido de orçamento, receberá uma visão geral do seu orçamento e, em seguida, receberá um orçamento definido",
+    "after-acceptance": "Após a aceitação do orçamento, será emitida uma fatura. Esta pode ser paga em numerário ou por transferência bancária",
+    "your-personal-data": "Os seus dados pessoais serão usados para processar a sua encomenda, melhorar a sua experiência neste site e para outros fins descritos na nossa política de privacidade.",
+    "terms-and-conditions": "Li e aceito os termos e condições do site",
+    "Request-a-Quote": "Pedir Orçamento"
+  },
+  "orders": {
+    "loading-orders": "A Carregar Encomendas",
+    "last-updated": "Última Atualização",
+    "items": "Artigos",
+    "order": "Encomenda",
+    "total": "Total",
+    "you-havenot-placed-any-orders-yet": "Ainda não efetuou nenhuma encomenda.",
+    "buy-again": "Comprar Novamente",
+    "download": "Descarregar",
+    "your-orders": "As Suas Encomendas",
+    "product-title": "Título do Produto",
+    "quantity": "Quantidade",
+    "price": "Preço",
+    "action": "Ação"
+  },
+  "customer-chat": {
+    "name": "Nome",
+    "email": "Email",
+    "message": "Mensagem",
+    "your-message-has-been-sent": "A sua mensagem foi enviada.",
+    "please-fillout-all-required-fields": "Por favor, preencha todos os campos obrigatórios.",
+    "couldnt-submit-your-request": "Não foi possível submeter o seu pedido.",
+    "chat-with-seller": "Conversar com o Vendedor",
+    "submit": "Enviar"
+  },
+  "booking": {
+    "selectRentDates": "Selecionar datas de aluguer",
+    "selectAppointmentDate": "Selecionar data da marcação",
+    "pickDate": "Escolher data",
+    "book": "Reservar",
+    "checkingAvailability": "A verificar disponibilidade...",
+    "notAvailable": "Indisponível",
+    "duration": "Duração",
+    "poweredBy": "Disponibilizado por",
+    "bookingTitle": "Reserva",
+    "rent-this-product": "Alugar este produto",
+  "book-appointment": "Marcar uma consulta",
+  "select-date-range-duration": "Por favor selecione um intervalo de datas que seja múltiplo da duração"
+
+  }
+}

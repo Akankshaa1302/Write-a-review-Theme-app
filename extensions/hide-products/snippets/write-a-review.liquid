@@ -1,0 +1,121 @@
+<div id="write-a-review" v-cloak>
+    <div class="reviews-container">
+        <div class="reviews-summary">
+            <h3>Overall Rating</h3>
+            <div class="average-rating-display">
+                <span class="average-score" style="font-size: 8rem; font-weight: bold;">$% averageRating %</span>
+                <span class="out-of">/5</span>
+            </div>
+            <div>
+                <p-rating :model-value="Number(averageRating)" readonly :cancel="false"></p-rating>
+            </div>
+            <p class="based-on">Based on $% totalReviews % Reviews</p>
+
+            <div class="rating-distribution">
+                <div v-for="star in [5, 4, 3, 2, 1]" :key="star" class="distribution-row">
+                    <span class="star-label">$% star % star</span>
+                    <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" :style="{ width: getProgressBarWidth(star) }"></div>
+                    </div>
+                    <span class="count-label">$% ratingDistribution[star - 1] %</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="vertical-divider"></div>
+
+        <div class="reviews-list-container">
+            <div class="reviews-cta-header">
+                 <p-button class="write-a-review-button" size="large" @click="showDialog" :disabled="checkCustomerAbleToWrite" :loading="checkCustomerAbleToWrite">Write a Review</p-button>
+                 <div class="review-header">Write your personal experience and ratings</div>
+            </div>
+            
+            <div v-if="loadingReviews" class="loading-reviews">Loading reviews...</div>
+            <div v-else-if="reviews.length === 0" class="no-reviews">
+                <p>No reviews yet. Be the first to write one!</p>
+            </div>
+            <div v-else class="reviews-list">
+                <div v-for="(review, index) in reviews" :key="index" class="review-item">
+                    <div class="review-header">
+                        <span class="review-title" style="font-size: 2.2rem;">$% review.title %</span>
+                    </div>
+                    <div class="review-rating">
+                         <p-rating :model-value="review.rating" readonly :cancel="false"></p-rating>
+                    </div>
+                    <div class="review-body">
+                        <p>$% review.description %</p>
+                    </div>
+                     <div class="review-author">
+                        <span>By $% review.given_by %</span>
+                        <span class="review-date-separator" style="margin: 0 5px;">|</span>
+                        <span class="review-date">$% formatDate(review.created_at) %</span>
+                    </div>
+                    <hr v-if="index < reviews.length - 1" class="review-divider"/>
+                </div>
+            </div>
+            
+            <div class="st-ext-mt-6" v-if="totalCount > pageSize">
+                <p-paginator :rows="Number(pageSize)" :total-records="Number(totalCount)" v-model:first="first" @page="onPage" />
+            </div>
+        </div>
+    </div>
+    <p-toast position="top-right"></p-toast>
+  
+    <p-dialog modal v-model:visible="visible" @hide="handleCancel">
+        <template #header>
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <span style="font-weight: bold; font-size: 1.25rem;">Leave a Review</span>
+                <span style="display: inline-flex; align-items: center; gap: 5px; background: #e3f2fd; color: #1976d2; padding: 4px 10px; border-radius: 16px; font-size: 0.8rem; font-weight: 500;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#1976d2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    Verified Purchaser
+                </span>
+            </div>
+        </template>
+        <form @submit.prevent="submitReview">
+            <div class="form-group" style="text-align: center; margin-bottom: 1.5rem;">
+                <p-rating v-model="formFields.rating" :cancel="false" style="--p-icon-size: 3.5rem;"></p-rating>
+            </div>
+
+            <div class="form-group">
+                <label for="review_description">Write a review *</label>
+                <p-textarea style="width: 100% !important;" rows="6" id="review_description" v-model="formFields.review_description" required placeholder="What should other customers know?"/>
+            </div>
+
+            <div class="form-group">
+                <label for="review_title">Title your review *</label>
+                <p-inputtext id="review_title" type="text" v-model="formFields.review_title" required placeholder="What's most important to know?" class="form-input" />
+            </div>
+
+            <div class="form-group">
+                <label for="name">Your public name *</label>
+                <p-inputtext id="name" type="text" autocomplete="off" v-model="formFields.name" required placeholder="Enter your name" class="form-input" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <p-inputtext id="email" type="email" autocomplete="off" v-model="formFields.email" readonly required placeholder="email@example.com" class="form-input" />
+            </div>
+
+           <div class="honeypot-fields">
+                <p-inputtext type="text" id="honeypotNameFieldName" name="honeypot_name_field_name" />
+                <p-inputtext type="text" id="honeypotValidFromFieldName" name="honeypot_valid_from_field_name" />
+            </div>
+
+            <div class="offer-action-buttons">
+                <p-button type="button" size="large" severity="secondary" @click="handleCancel" class="cancel-btn">Cancel</p-button>
+                <p-button class="offers-submit-btn" :disabled="submittingOfferLoading" type="submit" size="large" severity="primary">
+                    Submit Review
+                    <svg v-if="submittingOfferLoading" width="15" height="15" aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+                    </svg>
+                </p-button>
+            </div>
+        </form>
+    </p-dialog>
+
+</div>
+<script>
+    window.isCustomerEmail = {{ customer.email | json }};
+    window.customerFirstName = {{ customer.first_name | json }};
+    window.customerSecondName = {{ customer.last_name | json }};
+</script>

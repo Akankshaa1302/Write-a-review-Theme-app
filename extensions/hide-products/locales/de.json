@@ -1,0 +1,99 @@
+{
+  "ratings": {
+    "stars": {
+      "label": "Bewertungen"
+    },
+    "home": {
+      "recommendationText": "Empfohlenes Produkt!"
+    }
+  },
+  "offer": {
+    "email": "E-Mail",
+  "offer-price": "Angebotspreis",
+  "quantity": "Menge",
+  "note": "Notiz",
+  "your-offer-request-has-been-sent-successfully": "Ihre Angebotsanfrage wurde erfolgreich gesendet",
+    "billing": "Rechnungsinformationen",
+    "e-mail-address": "E-Mail-Adresse",
+    "first-name": "Vorname",
+    "last-name": "Nachname",
+    "company-name-optional": "Firmenname (optional)",
+    "street": "Straße",
+    "street-name": "Straßenname",
+    "number": "Nummer",
+    "house-number": "Hausnummer",
+    "zip": "Postleitzahl",
+    "place": "Ort",
+    "country-region": "Land/Region",
+    "netherlands": "Niederlande",
+    "phone": "Telefon*",
+    "external-reference": "Externe Referenz",
+    "external-reference-optional": "Externe Referenz (optional)",
+    "send-to-another-address": "An eine andere Adresse senden?",
+    "order-notes-optional": "Bestellhinweise (optional)",
+    "notes-about-your-order-for-example-special-notes-for-delivery": "Hinweise zu Ihrer Bestellung, z. B. besondere Hinweise zur Lieferung.",
+    "your-offer": "Ihr Angebot",
+    "rental-period": "Mietzeitraum",
+    "from": "von",
+    "to": "bis",
+    "delivery-or-collection": "Die Lieferung oder Abholung erfolgt einen Tag vor dem Mietzeitraum. Am letzten Miettag holen wir die Artikel ab oder Sie können sie zurückbringen.",
+    "product": "Produkt",
+    "subtotal": "Zwischensumme",
+    "shipping": "Versand",
+    "pick": "Abholen",
+    "deliver": "Liefern",
+    "desired-collection-time": "Gewünschte Abholzeit*",
+    "desired-return-time": "Gewünschte Rückgabezeit*",
+    "pick-desired-collection-time": "Gewünschte Abholzeit auswählen",
+    "pick-desired-return-time": "Gewünschte Rückgabezeit auswählen",
+    "tax": "Steuer",
+    "currency-symbol": "€",
+    "total": "Gesamt",
+    "after-this-quote-request": "Nach dieser Angebotsanfrage erhalten Sie eine Übersicht über Ihr Angebot, anschließend erhalten Sie ein endgültiges Angebot.",
+    "after-acceptance": "Nach Annahme des Angebots stellen wir eine Rechnung aus. Diese kann bar oder per Banküberweisung bezahlt werden.",
+    "your-personal-data": "Ihre persönlichen Daten werden verwendet, um Ihre Bestellung zu verarbeiten und Ihre Erfahrung auf dieser Website zu verbessern, sowie für andere Zwecke gemäß unserer Datenschutzerklärung.",
+    "terms-and-conditions": "Ich habe die Allgemeinen Geschäftsbedingungen der Website gelesen und stimme diesen zu.",
+    "Request-a-Quote": "Angebot anfordern"
+  },
+  "orders": {
+    "loading-orders": "Bestellungen werden geladen",
+    "last-updated": "Zuletzt aktualisiert",
+    "items": "Artikel",
+    "order": "Bestellung",
+    "total": "Gesamt",
+    "you-havenot-placed-any-orders-yet": "Sie haben noch keine Bestellungen aufgegeben.",
+    "buy-again": "Erneut kaufen",
+    "download": "Herunterladen",
+    "your-orders": "Deine Bestellungen",
+    "product-title": "Produkt",
+    "quantity": "Menge",
+    "price": "Preis",
+    "action": "Aktion"
+  },
+  "customer-chat": {
+    "name": "Name",
+    "email": "E-Mail",
+    "message": "Nachricht",
+    "your-message-has-been-sent": "Ihre Nachricht wurde gesendet.",
+    "please-fillout-all-required-fields": "Bitte füllen Sie alle Pflichtfelder aus.",
+    "couldnt-submit-your-request": "Ihre Anfrage konnte nicht übermittelt werden.",
+    "chat-with-seller": "Mit Verkäufer chatten",
+    "submit": "Senden"
+  },
+  "booking": {
+    "selectRentDates": "Mietdaten auswählen",
+    "selectAppointmentDate": "Termin auswählen",
+    "pickDate": "Datum auswählen",
+    "book": "Buchen",
+    "checkingAvailability": "Verfügbarkeit wird überprüft...",
+    "notAvailable": "Nicht verfügbar",
+    "duration": "Dauer",
+    "poweredBy": "Bereitgestellt von",
+    "bookingTitle": "Buchung",
+    "rent-this-product": "Mieten Sie dieses Produkt",
+  "book-appointment": "Termin buchen",
+  "select-date-range-duration": "Bitte wählen Sie einen Datumsbereich aus, der ein Vielfaches der Dauer ist"
+  }
+}
+
+  

@@ -1,0 +1,100 @@
+{
+  "ratings": {
+    "stars": {
+      "label": "Beoordelingen"
+    },
+    "home": {
+      "recommendationText": "Aanbevolen product!"
+    }
+  },
+  "offer": {
+      "email": "E-mail",
+  "offer-price": "Aanbiedingsprijs",
+  "quantity": "Hoeveelheid",
+  "note": "Notitie",
+  "your-offer-request-has-been-sent-successfully": "Je aanbiedingsverzoek is succesvol verzonden",
+    "billing": "Facturatiegegevens",
+    "e-mail-address": "E-mailadres",
+    "first-name": "Voornaam",
+    "last-name": "Achternaam",
+    "company-name-optional": "Bedrijfsnaam (optioneel)",
+    "street": "Straat",
+    "street-name": "Straatnaam",
+    "number": "Nummer",
+    "house-number": "Huisnummer",
+    "zip": "Postcode",
+    "place": "Plaats",
+    "country-region": "Land/Regio",
+    "netherlands": "Nederland",
+    "phone": "Telefoon*",
+    "external-reference": "Externe referentie",
+    "external-reference-optional": "Externe Referentie (optioneel)",
+    "send-to-another-address": "Verzenden naar een ander adres?",
+    "order-notes-optional": "Bestelnotities (optioneel)",
+    "notes-about-your-order-for-example-special-notes-for-delivery": "Notities over uw bestelling, bijvoorbeeld speciale aanwijzingen voor levering.",
+    "your-offer": "Uw Offerte",
+    "rental-period": "Huurperiode",
+    "from": "van",
+    "to": "tot",
+    "delivery-or-collection": "Aflevering of ophalen vindt plaats één dag voor de huurperiode. Aan het einde van de huurperiode halen wij de artikelen op of kunt u ze terugbrengen",
+    "product": "Product",
+    "subtotal": "Subtotaal",
+    "shipping": "Verzending",
+    "pick": "Ophalen",
+    "deliver": "Bezorgen",
+    "desired-collection-time": "Gewenste ophaaltijd*",
+    "desired-return-time": "Gewenste retourtijd*",
+    "pick-desired-collection-time": "Kies gewenste ophaaltijd",
+    "pick-desired-return-time": "Kies gewense retourtijd",
+    "tax": "BTW",
+    "currency-symbol": "€",
+    "total": "Totaal",
+    "after-this-quote-request": "Na deze offerteaanvraag ontvangt u een overzicht van uw offerte, waarna u een definitieve offerte ontvangt",
+    "after-acceptance": "Na acceptatie van de offerte sturen wij een factuur. Deze kan contant of via bankoverschrijving worden voldaan",
+    "your-personal-data": "Uw persoonsgegevens worden gebruikt om uw bestelling te verwerken, uw ervaring op deze site te verbeteren en voor andere doeleinden zoals beschreven in ons privacybeleid.",
+    "terms-and-conditions": "Ik heb de algemene voorwaarden van de site gelezen en ga hiermee akkoord",
+    "Request-a-Quote": "Offerte Aanvragen"
+  },
+  "orders": {
+    "loading-orders": "Bestellingen laden",
+    "last-updated": "Laatst bijgewerkt",
+    "items": "Artikelen",
+    "order": "Bestelling",
+    "total": "Totaal",
+    "you-havenot-placed-any-orders-yet": "U heeft nog geen bestellingen geplaatst.",
+    "buy-again": "Opnieuw kopen",
+    "download": "Downloaden",
+    "your-orders": "Uw Bestellingen",
+    "product-title": "Productnaam",
+    "quantity": "Aantal",
+    "price": "Prijs",
+    "action": "Actie"
+  },
+  "customer-chat": {
+    "name": "Naam",
+    "email": "E-mail",
+    "message": "Bericht",
+    "your-message-has-been-sent": "Uw bericht is verzonden.",
+    "please-fillout-all-required-fields": "Vul alle verplichte velden in.",
+    "couldnt-submit-your-request": "Uw verzoek kon niet worden ingediend.",
+    "submit": "Verzenden",
+    "chat-with-seller": "Chat met de verkoper"
+  },
+  "booking": {
+    "selectRentDates": "Selecteer huurdata",
+    "selectAppointmentDate": "Selecteer afspraakdatum",
+    "pickDate": "Kies datum",
+    "book": "Boek",
+    "checkingAvailability": "Beschikbaarheid controleren...",
+    "notAvailable": "Niet beschikbaar",
+    "duration": "Duur",
+    "poweredBy": "Aangeboden door",
+    "bookingTitle": "Boeking",
+    "rent-this-product": "Huur dit product",
+  "book-appointment": "Boek een afspraak",
+  "select-date-range-duration": "Selecteer een datumbereik dat een veelvoud is van de duur"
+
+  }
+}
+
+  

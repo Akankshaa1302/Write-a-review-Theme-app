@@ -1,0 +1,17 @@
+{% schema %}
+    {
+      "name": "Write a Review",
+      "target": "section",
+      "templates": ["product"],
+      // "available_if": "{{ app.metafields.shipturtle.product_review_feature }}",
+      "settings": [
+        
+      ]
+    }
+  {% endschema %}
+  <link rel="stylesheet" href="{{ 'write-a-review.css' | asset_url }}" />
+  <script src="{{ 'write-a-review.js' | asset_url }}"></script>
+  
+  {% render "write-a-review" %}
+
+  

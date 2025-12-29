@@ -1,0 +1,101 @@
+{
+    "ratings": {
+      "stars": {
+        "label": "Ratings"
+      },
+      "home": {
+        "recommendationText": "Recommended Product!"
+      }
+    },
+    "offer":{
+          "email": "Email",
+          "offer-price": "Offer Price",
+          "quantity": "Quantity",
+          "note" : "Note",
+          "your-offer-request-has-been-sent-successfully":" Your offer request has been sent successfully",
+          "billing":"Billing Information",
+          "e-mail-address":"E-mail address",
+          "first-name":"First Name",
+          "last-name":"Last Name",
+          "company-name-optional":"Company Name (optional)",
+          "street":"Street",
+          "street-name":"Street",
+          "number":"Number",
+          "house-number": "House Number",
+          "zip":"Zip",
+          "place":"Place",
+          "country-region":"Country/Region",
+          "netherlands":"NetherLands",
+          "phone":"Phone*",
+          "external-reference":"External reference",
+          "external-reference-optional":"External Reference (optional)",          
+          "send-to-another-address":"Send to another address?",
+          "order-notes-optional":"Order Notes (optional)",
+          "notes-about-your-order-for-example-special-notes-for-delivery":"Notes about your order, for example special notes for delivery.",
+          "your-offer":"Your Quote",
+          "rental-period":"Rental period",
+          "from": "from",
+          "to": "to",
+          "delivery-or-collection":"Delivery or collection takes place one day before the rental period. After on the last day of rental we will pick up the items or you can return ",
+          "product":"Product",
+          "subtotal":"Subtotal",
+
+          "shipping":"Shipping",
+          "pick":"Pick",
+          "deliver":"Deliver",
+          "desired-collection-time":"Desired Collection Time*",
+          "desired-return-time":"Desired Return Time*",
+          "pick-desired-collection-time": "Pick Desired Collection Time",
+          "pick-desired-return-time": "Pick Desired Return Time",
+          "tax":"Tax",
+          "currency-symbol":"€",
+          "total":"Total",
+          "after-this-quote-request":"After this quote request you will get an overview of youe quote then you will get a definition quote",
+          "after-acceptance":"After acceptance of the quotation, we will issue an invoice send. This can be paid in cash or via bank transfer",
+
+          "your-personal-data":"Your personal data will be used to process your order, to improve your experience on this site for other purposes as described in our privacy policy.",
+          "terms-and-conditions":"I have read the terms and conditions of the site and agree to this",
+          "Request-a-Quote":"Request a Quote"
+    },
+    "orders": {
+      "loading-orders": "Loading Orders",
+      "last-updated": "Last Updated",
+      "items": "Items",
+      "order": "Order",
+      "total": "Total",
+      "you-havenot-placed-any-orders-yet": "You have not placed any orders yet.",
+      "buy-again": "Buy Again",
+      "download": "Download",
+      "your-orders": "Your Orders",
+      "product-title": "Product Title",
+      "quantity": "Quantity",
+      "price": "Price",
+      "action": "Aktion"
+    },
+    "customer-chat":{
+      "name":"Name",
+      "email":"Email",
+      "message": "Message",
+      "your-message-has-been-sent":"Your message has been sent.",
+      "please-fillout-all-required-fields":"Please fillout all required fields.",
+      "couldnt-submit-your-request":"Couldn't submit your request.",
+      "chat-with-seller": "Chat With Seller",
+      "submit": "Submit"
+    },
+    "booking": {
+      "selectRentDates": "Select Rent Dates",
+      "selectAppointmentDate": "Select Appointment Date",
+      "pickDate": "Pick Date",
+      "book": "Book",
+      "checkingAvailability": "Checking slot availability...",
+      "notAvailable": "Not available",
+      "duration": "Duration",
+      "poweredBy": "Powered By",
+      "bookingTitle": "Booking",
+      "rent-this-product": "Rent This Product",
+      "book-appointment": "Book an Appointment",
+      "select-date-range-duration": "Please select a date range that is a multiple of the duration"
+  }
+}
+  
+  

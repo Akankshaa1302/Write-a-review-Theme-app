@@ -1,0 +1,99 @@
+{
+  "ratings": {
+    "stars": {
+      "label": "Calificaciones"
+    },
+    "home": {
+      "recommendationText": "¡Producto Recomendado!"
+    }
+  },
+  "offer": {
+     "email": "Correo electrónico",
+  "offer-price": "Precio de la oferta",
+  "quantity": "Cantidad",
+  "note": "Nota",
+  "your-offer-request-has-been-sent-successfully": "Tu solicitud de oferta ha sido enviada con éxito",
+
+    "billing": "Información de Facturación",
+    "e-mail-address": "Dirección de correo electrónico",
+    "first-name": "Nombre",
+    "last-name": "Apellido",
+    "company-name-optional": "Nombre de la empresa (opcional)",
+    "street": "Calle",
+    "street-name": "Nombre de la calle",
+    "number": "Número",
+    "house-number": "Número de casa",
+    "zip": "Código postal",
+    "place": "Lugar",
+    "country-region": "País/Región",
+    "netherlands": "Países Bajos",
+    "phone": "Teléfono*",
+    "external-reference": "Referencia externa",
+    "external-reference-optional": "Referencia externa (opcional)",
+    "send-to-another-address": "¿Enviar a otra dirección?",
+    "order-notes-optional": "Notas del pedido (opcional)",
+    "notes-about-your-order-for-example-special-notes-for-delivery": "Notas sobre tu pedido, por ejemplo notas especiales para la entrega.",
+    "your-offer": "Tu Cotización",
+    "rental-period": "Periodo de alquiler",
+    "from": "desde",
+    "to": "hasta",
+    "delivery-or-collection": "La entrega o recogida se realiza un día antes del periodo de alquiler. Después, el último día del alquiler recogeremos los artículos o puedes devolverlos.",
+    "product": "Producto",
+    "subtotal": "Subtotal",
+    "shipping": "Envío",
+    "pick": "Recoger",
+    "deliver": "Entregar",
+    "desired-collection-time": "Hora deseada de recogida*",
+    "desired-return-time": "Hora deseada de devolución*",
+    "pick-desired-collection-time": "Selecciona la hora deseada de recogida",
+    "pick-desired-return-time": "Selecciona la hora deseada de devolución",
+    "tax": "Impuesto",
+    "currency-symbol": "€",
+    "total": "Total",
+    "after-this-quote-request": "Después de esta solicitud de cotización, obtendrás una vista general de tu cotización y luego recibirás una cotización definitiva.",
+    "after-acceptance": "Después de la aceptación de la cotización, emitiremos una factura. Esta puede pagarse en efectivo o mediante transferencia bancaria.",
+    "your-personal-data": "Tus datos personales se utilizarán para procesar tu pedido, para mejorar tu experiencia en este sitio y para otros fines descritos en nuestra política de privacidad.",
+    "terms-and-conditions": "He leído los términos y condiciones del sitio y estoy de acuerdo con ellos",
+    "Request-a-Quote": "Solicitar una Cotización"
+  },
+  "orders": {
+    "loading-orders": "Cargando pedidos",
+    "last-updated": "Última actualización",
+    "items": "Artículos",
+    "order": "Pedido",
+    "total": "Total",
+    "you-havenot-placed-any-orders-yet": "Aún no has realizado ningún pedido.",
+    "buy-again": "Comprar de nuevo",
+    "download": "Descargar",
+    "your-orders": "Tus Pedidos",
+    "product-title": "Título del producto",
+    "quantity": "Cantidad",
+    "price": "Precio",
+    "action": "Acción"
+  },
+  "customer-chat": {
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "message": "Mensaje",
+    "your-message-has-been-sent": "Tu mensaje ha sido enviado.",
+    "please-fillout-all-required-fields": "Por favor, completa todos los campos obligatorios.",
+    "couldnt-submit-your-request": "No se pudo enviar tu solicitud.",
+    "chat-with-seller": "Chatear con el vendedor",
+    "submit": "Enviar"
+  },
+  "booking": {
+    "selectRentDates": "Seleccionar fechas de alquiler",
+    "selectAppointmentDate": "Seleccionar fecha de cita",
+    "pickDate": "Elegir fecha",
+    "book": "Reservar",
+    "checkingAvailability": "Comprobando disponibilidad...",
+    "notAvailable": "No disponible",
+    "duration": "Duración",
+    "poweredBy": "Desarrollado por",
+    "bookingTitle": "Reserva",
+    "rent-this-product": "Alquilar este producto",
+  "book-appointment": "Reservar una cita",
+  "select-date-range-duration": "Por favor seleccione un rango de fechas que sea múltiplo de la duración"
+
+  }
+}
