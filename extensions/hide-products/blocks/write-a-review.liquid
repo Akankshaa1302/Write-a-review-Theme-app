@@ -1,17 +1,56 @@
-{% schema %}
-    {
-      "name": "Write a Review",
-      "target": "section",
-      "templates": ["product"],
-      // "available_if": "{{ app.metafields.shipturtle.product_review_feature }}",
-      "settings": [
-        
-      ]
-    }
-  {% endschema %}
-  <link rel="stylesheet" href="{{ 'write-a-review.css' | asset_url }}" />
-  <script src="{{ 'write-a-review.js' | asset_url }}"></script>
-  
-  {% render "write-a-review" %}
+<div id="write-a-review-app" data-lang-asset="{{ 'lang.json' | asset_url }}" data-block-settings="{{ block.settings | json }}"></div>
 
+<style>
+  {% case block.settings.product_review_font_size_options %}
+    {% when 'xs' %}
+      #write-a-review-app { font-size: 11px; }
+    {% when 'sm' %}
+      #write-a-review-app { font-size: 12px; }
+    {% when 'md' %}
+      #write-a-review-app { font-size: 14px; }
+    {% when 'lg' %}
+      #write-a-review-app { font-size: 16px; }
+  {% endcase %}
+</style>
+{% schema %}
+  {
+    "name": "Write a Review",
+    "target": "section",
+    "templates": ["product"],
+    
+    "settings": [
+      {
+        "type": "radio",
+        "id": "product_review_font_size_options",
+        "label": "Font Size",
+       "options": [
+        {
+          "value": "xs",
+          "label": "Extra Small"
+        },
+        {
+          "value": "sm",
+          "label": "Small"
+        },
+        {
+          "value": "md",
+          "label": "Medium"
+        },
+        {
+          "value": "lg",
+          "label": "Large"
+        }
+      ],
+        "default": "md"
+      }
+    ]
+  }
+{% endschema %}
+<link rel="stylesheet" href="{{ 'write-a-review.css' | asset_url }}" />
+<script src="{{ 'write-a-review.js' | asset_url }}"></script>
+<script>
+    window.customerEmail = {{ customer.email | json }};
+    window.customerFirstName = {{ customer.first_name | json }};
+    window.customerSecondName = {{ customer.last_name | json }};
+</script>
   

@@ -1,286 +1,444 @@
-    .honeypot-fields {
+/* ===========================================
+   SCOPED PRIMEVUE OVERRIDES FOR WRITE-A-REVIEW
+   =========================================== */
+
+/* Base container - SET YOUR DESIRED FONT SIZE HERE */
+#write-a-review-app {
+    line-height: 1.5;
+}
+
+/* Override PrimeVue's rem-based sizing to use em (relative to container) */
+#write-a-review-app .p-component {
+    font-size: 1em;
+}
+
+/* ===========================================
+   BUTTON VARIANTS
+   =========================================== */
+#write-a-review-app .p-button {
+    font-size: 1em;
+    padding: 0.5em 1em;
+}
+
+#write-a-review-app .p-button.p-button-sm {
+    font-size: 0.875em;
+    padding: 0.375em 0.75em;
+}
+
+#write-a-review-app .p-button.p-button-lg,
+#write-a-review-app .p-button[data-p-size="large"] {
+    font-size: 1.125em;
+    padding: 0.625em 1.25em;
+}
+
+/* ===========================================
+   INPUT VARIANTS
+   =========================================== */
+#write-a-review-app .p-inputtext,
+#write-a-review-app .p-textarea {
+    font-size: 1em;
+    padding: 0.5em 0.75em;
+}
+
+#write-a-review-app .p-inputtext.p-inputtext-sm {
+    font-size: 0.875em;
+    padding: 0.375em 0.5em;
+}
+
+#write-a-review-app .p-inputtext.p-inputtext-lg,
+#write-a-review-app .p-inputtext[data-p-size="large"] {
+    font-size: 1.125em;
+    padding: 0.625em 1em;
+}
+
+/* ===========================================
+   DIALOG (now inside container)
+   =========================================== */
+#write-a-review-app .p-dialog-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+}
+
+#write-a-review-app .p-dialog {
+    width: 60% !important;
+    margin: 0 auto;
+    font-size: 1em;
+}
+#write-a-review-app .p-dialog.delete-confirm-dialog {
+    width: 40rem !important;
+    max-width: 90vw;
+}
+
+#write-a-review-app .confirm-delete-message {
+    text-align: center;
+    display: block;
+}
+
+#write-a-review-app .confirm-delete-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+#write-a-review-app .p-dialog-title {
+    font-size: 1.25em;
+}
+
+#write-a-review-app .p-dialog-content {
+    font-size: 1em;
+}
+
+/* ===========================================
+   TOAST - Teleports to body
+   =========================================== */
+.p-toast {
+    position: fixed;
+    z-index: 10000;
+}
+.p-toast-summary {
+    font-size: 1em;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.p-toast-detail {
+    font-size: 0.875em;
+}
+
+/* ===========================================
+   RATING
+   =========================================== */
+#write-a-review-app .p-rating {
+    font-size: 1em;
+}
+
+#write-a-review-app .p-rating .p-rating-icon {
+    width: 1.5em;
+    height: 1.5em;
+    color: #F5D547 !important;
+}
+
+#write-a-review-app .p-rating .p-rating-icon svg {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+#write-a-review-app .p-rating-option-active .p-rating-icon,
+#write-a-review-app .p-rating-item-active .p-rating-icon {
+    color: #FFD700 !important; 
+}
+
+/* Dialog rating - larger stars */
+#write-a-review-app .p-dialog .p-rating .p-rating-icon {
+    width: 2.5em;
+    height: 2.5em;
+}
+
+#write-a-review-app .p-dialog .p-rating .p-rating-icon svg {
+    width: 2.5em;
+    height: 2.5em;
+}
+
+/* ===========================================
+   PAGINATOR
+   =========================================== */
+#write-a-review-app .p-paginator {
+    font-size: 1em;
+}
+
+#write-a-review-app .p-paginator-page,
+#write-a-review-app .p-paginator-prev,
+#write-a-review-app .p-paginator-next,
+#write-a-review-app .p-paginator-first,
+#write-a-review-app .p-paginator-last {
+    min-width: 2.5em;
+    height: 2.5em;
+    font-size: 1em;
+}
+
+/* ===========================================
+   YOUR EXISTING CUSTOM STYLES
+   =========================================== */
+#write-a-review-app .honeypot-fields {
+    display: none;
+}
+
+#write-a-review-app .vertical-divider {
+    display: block !important;
+}
+
+#write-a-review-app .progress-bar-fill {
+    display: block !important;
+}
+
+#write-a-review-app .p-inputtextarea {
+    min-height: 120px; 
+    resize: vertical; 
+}
+
+#write-a-review-app .p-badge-warn {
+    display: none;
+}
+
+#write-a-review-app .st-ext-mt-6 {
+    margin-top: 1.5em;
+}
+
+#write-a-review-app .write-a-review-button {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    border: none;
+    padding: 0.625em 1.25em;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 5px;
+    width: max-content;
+}
+
+#write-a-review-app [v-cloak] {
+    display: none;
+}
+
+#write-a-review-app .dialog-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1.25em;
+}
+
+/* Form Fields Styling */
+#write-a-review-app .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 1em;
+}
+
+#write-a-review-app .form-group label {
+    width: max-content;
+    text-wrap: nowrap;
+    font-size: 1em;
+    margin-bottom: 0.25em;
+}
+
+#write-a-review-app .form-input {
+    width: 100% !important;
+    border-radius: 5px;
+    border: 1px solid black;
+    padding: 0.625em;
+    outline: none;
+    font-size: 1em;
+}
+
+#write-a-review-app .form-input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+#write-a-review-app .form-error-message {
+    color: red;
+    font-size: 0.875em;
+    margin-bottom: 1em;
+}
+
+#write-a-review-app .offer-action-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1em;
+    margin-top: 1.5em;
+}
+
+#write-a-review-app .cancel-btn {
+    background-color: #ccc;
+}
+
+#write-a-review-app .offers-submit-btn {
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+}
+
+#write-a-review-app .delete-confirm-btn {
+    background-color: #dc3545;
+    color: white;
+    border-radius: 5px;
+}
+
+#write-a-review-app .spinner {
+    margin-left: 0.625em;
+    animation: rotate 1.5s linear infinite;
+}
+
+#write-a-review-app .form-group-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+    width: 100%;
+}
+
+#write-a-review-app .form-group-title {
+    font-size: 1em;
+    font-weight: bold;
+    margin-bottom: 3em;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===========================================
+   REVIEWS SECTION
+   =========================================== */
+#write-a-review-app .reviews-container {
+    display: flex;
+    gap: 2em;
+    margin-top: 2em;
+    border: 1px solid #e0e0e0;
+    padding: 2em;
+    border-radius: 8px;
+}
+
+#write-a-review-app .reviews-summary {
+    flex: 1;
+    min-width: 250px;
+}
+
+#write-a-review-app .vertical-divider {
+    width: 1px;
+    background-color: #e0e0e0;
+}
+
+#write-a-review-app .reviews-list-container {
+    flex: 2;
+}
+
+#write-a-review-app .average-rating-display {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
+#write-a-review-app .average-score {
+    font-size: 3em;
+    font-weight: bold;
+}
+
+#write-a-review-app .out-of {
+    color: #666;
+    font-size: 1.2em;
+}
+
+#write-a-review-app .based-on {
+    color: #666;
+    margin-bottom: 1.5em;
+}
+
+#write-a-review-app .distribution-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.5em;
+}
+
+#write-a-review-app .star-label {
+    width: 45px;
+    font-size: 0.9em;
+}
+
+#write-a-review-app .progress-bar-bg {
+    flex-grow: 1;
+    height: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#write-a-review-app .progress-bar-fill {
+    height: 100%;
+    background-color: #FFD700;
+}
+
+#write-a-review-app .count-label {
+    width: 30px;
+    text-align: right;
+    color: #666;
+}
+
+#write-a-review-app .reviews-cta-header {
+    margin-bottom: 2em;
+}
+
+#write-a-review-app .review-item {
+    margin-bottom: 1.5em;
+}
+
+#write-a-review-app .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+
+#write-a-review-app .review-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    text-transform: uppercase;
+}
+
+#write-a-review-app .review-date {
+    color: #999;
+    font-size: 0.9em;
+}
+
+#write-a-review-app .review-body {
+    margin: 1em 0;
+    color: #555;
+}
+
+#write-a-review-app .review-author {
+    color: #777;
+    font-size: 0.9em;
+}
+
+#write-a-review-app .review-divider {
+    border: 0;
+    border-top: 1px solid #e0e0e0;
+    margin: 1.5em 0;
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+@media (max-width: 768px) {
+    #write-a-review-app .p-dialog {
+        width: 90% !important;
+    }
+    
+    #write-a-review-app .form-group-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #write-a-review-app .offer-action-buttons {
+        flex-direction: column;
+    }
+    
+    #write-a-review-app .reviews-container {
+        flex-direction: column;
+    }
+    
+    #write-a-review-app .vertical-divider {
         display: none;
     }
-    div .vertical-divider {
-        display: block !important;
-    }
-    div .progress-bar-fill {
-       display: block !important;
-    }
-    .p-inputtextarea {
-            min-height: 120px; 
-            resize: vertical; 
-    }
-    .p-badge-warn{
-        display:none;
-    }
-    .st-ext-mt-6 {
-        margin-top: 1.5rem;
-    }
-
-    .p-rating-option-active .p-rating-icon {
-        color: #FFD700 !important; 
-    }
-    .p-rating-item-active .p-rating-icon {
-        color: #FFD700 !important;
-    }
     
-    .p-dialog .p-rating .p-rating-icon {
-        font-size: 3rem !important;
-        width: 3rem !important;
-        height: 3rem !important;
-    }
-    .p-dialog .p-rating .p-rating-icon svg {
-        width: 3rem !important;
-        height: 3rem !important;
-    }
-    
-    .p-rating .p-rating-icon {
-        color: #F5D547 !important;
-    }
-
-    .write-a-review-button {
-        background-color: rgb(0, 0, 0);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 5px;
-        width: max-content;
-    }
-     [v-cloak]{
-        display:none;
-     }
-    /* Dialog Styling */
-    .p-dialog {
-        width: 60% !important;
-        margin: 0 auto;
-    }
-
-    .dialog-title {
-        font-size: 24px;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 20px;
-    }
-
-    /* Form Fields Styling */
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        margin-bottom: 1rem;
-    }
-
-    .form-group label {
-        width: max-content;
-        text-wrap: nowrap;
-    }
-
-    .form-input {
-        width: 100% !important;
-        border-radius: 5px;
-        border: 1px solid black;
-        padding: 10px;
-        outline: none;
-        height: 30px;
-
-    }
-
-    .form-input:focus {
-        border-color: #007bff;
-        outline: none;
-    }
-
-    .form-error-message {
-        color: red;
-        font-size: 14px;
-        margin-bottom: 1rem;
-    }
-
-    .offer-action-buttons {
-        display: flex;
-        flex-direction:row;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
-
-    .cancel-btn {
-        background-color: #ccc;
-    }
-
-    .offers-submit-btn {
-        background-color: #28a745;
-        color: white;
-        border-radius: 5px;
-    }
-
-    .spinner {
-        margin-left: 10px;
-        animation: rotate 1.5s linear infinite;
-    }
-
-    .form-group-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
+    #write-a-review-app .reviews-summary, 
+    #write-a-review-app .reviews-list-container {
         width: 100%;
     }
-
-    .form-group-title {
-        font-size: 16px;
-        font-weight: bold;
-        margin-bottom: 3rem;
-    }
-    @keyframes rotate {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-    @media (max-width: 768px) {
-        .p-dialog {
-            width: 90% !important;
-        }
-        .form-group-container {
-            grid-template-columns: 1fr;
-        }
-        .offer-action-buttons {
-            display: flex;
-            justify-content: center;
-            flex-direction:column;
-           
-        }
-    }
-    .reviews-container {
-        display: flex;
-        gap: 2rem;
-        margin-top: 2rem;
-        border: 1px solid #e0e0e0;
-        padding: 2rem;
-        border-radius: 8px;
-    }
-
-    .reviews-summary {
-        flex: 1;
-        min-width: 250px;
-    }
-
-    .vertical-divider {
-        width: 1px;
-        background-color: #e0e0e0;
-    }
-
-    .reviews-list-container {
-        flex: 2;
-    }
-
-    .average-rating-display {
-        display: flex;
-        align-items: baseline;
-        gap: 5px;
-    }
-
-    .average-score {
-        font-size: 3rem;
-        font-weight: bold;
-    }
-
-    .out-of {
-        color: #666;
-        font-size: 1.2rem;
-    }
-
-    .based-on {
-        color: #666;
-        margin-bottom: 1.5rem;
-    }
-
-    .distribution-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 0.5rem;
-    }
-
-    .star-label {
-        width: 45px;
-        font-size: 0.9rem;
-    }
-
-    .progress-bar-bg {
-        flex-grow: 1;
-        height: 10px;
-        background-color: #f0f0f0;
-        border-radius: 5px;
-        overflow: hidden;
-    }
-
-    .progress-bar-fill {
-        height: 100%;
-        background-color: #FFD700;
-    }
-
-    .count-label {
-        width: 30px;
-        text-align: right;
-        color: #666;
-    }
-
-    .reviews-cta-header {
-        margin-bottom: 2rem;
-    }
-
-    .review-item {
-        margin-bottom: 1.5rem;
-    }
-
-    .review-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-    }
-
-    .review-title {
-        font-weight: bold;
-        font-size: 1.1rem;
-        text-transform: uppercase;
-    }
-    
-    .review-date {
-        color: #999;
-        font-size: 0.9rem;
-    }
-
-    .review-body {
-        margin: 1rem 0;
-        color: #555;
-    }
-    
-    .review-author {
-         color: #777;
-         font-size: 0.9rem;
-    }
-
-    .review-divider {
-        border: 0;
-        border-top: 1px solid #e0e0e0;
-        margin: 1.5rem 0;
-    }
-
-    @media (max-width: 768px) {
-        .reviews-container {
-            flex-direction: column;
-        }
-        .vertical-divider {
-            display: none;
-        }
-        .reviews-summary, .reviews-list-container {
-            width: 100%;
-        }
-    }
+}
