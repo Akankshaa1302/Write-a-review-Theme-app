@@ -1,0 +1,259 @@
+<input type="hidden" name="shipturtle_customer_chat" id="shipturtle_customer_chat"
+value="{{ customer.email }}" />
+<style>
+    .chat-with-seller-container {
+        background: {{ block.settings.stChatPopupBgColor }} !important;
+    }
+    .st-customer-chat-cta-section {
+        background: {{ block.settings.stChatWithSellerBtnBgColor }} !important;
+        color: {{ block.settings.stChatWithSellerBtnTxtColor }} !important;
+    }
+    .chat-with-seller {
+        color: {{ block.settings.stPopupTxtColor }} !important;
+    }
+    .chat-submit-btn-custom-styling {
+        color: {{ block.settings.stChatSubmitBtnTxtColor }} !important;
+        background: {{ block.settings.stChatSubmitBtnBgColor }} !important;
+        font-family: inherit;
+        border: 1px solid lighgrey;
+    }
+    .chat-with-seller-btn {
+        cursor: pointer;
+    }
+    #submit-customer-query:disabled {
+        background-color: lightgrey;
+    }
+</style>
+{% schema %}
+    {
+    "name": "Customer Chat",
+    "target": "section",
+    "templates": ["product"],
+    "settings": [
+        {
+            "type": "text",
+            "id": "stChatWithSellerBtnTxt",
+            "label": "CTA Text",
+            "default": "Chat With Seller"
+        },
+        {
+            "type": "color",
+            "id": "stChatWithSellerBtnBgColor",
+            "label": "CTA Background Color",
+            "default": "#000"
+        },
+        {
+            "type": "color",
+            "id": "stChatWithSellerBtnTxtColor",
+            "label": "CTA Text Color",
+            "default": "#fff"
+        },
+        {
+            "type": "text",
+            "id": "stChatHeaderText",
+            "label": "Header Text",
+            "default": "Chat With Seller"
+        },
+        {
+            "type": "text",
+            "id": "stChatSubmitButtonText",
+            "label": "Submit Button Text",
+            "default": "Submit"
+        },
+        {
+            "type": "text",
+            "id": "stChatTxtBoxPlaceholder",
+            "label": "Placeholder",
+            "default": "Write your queries...."
+        },
+        {
+            "type": "text",
+            "id": "stChatTxtBoxLable",
+            "label": "label",
+            "default": "Message"
+        },
+        {
+            "type": "color",
+            "id": "stChatPopupBgColor",
+            "label": "Popup Background Color",
+            "default": "#fff"
+        },
+        {
+            "type": "color",
+            "id": "stPopupTxtColor",
+            "label": "Popup Text Color",
+            "default": "#000"
+        },
+        {
+            "type": "color",
+            "id": "stChatSubmitBtnBgColor",
+            "label": "Submit Button background Color",
+            "default": "#000"
+        },
+        {
+            "type": "color",
+            "id": "stChatSubmitBtnTxtColor",
+            "label": "Submit Button Text color",
+            "default": "#fff"
+        },
+        {
+            "type": "number",
+            "id": "stChatTxtBoxRows",
+            "label": "Text Box Rows",
+            "default": 8
+        },
+        {
+            "type": "number",
+            "id": "stChatFontSize",
+            "label": "Font Size(px)",
+            "default": 14
+        }
+        ]
+    }
+{% endschema %}
+<link rel="stylesheet" href="{{ 'customer-chat.css' | asset_url }}" />
+<div class="st-customer-chat-cta-section" id="st-customer-chat-cta">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+    </svg>
+    <p class="chat-with-seller-btn">{% if block.settings.stChatWithSellerBtnTxt == 'Chat With Seller' %}{{ 'customer-chat.chat-with-seller' | t }}{% else %}{{ block.settings.stChatWithSellerBtnTxt }}{% endif %}</p>
+</div>
+<div class="chat-with-seller-container" id="chat-with-seller-container">
+    <div class="chat-with-seller" style="font-size: {{ block.settings.stChatFontSize }}px">
+        <div class="chat-with-seller-header">
+            <p class="chat-with-seller-header-title">{% if block.settings.stChatHeaderText == 'Chat With Seller' %}{{ 'customer-chat.chat-with-seller' | t }}{% else %}{{ block.settings.stChatHeaderText }}{% endif %}</p>
+            <p class="st-chat-with-seller-close" id="st-chat-with-seller-close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+            </p>
+        </div>
+        <form class="chat-with-seller-form" id="chat-with-seller-form">
+            <div>
+                <label for="chat-customer-name">{{ 'customer-chat.name' | t }}*</label>
+                <input name="chat-customer-name" id="chat-customer-name" type="text"/>
+            </div>
+            <div>
+                <label for="chat-customer-email">{{ 'customer-chat.email' | t }}*</label>
+                <input name="chat-customer-email" id="chat-customer-email" type="email"
+                value="{% if customer %}{{ customer.email }}{% else %}{% endif %}"/>
+            </div>
+            <div>
+                <label for="customer-chat">{{ 'customer-chat.message' | t }}*</label>
+                <textarea id="customer-chat-user-request" name="customer-chat"
+                rows="{{ block.settings.stChatTxtBoxRows }}" cols="50"
+                placeholder="{{ block.settings.stChatTxtBoxPlaceholder }}"
+                style="font-size: {{ block.settings.stChatFontSize }}px;
+                font-family: {{ block.settings.stChatFontFamily.family }};">
+                </textarea>
+            </div>
+            <div id="customer-chat-success"></div>
+            <div id="customer-chat-error"></div>
+            <button type="submit" id="submit-customer-query" class="chat-submit-btn-custom-styling">
+                {{ 'customer-chat.submit' | t }}
+            </button>
+        </form>
+    </div>
+</div>
+<script>
+     function CustomerChat(){
+    const url = Shopify.shop === 'bazaatest.myshopify.com' ? "https://api-v2.shipturtle.com/api/v2/chats/store" : "https://api.shipturtle.com/api/v1/vendor/contact"
+    let chatWithSellerBtn = document.getElementById('st-customer-chat-cta')
+    let chatWithSellerContainer = document.getElementById('chat-with-seller-container')
+    let closePopupBtn = document.getElementById('st-chat-with-seller-close')
+    let chatWithSellerForm = document.getElementById('chat-with-seller-form')
+    let userName = document.getElementById('chat-customer-name')
+    let userRequest = document.getElementById('customer-chat-user-request')
+    let customerEmail = document.getElementById('chat-customer-email')
+    let successText = document.getElementById('customer-chat-success')
+    let errorText = document.getElementById('customer-chat-error')
+    let submitButton = document.getElementById('submit-customer-query')
+    let productId = ShopifyAnalytics.meta.product && ShopifyAnalytics.meta.product.id;
+
+if (!productId) {
+    const hiddenProductInput = document.querySelector('input[type="hidden"][name*="product-id"]');
+    if (hiddenProductInput) {
+        productId = hiddenProductInput.value;
+    } else {
+        console.log('Product ID not found in ShopifyAnalytics or hidden input');
+    }
+}
+    userRequest.value = null;
+    userName.value = null;
+
+    const submitForm = (e) => {
+        e.preventDefault()
+        successText.textContent = '';
+        errorText.textContent = ''
+
+        if(!userName.value || userName.value.length === 0 || 
+           !customerEmail.value || customerEmail.value.length === 0 ||
+           !userRequest.value || userRequest.value.length === 0) {
+            errorText.textContent = "{{ 'customer-chat.please-fillout-all-required-fields' | t }}"
+            return
+        }
+
+        var formData = new FormData()
+        if (Shopify.shop === 'bazaatest.myshopify.com') {
+            formData.set('message', userRequest.value)
+            formData.set('shopify_domain', Shopify.shop)
+            formData.set('name', userName.value);
+            formData.set('product_id',  productId)
+            formData.set('customer_email', customerEmail.value)
+            formData.set('sender', 'customer')
+        } else {
+            formData.append('shopify_domain', Shopify.shop);
+            formData.append('channel_id',  productId);
+            formData.append('name', userName.value);
+            formData.append('message', userRequest.value);
+            formData.append('email', customerEmail.value)
+        }
+
+        submitButton.disabled = true;
+
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            successText.textContent = "{{ 'customer-chat.your-message-has-been-sent' | t }}"
+            submitButton.disabled = false;
+            setTimeout(() => {
+                hideForm()
+            }, 1000)
+        })
+        .catch(error => {
+            errorText.textContent = "{{ 'customer-chat.couldnt-submit-your-request' | t }}"
+            submitButton.disabled = false;
+        });
+    }
+
+    const showForm = () => {
+        chatWithSellerContainer.classList.remove('hide')
+        chatWithSellerContainer.classList.add('show')
+        chatWithSellerBtn.classList.add('hide')
+    }
+
+    const hideForm = () => {
+        chatWithSellerContainer.classList.remove('show')
+        chatWithSellerContainer.classList.add('hide')
+        chatWithSellerBtn.classList.remove('hide')
+        userRequest.value = null;
+        successText.textContent = null;
+        errorText.textContent = '';
+        userName.value = null
+    }
+    if(chatWithSellerForm){
+        chatWithSellerForm.addEventListener('submit', submitForm, false);
+    }else{
+       submitButton.addEventListener('submit', submitForm, false);
+    }
+    
+    closePopupBtn.addEventListener('click', hideForm)
+    chatWithSellerBtn.addEventListener('click', showForm)
+}
+CustomerChat()
+</script>

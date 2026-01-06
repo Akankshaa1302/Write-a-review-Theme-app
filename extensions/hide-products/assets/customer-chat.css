@@ -1,0 +1,194 @@
+/* CTA BUTTON */
+.st-customer-chat-cta {
+    cursor: pointer;
+    height: max-content;
+    width: 50px;
+    padding: 10px;
+    border: 1px solid lightgrey;
+    border-top-left-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-right: none;
+    box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+    position: fixed;
+    bottom: 1rem;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    -webkit-transition: width .3s ease .15s;
+    -moz-transition: width .3s ease .15s;
+    -o-transition: width .3s ease .15s;
+    -ms-transition: width .3s ease .15s;
+    transition: width .3s ease .15s;
+    z-index: 2147483647;
+}
+.st-customer-chat-cta p {
+    display: none;
+    opacity: 0;
+    margin: 0px;
+    font-size: 12px;
+    -webkit-transition: all .3s ease .15s;
+    -moz-transition: all .3s ease .15s;
+    -o-transition: all .3s ease .15s;
+    -ms-transition: all .3s ease .15s;
+    transition: all .3s ease .15s;
+}
+.st-customer-chat-cta:hover > p {
+    display: block;
+    opacity: 1;
+}
+.st-customer-chat-cta:hover{
+    width: max-content;
+    border-top-left-radius: 28px;
+    border-bottom-left-radius: 28px;
+}
+.st-customer-chat-cta:hover p {
+    display: block;
+    -webkit-animation: slide 0.3s ease-out;
+    -moz-animation: slide 0.3s ease-out;
+    animation: slide 0.3s ease-out;
+}
+
+@keyframes slide {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+} 
+
+@-moz-keyframes slide {
+    0% { 
+        opacity: 0;
+    } 
+    100% {
+        opacity: 1;
+    }
+} 
+
+/* CTA BUTTON FOR SECTION */
+.st-customer-chat-cta-section {
+    border: 1px solid #000;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-family: inherit;
+    line-height: normal;
+    cursor: pointer;
+    min-width: calc(12rem + 1px * 2);
+    min-height: calc(4.5rem + 1px * 2);
+    max-width: 44rem;
+    margin: auto;
+    font-size: 1.2rem;
+}
+.st-customer-chat-cta-section p {
+    margin: 0px;
+}
+.st-customer-chat-cta-section.show {
+    display: block;
+}
+.st-customer-chat-cta-section.hide {
+    display: none;
+}
+
+.chat-with-seller-container {
+    /* position: fixed; */
+    top: 50%;
+    left: 50%;
+    /* transform: translate(-50%, -50%); */
+    border-radius: 8px;
+    z-index: 2147483647;
+    display: none;
+    /* padding: 2rem;
+    padding-top: 0.5rem; */
+    padding: 0px;
+    border: 1px solid lightgrey;
+    max-width: 500px;
+    margin: auto;
+}
+.chat-with-seller-container.show {
+    display: block;
+    -webkit-animation: slide 0.3s ease-out;
+    -moz-animation: slide 0.3s ease-out;
+    animation: slide 0.3s ease-out;
+}
+
+.chat-with-seller-container.hide {
+    display: none;
+}
+
+.chat-with-seller {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    position: relative;
+}
+.chat-with-seller-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+.chat-with-seller .st-chat-with-seller-close {
+    font-size: 14px;
+    cursor: pointer;
+    margin: 0px;
+}
+.chat-with-seller .chat-with-seller-header-title {
+    font-size: 16px;
+    margin: 0px;
+}
+.chat-with-seller .chat-with-seller-form, .chat-with-seller .chat-with-seller-form > div {
+    display: flex;
+    flex-direction: column;
+}
+.chat-with-seller .chat-with-seller-form > div {
+    width: 100%;
+}
+.chat-with-seller .chat-with-seller-form {
+    color: #000;    
+    width: 100%;    
+    max-width: 500px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+#customer-chat-error {
+    color: red;
+}
+#customer-chat-success {
+    color: green;
+}
+
+.chat-with-seller input, .chat-with-seller textarea {
+    outline: none;
+    box-shadow: none;
+    width: 100%;
+    border: 1px solid lightgrey;
+    border-radius: 8px;
+    resize: none;
+    padding: 10px;
+}
+
+.chat-with-seller button {
+    border: none;
+    width: 100%;
+    border: 8px;
+    border-radius: 8px;
+    padding: 10px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+@media screen and (max-width: 500px){
+    .chat-with-seller-container {
+        width: 300px;
+    }
+}

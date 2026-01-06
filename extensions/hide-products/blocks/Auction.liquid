@@ -1,0 +1,44 @@
+<div id="auction-loading-spinner" class="loader"></div>
+<style id="auction-styling"></style>
+<div id="app"></div>
+<style>
+  .loader {
+    width: 30px;
+    margin: auto;
+    aspect-ratio: 1;
+    border-radius: 50%;
+
+    background: radial-gradient(farthest-side,#ffa516 94%,#0000) top / 8px 8px no-repeat, conic-gradient(#0000 30%, #ffa516);
+    -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 8px),#000 0);
+    animation: l13 1s infinite linear;
+  }
+  @keyframes l13 {
+    100% {
+      transform: rotate(1turn)
+    }
+  }
+</style>
+<script>
+  window.selectedVariantId = {{ product.selected_or_first_available_variant.id | json }};
+  window.productData={
+    productType : {{ product.type | json }}
+  };
+  window.customerData = {
+    id: {{ customer.id | json }},
+    email: {{ customer.email | json }},
+    first_name: {{ customer.first_name | json }},
+    last_name: {{ customer.last_name | json }}
+  };
+</script>
+
+{% schema %}
+  {
+    "name": "Auction App",
+    "target": "section",
+    "templates": ["product"]
+  }
+{% endschema %}
+<link rel="stylesheet" href="{{ 'auction-app.css' | asset_url }}" />
+
+<link rel="stylesheet" href="https://unpkg.com/primeflex@latest/primeflex.css">
+<script id="auction-theme-app-extension" src="{{ 'auction-app.js' | asset_url }}"></script>

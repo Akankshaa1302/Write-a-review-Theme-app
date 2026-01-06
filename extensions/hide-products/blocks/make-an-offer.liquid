@@ -1,0 +1,52 @@
+{% schema %}
+  {
+    "name": "Make an Offer",
+    "target": "section",
+    "templates": ["product"],
+    "settings": [
+      { "type": "color", "id": "background_colour", "label": "Background color", "default": "#000" },
+      {
+        "type": "color",
+        "id": "stChatSubmitBtnBgColor",
+        "label": "Submit Button background Color",
+        "default": "#000"
+      },
+      {
+        "type": "text",
+        "id": "make_an_offer_btn_text",
+        "label": "Make An Offer Button Title",
+        "default": "Make an Offer"
+      },
+      {
+        "type": "text",
+        "id": "offers_popup_title",
+        "label": "Popup Title",
+        "default": "Make an Offer"
+      },
+      {
+        "type": "text",
+        "id": "offers_notice_text",
+        "label": "Offers Notice Text",
+        "default": "By submitting an offer, you confirm you're ready to purchase the item if accepted."
+      },
+      {
+        "type": "text",
+        "id": "offer_submit_text",
+        "label": "Submit Offer Button Text",
+        "default": "Submit"
+      },
+      {
+          "type": "number",
+          "id": "stChatTxtBoxRows",
+          "label": "Text Box Rows",
+          "default": 8
+      }
+    ]
+  }
+
+{% endschema %}
+<link rel="stylesheet" href="{{ 'make-an-offer.css' | asset_url }}" />
+<script src="{{ 'make-an-offer.js' | asset_url }}"></script>
+
+{% render "make-an-offer" %}
+

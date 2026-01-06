@@ -1,0 +1,199 @@
+<div v-if="auctionTimerData && auctionSettingsData" class="auction-timer-container">
+  <p-dialog v-model:visible="confirmBuyNowBid" modal header="Confirm Buy Now" :style="{ width: '400px' }">
+    <p-divider></p-divider>
+    <div class="dialog-content">
+      <label class="bid-label">Are you sure you want to buy this product?</label>
+      <div class="info-text">
+       The auction is still ongoing. If you proceed with the purchase, you will no longer be able to participate in the auction.
+       Please complete the transaction within 10 min to secure the item.
+      </div>
+      <div class="flex gap-2 justify-content-center">
+      <p-button :loading="isConfirmBuyNowLoading" @click="buyItNow" >Confirm</p-button>
+      <p-button @click="closeConfirmBuyNowBid" >Close</p-button>
+      </div>
+    </div>
+  </p-dialog>
+  <p-dialog v-model:visible="isProxyDialogVisible" modal header="Place Automatic Bid" :style="{ width: '400px' }">
+    <p-divider></p-divider>
+    <div class="dialog-content">
+      <label class="bid-label">Enter the Target Amount for your Automatic Bid</label>
+      <div class="info-text">
+        You will be the highest bidder till the target amount that you'll enter here.
+      </div>
+      <div class="info-text">
+        Your current proxy bid is [[currentProxyBidValue]].
+      </div>
+      <div class="flex justify-content-between">
+        <input
+          required
+          v-model="targetAmount"
+          type="number"
+          class="bid-input"
+          placeholder="USD"
+        />
+      <Button class="proxy-button" @click="placeProxyBid" >Place Proxy Bid</Button>
+      </div>
+      {% comment %} <div style="display:flex;align-items:center;gap:15px;">
+        <input
+          required
+          v-model="targetAmount"
+          type="number"
+          class="bid-input"
+          placeholder="USD"
+        />
+        <span class="info-text">
+          You will be the highest bidder till the target amount that you'll enter here.
+        </span>
+      </div>
+      <Button class="proxy-button" @click="placeProxyBid" >Place Proxy Bid</Button> {% endcomment %}
+    </div>
+  </p-dialog>
+  <p-dialog v-model:visible="isDialogVisible" header="All Bids">
+    <p-divider></p-divider>
+    <p-datatable :value="allBidsDetails">
+      <p-column field="bidder_name" header="Bidder Name">
+       
+      </p-column>
+      <p-column header="Email" field="email">
+          
+      </p-column>
+      <p-column header="No of Bids" field="total_bids">
+          
+      </p-column>
+      <p-column header="Current Bid" field="highest_bid">
+          
+      </p-column>
+  </p-datatable>
+  </p-dialog>
+  <p-toast></p-toast>
+  
+  <div class="countdown-timer" :style="{backgroundColor : auctionSettingsData.header_background_color}">
+    <h4 :style="{color:auctionSettingsData.header_text_color}" v-if="auctionTimerData.status === 'scheduled'">Starting In</h4>
+    <h4 v-else class="timer-header" :style="{color:auctionSettingsData.header_text_color}">Time Remaining</h4>
+    <div class="countdown-container">
+      <template v-for="(unit, index) in countdown" :key="index">
+          <div class="time-group">
+          <div :style="{backgroundColor : auctionSettingsData.countdown_animation_background_color, color : auctionSettingsData.countdown_animation_text_color}" class="circle">[[unit.value]]</div>
+          <p :style="{color:auctionSettingsData.header_text_color}" class="label">[[unit.label]]</p>
+        </div>
+        <span v-if="index !== countdown.length - 1" class="colon">:</span>
+      </template>
+    </div>
+  </div>
+   <div class="countdown-info p-2" :style="{backgroundColor :auctionSettingsData.content_background_color ,color : auctionSettingsData.content_text_color}">
+      <div v-if="!auctionSettingsData.hide_start_date" class="grid">
+          <div class="col">
+              <h5>Start Date</h5>
+          </div>
+          <div class="col">
+              <h5>[[formattedStartDate]]</h5>
+          </div>
+        </div>
+        <div v-if="!auctionSettingsData.hide_end_date" class="grid">
+          <div class="col">
+              <h5>End Date</h5>
+          </div>
+          <div class="col">
+              <h5>[[formattedEndDate]]</h5>
+          </div>
+        </div>
+   <div v-if="!auctionSettingsData.hide_start_price" class="grid">
+     <div class="col">
+         <h5>Starting Bid</h5>
+     </div>
+     <div class="col">
+         <h5>[[auctionTimerData.shop_currency]] [[auctionTimerData.starting_bid]]</h5>
+     </div>
+   </div>
+   <div v-if="!auctionSettingsData.hide_reserve_price" class="grid">
+     <div class="col">
+         <h5>Reserved Price</h5>
+     </div>
+     <div class="col">
+         <h5><span v-if="auctionTimerData.reserve_price_enabled">[[auctionTimerData.shop_currency]]</span>[[auctionTimerData.reserved_price]]</h5>
+     </div>
+   </div>
+   <div v-if="!auctionSettingsData.hide_no_of_bids" class="grid">
+     <div class="col">
+         <h5>No. of bids</h5>
+     </div>
+     <div class="col">
+         <h5>[[auctionTimerData.no_of_bids]]</h5>
+     </div>
+   </div>
+   <div v-if="!auctionSettingsData.hide_penny_remaining" class="grid">
+    <div class="col">
+      <h5>Penny Bids Remaining</h5>
+    </div>
+    <div class="col">
+      <h5>NA</h5>
+    </div>
+   </div>
+   <div v-if="!auctionSettingsData.hide_current_bid" class="grid">
+     <div class="col">
+         <h5>Current bids</h5>
+     </div>
+     <div class="col">
+         <h5>[[auctionTimerData.shop_currency]] [[auctionTimerData.current_bid]]<span class="is-your-bid" v-if="isYourBid">(Your Bid)</span></h5>
+     </div>
+   </div>
+   <div v-if="!auctionSettingsData.hide_next_minimum_bid" class="grid">
+     <div class="col">
+         <h5>Next min. bid</h5>
+     </div>
+     <div class="col">
+         <h5>[[auctionTimerData.shop_currency]] [[auctionTimerData.next_min_bid]]</h5>
+     </div>
+   </div>
+   </div>
+   <div class="separator my-2"></div>
+   <section v-if="auctionTimerData.status === 'active'">
+       <div class="flex column-gap-3 justify-content-center">
+         <div>
+           <p-input-number v-model="bidAmount"></p-input-number>
+            <h5 @click="openProxyBidModal" style="cursor : pointer;" v-if="auctionTimerData.is_proxy_enabled === true" class="mt-1 text-center custom-text-color-orange">Proxy Bid Enabled</h5>
+           </div>
+         <div>
+           <p-button
+            class="btn size"
+            :style="{backgroundColor : auctionSettingsData.button_background_color, color : auctionSettingsData.button_text_color
+}"
+                    @click="placeBid"
+                                               >
+                                                Place bid
+                     
+                 </p-button>
+         </div>
+       </div>
+      </section>
+      <section v-if="auctionTimerData.status === 'active' || auctionTimerData.status === 'hold'">
+       <div v-if="!auctionSettingsData.hide_view_all_bids" class="grid my-3">
+         <div class="col flex justify-content-center custom-text-color-orange">
+           <p-button @click="viewAllBids" :style="{backgroundColor : auctionSettingsData.button_background_color, color : auctionSettingsData.button_text_color
+           }" class="btn size">View All Bids</p-button>
+          </div>
+      </div>
+    </section>
+    <section v-if="auctionTimerData.status === 'active'  && isBuyoutPriceGreaterThanProxyBid">
+      <div class="separator mb-3"></div>
+      <h2> [[checkProxyBidValueToBidAmount]]</h2>
+       <div v-if="auctionTimerData.is_buyout_enabled === true && auctionTimerData.show_buyout_price === true" class="grid">
+         <div class="col">
+           <h5 v-if="!auctionSettingsData.hide_price" class="text-center mb-3"><i class="custom-text-color-orange">Buy</i> it Now @ [[auctionTimerData.buyout_price]]</h5>
+           <div>
+             <p-button @click="openConfirmBuyNowBid" :style="{backgroundColor : auctionSettingsData.button_background_color, color : auctionSettingsData.button_text_color
+           }" class="btn size">Buy Now</p-button>
+           </div>
+         </div>
+       </div>
+      </section>
+ </div>
+ <div v-if="titleCaseError"  class="flex align-items-center justify-content-center p-4">
+  <div class="text-center">
+    <h2 class="mt-3">[[titleCaseError]]</h2>
+    <p class="text-secondary">
+      Stay tuned! New auctions will be available soon. Check back later or explore our latest products.
+    </p>
+  </div>
+</div>
+

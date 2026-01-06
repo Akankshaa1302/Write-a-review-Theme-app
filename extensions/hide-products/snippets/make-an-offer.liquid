@@ -1,0 +1,46 @@
+<div id="make-an-offer" v-cloak>
+    <p-button class="make-an-offer-button" size="large" label="{{ block.settings.make_an_offer_btn_text }}" @click="visible = true"></p-button>
+    <p style="color: green; margin-top: 1rem;" v-if="offerSuccess">{{ 'offer.your-offer-request-has-been-sent-successfully' | t }}</p>
+    <p-dialog modal v-model:visible="visible" header="{{ block.settings.offers_popup_title }}" :style="{ width: '35rem' }" @hide="handleCancel">
+        <span>{{ block.settings.offers_notice_text }}</span>
+        <form @submit.prevent="makeOffer">
+            <div class="offer-input-wrapper">
+                <label for="email">{{ 'offer.email' | t }}* </label>
+                <p-inputtext class="offer-input-field" id="email" size="large" type="email" autocomplete="off" v-model="email" required />
+            </div>
+            <div class="offer-input-wrapper">
+                <label for="offer-price">{{ 'offer.offer-price' | t }}* </label>
+                <p-inputtext class="offer-input-field" id="offer-price" size="large" type="number" autocomplete="off" v-model="offerPrice" required />
+            </div>
+            <div class="offer-input-wrapper">
+                <label for="offer-price">{{ 'offer.quantity' | t }}* </label>
+                <p-inputtext class="offer-input-field" id="offer-price" size="large" type="number" autocomplete="off" v-model="quantity" required />
+            </div>
+            <div class="offer-input-wrapper">
+                <label for="note">{{ 'offer.note' | t }} </label>
+                <p-textarea class="offer-input-field" id="note" size="large" type="text" autocomplete="off" v-model="note" />
+            </div>
+
+            <div v-if="formError"><span class="form-error">$% formErrorMessage %</span></div>
+            <div class="offer-action-buttons">
+                <p-button type="button" size="large" label="Cancel" severity="secondary" @click="handleCancel"></p-button>
+                <p-button class="offers-submit-btn" :disabled="submittingOfferLoading" type="submit" style="display: flex; align-items: center; justify-content: center;" size="large" severity="primary">
+                    {{ block.settings.offer_submit_text }} <svg v-if="submittingOfferLoading" width="15" height="15" aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+                    </svg>
+                </p-button>
+            </div>  
+        </form>
+    </p-dialog>
+</div>
+<input type="hidden" id="customer_email" value="{% if customer %}{{ customer.email }}{% else %}{% endif %}"/>
+<input type="hidden" id="product_price" value="{{ product.price | money }}"/>
+<style>
+    .make-an-offer-button {
+        background-color: {{ block.settings.background_colour }};
+    }
+
+    .offers-submit-btn {
+        background: {{ block.settings.background_colour }};
+    }
+</style>
