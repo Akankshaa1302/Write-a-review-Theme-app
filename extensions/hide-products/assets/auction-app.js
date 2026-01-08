@@ -12,8 +12,6 @@ function AuctionThemeAppExtension() {
       const auctionTimerData = ref(null);
       const isDialogVisible = ref(false);
       const toast = ref(null);
-      
-
       const pusher = ref();
       const isProxyDialogVisible = ref(false);
       const targetAmount = ref(null);
@@ -25,8 +23,8 @@ function AuctionThemeAppExtension() {
       
       // DOM elements
       let makeAnOfferButton;
+      const productForm = document.querySelectorAll('product-form form[method="post"][action="/cart/add"]');
       const productPrice = document.querySelector('.product-block--price');
-      const productForm = document.querySelector('form[method="post"][action="/cart/add"]');
       
       // Error handling
       const titleCaseError = ref();
@@ -173,15 +171,17 @@ function AuctionThemeAppExtension() {
       }
       // Form visibility helpers
       function showProductForm() {
-        console.log('Showing product form');
-        if (productForm) productForm.style.visibility = 'visible';
-        if (productPrice) productPrice.style.visibility = 'visible';
-        console.log("yaha", productForm.style.visibility);
+        productForm.forEach(form => {
+             form.style.visibility = 'visible';
+        });
+
       }
       
       function hideProductForm() {
-        if (productForm) productForm.style.visibility = 'hidden';
-        if (productPrice) productPrice.style.visibility = 'hidden';
+        productForm.forEach(form => {
+             form.style.visibility = 'hidden';
+        });
+
       }
       
       function handleAuctionFetchError(error) {
@@ -400,7 +400,9 @@ function AuctionThemeAppExtension() {
         });
         // Add event listener for variant changes
         if (productForm) {
-          productForm.addEventListener('change', getVariantID);
+          productForm.forEach(form => {
+            form.addEventListener('change', getVariantID);
+          });
         }
       });
       
@@ -412,7 +414,9 @@ function AuctionThemeAppExtension() {
       
       onUnmounted(() => {
         if (productForm) {
-          productForm.removeEventListener('change', getVariantID);
+          productForm.forEach(form => {
+            form.removeEventListener('change', getVariantID);
+          });
         }
         clearInterval(countdownTimeInterval);
       });
