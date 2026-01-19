@@ -1,0 +1,201 @@
+/* Apply custom styles */
+#seller-profile-app {
+    font-family: var(--sp-body-font);
+    font-size: var(--sp-body-font-size);
+  }
+
+  #seller-profile-app h1,
+  #seller-profile-app h2,
+  #seller-profile-app h3 {
+    font-family: var(--sp-heading-font);
+    font-size: var(--sp-heading-font-size);
+  }
+
+  /* Primary Buttons */
+  #seller-profile-app .st-ext-bg-black,
+  #seller-profile-app .p-button:not(.p-button-outlined),
+  #seller-profile-app .p-button.st-ext-bg-black-alpha-90,
+  #seller-profile-app .product-details-btn {
+    background-color: var(--sp-primary-button-bg) !important;
+    color: var(--sp-primary-button-text) !important;
+    border-color: var(--sp-primary-button-bg) !important;
+  }
+
+  /* Product details button specific styling */
+  #seller-profile-app .product-details-btn:hover {
+    background-color: var(--sp-primary-button-bg) !important;
+    opacity: 0.9;
+    text-decoration: none !important;
+  }
+
+  /* Secondary Buttons */
+  #seller-profile-app .p-button-outlined,
+  #seller-profile-app .p-button.st-ext-border-gray-300 {
+    background-color: var(--sp-secondary-button-bg) !important;
+    color: var(--sp-secondary-button-text) !important;
+    border-color: var(--sp-secondary-button-text) !important;
+  }
+
+  /* Stars and accent elements */
+  #seller-profile-app .pi-star-fill,
+  #seller-profile-app .st-ext-text-yellow-400 {
+    color: var(--sp-accent-color) !important;
+  }
+
+  /* Dynamic grid layout - Override default grid classes with high specificity */
+
+  /* Debug: Show the CSS variable value */
+  #seller-profile-app::before {
+    content: "Vendors per row: " var(--sp-vendors-per-row);
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: black;
+    color: white;
+    padding: 5px;
+    font-size: 12px;
+    z-index: 9999;
+    display: none;
+    /* Remove this line to debug */
+  }
+
+  /* Target vendor cards specifically */
+  @media (min-width: 640px) {
+    #seller-profile-app div.st-ext-grid.st-ext-grid-nogutter > div[class*="st-ext-col-12"][class*="st-ext-sm:st-ext-col-6"][class*="st-ext-md:st-ext-col-4"][class*="st-ext-lg:st-ext-col-3"] {
+      width: calc(100% / var(--sp-vendors-per-row)) !important;
+      flex: 0 0 calc(100% / var(--sp-vendors-per-row)) !important;
+      max-width: calc(100% / var(--sp-vendors-per-row)) !important;
+    }
+  }
+
+  @media (min-width: 768px) {
+    #seller-profile-app div.st-ext-grid.st-ext-grid-nogutter > div[class*="st-ext-col-12"][class*="st-ext-sm:st-ext-col-6"][class*="st-ext-md:st-ext-col-4"][class*="st-ext-lg:st-ext-col-3"] {
+      width: calc(100% / var(--sp-vendors-per-row)) !important;
+      flex: 0 0 calc(100% / var(--sp-vendors-per-row)) !important;
+      max-width: calc(100% / var(--sp-vendors-per-row)) !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #seller-profile-app div.st-ext-grid.st-ext-grid-nogutter > div[class*="st-ext-col-12"][class*="st-ext-sm:st-ext-col-6"][class*="st-ext-md:st-ext-col-4"][class*="st-ext-lg:st-ext-col-3"] {
+      width: calc(100% / var(--sp-vendors-per-row)) !important;
+      flex: 0 0 calc(100% / var(--sp-vendors-per-row)) !important;
+      max-width: calc(100% / var(--sp-vendors-per-row)) !important;
+    }
+  }
+
+  /* Alternative approach - Override all column classes for VENDORS ONLY */
+  @media (min-width: 640px) {
+    /* Target only vendor cards using .st-ext-p-2 class */
+    #seller-profile-app .st-ext-col-12.st-ext-sm\\:st-ext-col-6.st-ext-p-2,
+    #seller-profile-app .st-ext-col-12.st-ext-md\\:st-ext-col-4.st-ext-p-2,
+    #seller-profile-app .st-ext-col-12.st-ext-lg\\:st-ext-col-3.st-ext-p-2 {
+      width: calc(100% / var(--sp-vendors-per-row)) !important;
+      flex: 0 0 calc(100% / var(--sp-vendors-per-row)) !important;
+      max-width: calc(100% / var(--sp-vendors-per-row)) !important;
+    }
+  }
+
+  /* Products per row layout - Vendor Details page */
+  /* Target only product cards using .st-ext-p-4 class */
+  @media (min-width: 640px) {
+    #seller-profile-app .st-ext-col-12.st-ext-md\\:st-ext-col-6.st-ext-lg\\:st-ext-col-3.st-ext-p-4 {
+      width: calc(100% / var(--sp-products-per-row)) !important;
+      flex: 0 0 calc(100% / var(--sp-products-per-row)) !important;
+      max-width: calc(100% / var(--sp-products-per-row)) !important;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    #seller-profile-app .st-ext-col-12.st-ext-md\\:st-ext-col-6.st-ext-lg\\:st-ext-col-3.st-ext-p-4 {
+      width: calc(100% / var(--sp-products-per-row)) !important;
+      flex: 0 0 calc(100% / var(--sp-products-per-row)) !important;
+      max-width: calc(100% / var(--sp-products-per-row)) !important;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    #seller-profile-app .st-ext-col-12.st-ext-md\\:st-ext-col-6.st-ext-lg\\:st-ext-col-3.st-ext-p-4 {
+      width: calc(100% / var(--sp-products-per-row)) !important;
+      flex: 0 0 calc(100% / var(--sp-products-per-row)) !important;
+      max-width: calc(100% / var(--sp-products-per-row)) !important;
+    }
+  }
+
+  /* Mobile banner height - reduce by half */
+  @media (max-width: 639px) {
+    #seller-profile-app [style*="--sp-vendor-listing-banner-height"],
+    #seller-profile-app [style*="--sp-vendor-details-banner-height"] {
+      height: calc(var(--sp-vendor-listing-banner-height) / 2) !important;
+      max-height: calc(var(--sp-vendor-listing-banner-height) / 2) !important;
+    }
+
+    #seller-profile-app [style*="--sp-vendor-details-banner-height"] {
+      height: calc(var(--sp-vendor-details-banner-height) / 2) !important;
+      max-height: calc(var(--sp-vendor-details-banner-height) / 2) !important;
+    }
+
+    /* Mobile skeleton loader height */
+    #seller-profile-app .p-skeleton[style*="--sp-vendor-listing-banner-height"] {
+      height: calc(var(--sp-vendor-listing-banner-height) / 2) !important;
+    }
+  }
+
+  /*
+
+   Helpful CSS Selectors for Customization: 
+
+   Vendor Cards: 
+   #seller-profile-app .vendor-card { } 
+
+   Buttons: 
+   #seller-profile-app .p-button { } 
+   #seller-profile-app .p-button-outlined { } 
+
+   Search & Filters: 
+   #seller-profile-app .p-input-text { } 
+   #seller-profile-app .p-select { } 
+
+   Vendor Details: 
+   #seller-profile-app .st-ext-tabview { } 
+   #seller-profile-app .st-ext-custom-tabs { } 
+
+   Stars & Ratings: 
+   #seller-profile-app .pi-star-fill { } 
+   #seller-profile-app .pi-star { } 
+
+   Layout: 
+   #seller-profile-app .st-ext-container { } 
+   #seller-profile-app .st-ext-grid { } 
+*/
+
+
+.shopify-block[data-block-handle="seller-profile"], .shopify-app-block:has(#seller-profile-app) {
+    width: 100% !important;
+}
+
+#seller-profile-app a:empty, #seller-profile-app ul:empty, #seller-profile-app dl:empty, #seller-profile-app div:empty, #seller-profile-app section:empty, #seller-profile-app article:empty, #seller-profile-app p:empty, #seller-profile-app h1:empty, #seller-profile-app h2:empty, #seller-profile-app h3:empty, #seller-profile-app h4:empty, #seller-profile-app h5:empty, #seller-profile-app h6:empty {
+    display: block !important;
+}
+
+
+#seller-profile-app .p-select-label {
+    font-size: 0.875rem !important;
+}
+#seller-profile-app .p-tabview-tablist-scroll-container {
+    max-width: 800px;
+    margin: auto;
+}
+#seller-profile-app .p-tabview-tablist {
+    gap: 1rem;
+}
+#seller-profile-app .vendor-dropdown .p-dropdown-label {
+    font-size: 0.875rem !important;
+   /* 14px */
+}
+#seller-profile-app .st-ext-custom-tabs .p-tabview-nav {
+    justify-content: center !important;
+}
+#seller-profile-app .st-ext-custom-tabs .p-tabview-panels {
+    min-height: 400px;
+}   

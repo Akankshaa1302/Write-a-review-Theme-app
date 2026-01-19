@@ -1,0 +1,301 @@
+<div
+  id="seller-profile-app"
+  data-lang-asset="{{ 'lang.json' | asset_url }}"
+  data-settings='{{ block.settings | json }}'></div>
+
+
+<!-- Dynamic CSS Variables from Block Settings -->
+<style>
+  :root {
+    --sp-primary-button-bg: {{ block.settings.primaryButtonColor | default: '#000000' }};
+    --sp-primary-button-text: {{ block.settings.primaryButtonTextColor | default: '#ffffff' }};
+    --sp-secondary-button-bg: {{ block.settings.secondaryButtonColor | default: '#ffffff' }};
+    --sp-secondary-button-text: {{ block.settings.secondaryButtonTextColor | default: '#000000' }};
+    --sp-accent-color: {{ block.settings.accentColor | default: '#fbbf24' }};
+    --sp-heading-font: {{ block.settings.headingFont.family | default: 'helvetica' }};
+    --sp-body-font: {{ block.settings.bodyFont.family | default: 'helvetica' }};
+    --sp-heading-font-size: {{ block.settings.headingFontSize | default: 24 }}px;
+    --sp-body-font-size: {{ block.settings.bodyFontSize | default: 14 }}px;
+    --sp-vendors-per-row: {{ block.settings.vendorsPerRow | default: 3 }};
+    --sp-products-per-row: {{ block.settings.productsPerRow | default: 4 }};
+    --sp-vendor-listing-banner-height: {{ block.settings.vendorListingBannerHeight | default: 20 }}rem;
+    --sp-vendor-details-banner-height: {{ block.settings.vendorDetailsBannerHeight | default: 20 }}rem;
+  }
+
+  /* Custom CSS from block settings */
+  {% if block.settings.customCss != blank %}
+    /* ===== CUSTOM CSS START ===== */
+    {{ block.settings.customCss }}
+    /* ===== CUSTOM CSS END ===== */
+  {% endif %}
+</style>
+
+<!-- Vue 3 -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<!-- Vue Router 4 -->
+<script src="https://unpkg.com/vue-router@4/dist/vue-router.global.prod.js"></script>
+<!-- Vue I18n -->
+<script src="https://unpkg.com/vue-i18n@9/dist/vue-i18n.global.js"></script>
+<!-- PrimeIcons -->
+<link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+<!-- PrimeVue core (UMD) -->
+<script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+<script src="https://unpkg.com/@primevue/themes/umd/aura.min.js"></script>
+{% schema %}
+  {
+    "name": "Seller Profile",
+    "target": "section",
+    "templates": ["page"],
+    "stylesheet": "st-primevue.css",
+    "javascript": "seller-profile.js",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Layout Settings"
+      },
+      {
+        "type": "select",
+        "id": "vendorsPerRow",
+        "label": "Vendors per row (Desktop)",
+        "options": [
+          {
+            "value": "2",
+            "label": "2 vendors"
+          }, {
+            "value": "3",
+            "label": "3 vendors"
+          }, {
+            "value": "4",
+            "label": "4 vendors"
+          }
+        ],
+        "default": "3"
+      },
+      {
+        "type": "range",
+        "id": "vendorsPerPage",
+        "label": "Vendors per page",
+        "min": 6,
+        "max": 24,
+        "step": 3,
+        "default": 12
+      },
+      {
+        "type": "checkbox",
+        "id": "showVendorRatings",
+        "label": "Show vendor ratings",
+        "default": true
+      }, {
+        "type": "range",
+        "id": "vendorListingBannerHeight",
+        "label": "Vendor listing banner height (rem)",
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "unit": "rem",
+        "default": 20
+      }, {
+        "type": "range",
+        "id": "vendorDetailsBannerHeight",
+        "label": "Vendor details banner height (rem)",
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "unit": "rem",
+        "default": 20
+      }, {
+        "type": "checkbox",
+        "id": "hideVendorDetailsBanner",
+        "label": "Hide vendor details banner",
+        "default": false
+      }, {
+        "type": "header",
+        "content": "Color Settings"
+      }, {
+        "type": "color",
+        "id": "primaryButtonColor",
+        "label": "Primary button background",
+        "default": "#000000"
+      }, {
+        "type": "color",
+        "id": "primaryButtonTextColor",
+        "label": "Primary button text",
+        "default": "#ffffff"
+      }, {
+        "type": "color",
+        "id": "secondaryButtonColor",
+        "label": "Secondary button background",
+        "default": "#ffffff"
+      }, {
+        "type": "color",
+        "id": "secondaryButtonTextColor",
+        "label": "Secondary button text",
+        "default": "#000000"
+      }, {
+        "type": "color",
+        "id": "accentColor",
+        "label": "Accent color (stars, badges)",
+        "default": "#fbbf24"
+      }, {
+        "type": "header",
+        "content": "Typography"
+      }, {
+        "type": "font_picker",
+        "id": "headingFont",
+        "label": "Heading font",
+        "default": "helvetica_n7"
+      }, {
+        "type": "font_picker",
+        "id": "bodyFont",
+        "label": "Body font",
+        "default": "helvetica_n4"
+      }, {
+        "type": "range",
+        "id": "headingFontSize",
+        "label": "Heading font size",
+        "min": 16,
+        "max": 32,
+        "step": 1,
+        "unit": "px",
+        "default": 24
+      }, {
+        "type": "range",
+        "id": "bodyFontSize",
+        "label": "Body font size",
+        "min": 12,
+        "max": 20,
+        "step": 1,
+        "unit": "px",
+        "default": 14
+      }, {
+        "type": "header",
+        "content": "Vendor Detail Settings"
+      },
+      {
+        "type": "select",
+        "id": "productsPerRow",
+        "label": "Products per row (Vendor Details)",
+        "options": [
+          {
+            "value": "2",
+            "label": "2 products"
+          }, {
+            "value": "3",
+            "label": "3 products"
+          }, {
+            "value": "4",
+            "label": "4 products"
+          }
+        ],
+        "default": "4"
+      },
+      {
+        "type": "range",
+        "id": "productsPerPage",
+        "label": "Products per page in vendor details",
+        "min": 4,
+        "max": 20,
+        "step": 2,
+        "default": 8
+      }, {
+        "type": "header",
+        "content": "Advanced Customization"
+      }, {
+        "type": "text",
+        "id": "vendorTerm",
+        "label": "Term for 'Vendor'",
+        "default": "Vendor",
+        "info": "Customize what to call vendors (e.g., 'Seller', 'Store', 'Partner')"
+      }, {
+        "type": "text",
+        "id": "vendorTermPlural",
+        "label": "Term for 'Vendors' (plural)",
+        "default": "Vendors",
+        "info": "Plural form (e.g., 'Sellers', 'Stores', 'Partners')"
+      }, {
+        "type": "text",
+        "id": "productTerm",
+        "label": "Term for 'Product'",
+        "default": "Product",
+        "info": "Customize what to call products (e.g., 'Listing', 'Item')"
+      }, {
+        "type": "text",
+        "id": "productTermPlural",
+        "label": "Term for 'Products' (plural)",
+        "default": "Products",
+        "info": "Plural form (e.g., 'Listings', 'Items')"
+      }, {
+        "type": "liquid",
+        "id": "customCss",
+        "label": "Custom CSS",
+        "info": "Add your own CSS styles. Always scope your styles to #seller-profile-app to avoid affecting other elements. Example: #seller-profile-app .my-custom-class { color: red; }",
+        "default": "/*  Helpful CSS Selectors for Customization: */\n\n/* Example: Style vendor cards with hover effects */\n/*\n#seller-profile-app .st-ext-bg-white {\n  transition: transform 0.3s ease, box-shadow 0.3s ease;\n}\n\n#seller-profile-app .st-ext-bg-white:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);\n}\n*/\n\n/* Example: Customize button styles */\n/*\n#seller-profile-app .p-button,\n#seller-profile-app .product-details-btn {\n  border-radius: 8px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n*/\n\n/* Example: Style the search input */\n/*\n#seller-profile-app .p-input-text {\n  border: 2px solid #e5e7eb;\n  border-radius: 12px;\n  padding: 12px 16px;\n}\n\n#seller-profile-app .p-input-text:focus {\n  border-color: #3b82f6;\n  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);\n}\n*/\n\n/* Example: Customize star ratings */\n/*\n#seller-profile-app .pi-star-fill {\n  color: #fbbf24;\n  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));\n}\n*/\n\n/* Add your custom styles below this line */\n"
+      }, {
+        "type": "liquid",
+        "id": "customJavaScript",
+        "label": "Custom JavaScript",
+        "info": "Add custom JavaScript. Access the app element with document.getElementById('seller-profile-app'). Example: console.log('Custom JS loaded');"
+      }
+    ]
+  }
+{% endschema %}
+
+<link rel="stylesheet" href="{{ 'seller-profile.css' | asset_url }}">
+
+<!-- Custom JavaScript from block settings -->
+{% if block.settings.customJavaScript != blank %}
+  <script>
+    // Helper API for custom JavaScript
+    window.SellerProfileAPI = {
+      // Get the main app element
+      getAppElement: function() {
+        return document.getElementById('seller-profile-app');
+      },
+      
+      // Add custom CSS dynamically
+      addCustomCSS: function(cssText) {
+        const style = document.createElement('style');
+        style.textContent = cssText;
+        document.head.appendChild(style);
+        return style;
+      },
+      
+      // Wait for a specific element to appear
+      waitForElement: function(selector, callback, timeout = 5000) {
+        const startTime = Date.now();
+        const checkElement = function() {
+          const element = document.querySelector(selector);
+          if (element) {
+            callback(element);
+          } else if (Date.now() - startTime < timeout) {
+            setTimeout(checkElement, 100);
+          }
+        };
+        checkElement();
+      },
+      
+      // Access block settings
+      getSettings: function() {
+        const appElement = this.getAppElement();
+        try {
+          return JSON.parse(appElement.getAttribute('data-settings') || '{}');
+        } catch (e) {
+          return {};
+        }
+      }
+    };
+    
+    // Wait for Vue app to be initialized before running custom JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+      // Wait a bit more to ensure Vue components are fully mounted
+      setTimeout(function() {
+        try {
+          // Custom JavaScript from admin settings
+          {{ block.settings.customJavaScript }}
+        } catch (error) {
+          console.error('Error in custom JavaScript:', error);
+        }
+      }, 1000);
+    });
+  </script>
+{% endif %}
