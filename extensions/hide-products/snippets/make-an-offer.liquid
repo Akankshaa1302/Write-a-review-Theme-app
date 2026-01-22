@@ -1,5 +1,6 @@
 <div id="make-an-offer" v-cloak>
-    <p-button class="make-an-offer-button" size="large" label="{{ block.settings.make_an_offer_btn_text }}" @click="visible = true"></p-button>
+    <p-toast></p-toast>
+    <p-button v-if="isButtonVisible" :disabled="isSoldOut" :title="isSoldOut ? 'Sold Out – Offers Not Available' : ''" class="make-an-offer-button" size="large" label="{{ block.settings.make_an_offer_btn_text }}" @click="showDialog"></p-button>
     <p style="color: green; margin-top: 1rem;" v-if="offerSuccess">{{ 'offer.your-offer-request-has-been-sent-successfully' | t }}</p>
     <p-dialog modal v-model:visible="visible" header="{{ block.settings.offers_popup_title }}" :style="{ width: '35rem' }" @hide="handleCancel">
         <span>{{ block.settings.offers_notice_text }}</span>
@@ -21,7 +22,6 @@
                 <p-textarea class="offer-input-field" id="note" size="large" type="text" autocomplete="off" v-model="note" />
             </div>
 
-            <div v-if="formError"><span class="form-error">$% formErrorMessage %</span></div>
             <div class="offer-action-buttons">
                 <p-button type="button" size="large" label="Cancel" severity="secondary" @click="handleCancel"></p-button>
                 <p-button class="offers-submit-btn" :disabled="submittingOfferLoading" type="submit" style="display: flex; align-items: center; justify-content: center;" size="large" severity="primary">
@@ -44,3 +44,12 @@
         background: {{ block.settings.background_colour }};
     }
 </style>
+<script>
+    window.makeAnOfferSettings = {
+        restrictOfferQuantity: {{ block.settings.restrict_offer_quantity | json }},
+        restrictOfferByCustomer: {{ block.settings.restrict_offer_by_customer | json }},
+        hideMakeAnOfferButton: {{ block.settings.hide_make_an_offer_button | json }},
+        variantInventory: {{ product.variants.first.inventory_quantity | json }}
+    };
+    
+</script>

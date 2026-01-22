@@ -169,15 +169,25 @@ value="{{ customer.email }}" />
     let errorText = document.getElementById('customer-chat-error')
     let submitButton = document.getElementById('submit-customer-query')
     let productId = ShopifyAnalytics.meta.product && ShopifyAnalytics.meta.product.id;
+    let variantId = ShopifyAnalytics.meta.product.variants[0]?.id;
 
-if (!productId) {
-    const hiddenProductInput = document.querySelector('input[type="hidden"][name*="product-id"]');
-    if (hiddenProductInput) {
-        productId = hiddenProductInput.value;
-    } else {
-        console.log('Product ID not found in ShopifyAnalytics or hidden input');
+    if (!productId) {
+        const hiddenProductInput = document.querySelector('input[type="hidden"][name*="product-id"]');
+        if (hiddenProductInput) {
+            productId = hiddenProductInput.value;
+        } else {
+            console.log('Product ID not found in ShopifyAnalytics or hidden input');
+        }
     }
-}
+    const getVariantID = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const variantParam = urlParams.get('variant');
+        if (variantParam) {
+            variantId = variantParam;
+        } else {
+            variantId = ShopifyAnalytics?.meta?.selectedVariantId;
+        }
+    }
     userRequest.value = null;
     userName.value = null;
 
@@ -207,6 +217,7 @@ if (!productId) {
             formData.append('name', userName.value);
             formData.append('message', userRequest.value);
             formData.append('email', customerEmail.value)
+            formData.append('variant_id', variantId);
         }
 
         submitButton.disabled = true;
@@ -254,6 +265,12 @@ if (!productId) {
     
     closePopupBtn.addEventListener('click', hideForm)
     chatWithSellerBtn.addEventListener('click', showForm)
+    const productForm = document.querySelectorAll('product-form form[method="post"][action="/cart/add"]');
+    if (productForm) {
+        productForm.forEach(form => {
+            form.addEventListener('change', getVariantID);
+        });
+    }
 }
 CustomerChat()
 </script>

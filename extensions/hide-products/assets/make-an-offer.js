@@ -1,25 +1,41 @@
 function MakeAnOfferCode(){
-    const { createApp, ref } = Vue;
+    const { createApp, ref, onBeforeMount, computed, onUnmounted } = Vue;
+    const { useToast } = PrimeVue;
 
     const app = createApp({
         setup() {
+            const toast = useToast();
             const visible = ref(false);
             const email = ref(document.getElementById('customer_email').value);
             const offerPrice = ref(null);
             const quantity = ref(null);
             const note = ref(null);
-            const formError = ref(false)
-            const formErrorMessage = ref(null)
             const productPrice = ref(parseFloat(document.getElementById('product_price').value.replace(/[^0-9.]/g, '').replace(/^\./, '')));
             const submittingOfferLoading = ref(false);
+            const variantId = ref(ShopifyAnalytics?.meta?.product?.variants[0]?.id);
+            const variantInventory = ref(window.makeAnOfferSettings?.variantInventory ?? null);
+            const hasPendingOffer = ref(false);
+            const restrictOfferQuantity = ref(window.makeAnOfferSettings?.restrictOfferQuantity || false);
+            const restrictOfferByCustomer = ref(window.makeAnOfferSettings?.restrictOfferByCustomer || false);
+            const hideMakeAnOfferButton = ref(window.makeAnOfferSettings?.hideMakeAnOfferButton || false);
+
+            const isSoldOut = computed(() => {
+                return variantInventory.value !== null && variantInventory.value <= 0;
+            });
+
+            const isButtonVisible = computed(() => {
+                if (isSoldOut.value && hideMakeAnOfferButton.value) {
+                    return false;
+                }
+                return true;
+            });
+            
             
 
             const resetForm = () => {
                 offerPrice.value = null;
                 quantity.value = null;
                 note.value = null;
-                formError.value = false;
-                formErrorMessage.value = null;
                 submittingOfferLoading.value = false;
             }
 
@@ -28,54 +44,187 @@ function MakeAnOfferCode(){
                 resetForm();
             }
 
-            const makeOffer = async () => {
-                submittingOfferLoading.value = true;
-                formError.value = false;
-                if (!offerPrice.value || !quantity.value || !email.value) {
-                    formError.value = true;
-                    formErrorMessage.value = 'Please fill in all the required fields'
-                    return;
+            const validateInventoryLimit = () => {
+                if (restrictOfferQuantity.value && variantInventory.value !== null) {
+                    if (quantity.value > variantInventory.value) {
+                        toast.add({ 
+                            severity: 'warn', 
+                            summary: 'Limit Reached', 
+                            detail: 'Quantity cannot exceed available inventory. ' + variantInventory.value + ' items available.', 
+                            life: 3000 
+                        });
+                        return false;
+                    }
                 }
+                return true;
+            }
+
+            const validateCustomerOfferLimit = () => {
+                 if (restrictOfferByCustomer.value && hasPendingOffer.value) {
+                         toast.add({ 
+                            severity: 'warn', 
+                            summary: 'Limit Reached', 
+                            detail: 'You already have an pending offer for this product.', 
+                            life: 3000 
+                        });
+                        return false;
+                    }
+                return true;
+            }
+
+            const makeOffer = async () => {
+        
+                submittingOfferLoading.value = true;
+                try {
+                    if (!offerPrice.value || !quantity.value || !email.value) {
+                        toast.add({ 
+                            severity: 'warn', 
+                            summary: 'Validation Error', 
+                            detail: 'Please fill in all the required fields', 
+                            life: 3000 
+                        });
+                        return;
+                    }
+
+                    if (!validateInventoryLimit()) {
+                        return;
+                    }
                 const response = await fetch('https://api.shipturtle.com/api/v2/orders/create-shopify-draft-order', {
-                    method: 'POST',
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(
+                            {
+                                "shop_domain": Shopify.shop,
+                                "variant_id": variantId.value,
+                                "quantity": quantity.value,
+                                "proposed_price": offerPrice.value,
+                                "note": note.value,
+                                "email": email.value
+                            }
+                        )
+                    })
+                    const data = await response.json(); 
+                    if (response.status === 201) {
+                        visible.value = false;
+                        resetForm();
+                        toast.add({ 
+                            severity: 'success', 
+                            summary: 'Success', 
+                            detail: 'Offer submitted successfully!', 
+                            life: 3000 
+                        });
+                        hasPendingOffer.value = true;
+                    } else {
+                        toast.add({ 
+                            severity: 'error', 
+                            summary: 'Error', 
+                            detail: data.message || 'Error while submitting offer', 
+                            life: 3000 
+                        });
+                    }   
+                } catch (error) {
+                    toast.add({ 
+                        severity: 'error', 
+                        summary: 'Error', 
+                        detail: 'An error occurred while processing your request.', 
+                        life: 3000 
+                    });
+                } finally {
+                    submittingOfferLoading.value = false;
+                }
+            }
+            const checkInventoryAndOffer = async () => {
+                if (!email.value) return;
+                const response = await fetch('https://apiuat.shipturtle.app/api/v2/variants/check-inventory-and-offers?variant_id=' + variantId.value + '&email=' + email.value + '&shop_domain=' + Shopify.shop, {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(
-                        {
-                            "shop_domain": Shopify.shop,
-                            "variant_id": ShopifyAnalytics.meta.product.variants[0]?.id,
-                            "quantity": quantity.value,
-                            "proposed_price": offerPrice.value,
-                            "note": note.value,
-                            "email": email.value
-                        }
-                    )
                 })
                 const data = await response.json(); 
-                if (response.status === 201) {
-                    visible.value = false;
-                    formErrorMessage.value = null;
-                    resetForm();
-                } else {
-                    formError.value = true;
-                    formErrorMessage.value = data.message || 'Error while submitting offer';
-                }   
-                submittingOfferLoading.value = false;
+                variantInventory.value = parseInt(data.data.inventory_quantity);
+                hasPendingOffer.value = data.data.has_pending_offer;
             }
 
+            const showDialog = () => {
+                try {
+                    if (!validateCustomerOfferLimit()) {
+                        return;
+                    }
+
+                    if(email.value) {
+                    visible.value = true;
+                    } else {
+                    toast.add({ 
+                        severity: 'warn', 
+                        summary: 'Login Required', 
+                        detail: 'Please login to make an offer', 
+                        life: 3000 
+                    });
+                    setTimeout(() => {
+                        window.location.href = "/account/login"
+                    }, 1500);
+                    }
+                } catch (error) {
+                    console.error('Error in showDialog:', error);
+                }
+            }
+            // Variant handling
+            const getVariantID = async () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const variantParam = urlParams.get('variant');
+                if (variantParam) {
+                    variantId.value = variantParam;
+                } else {
+                    variantId.value = ShopifyAnalytics?.meta?.selectedVariantId;
+                }
+                try {
+                    await checkInventoryAndOffer();
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+
+            onUnmounted(() => {
+                const productForm = document.querySelectorAll('product-form form[method="post"][action="/cart/add"]');
+                if (productForm) {
+                    productForm.forEach(form => {
+                        form.removeEventListener('change', getVariantID);
+                    });
+                }
+            });
+
+            onBeforeMount(() => {
+                try{
+                    checkInventoryAndOffer();
+                    // Add event listener for variant changes
+                    const productForm = document.querySelectorAll('product-form form[method="post"][action="/cart/add"]');
+                    if (productForm) {
+                        productForm.forEach(form => {
+                            form.addEventListener('change', getVariantID);
+                        });
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            })
             return {
+                showDialog,
+                isSoldOut,
+                isButtonVisible,
                 visible,
                 email,
                 offerPrice,
                 quantity,
                 note,
+                variantInventory,
+                hasPendingOffer,
                 submittingOfferLoading,
                 handleCancel,
                 makeOffer,
-                formError,
-                productPrice,
-                formErrorMessage
+                productPrice
             };
         }
     }); 
@@ -136,10 +285,12 @@ function MakeAnOfferCode(){
             }
         }
     });
+    app.use(PrimeVue.ToastService);
 
     app.component('p-button', PrimeVue.Button);
     app.component('p-dialog', PrimeVue.Dialog);
     app.component('p-inputtext', PrimeVue.InputText);
+    app.component('p-toast', PrimeVue.Toast);
     app.component('p-textarea', PrimeVue.Textarea);
 
     app.config.compilerOptions.delimiters = ['$%', '%'];
