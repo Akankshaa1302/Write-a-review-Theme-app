@@ -21,7 +21,7 @@ async function writeaReview() {
                              navigator.language.split('-')[0]
         
         // Map Shopify locales to our supported locales
-        const supportedLocales = ['en', 'de', 'es']
+        const supportedLocales = ['en', 'de', 'es', "nl", "pt"]
         const normalizedLocale = shopifyLocale.toLowerCase().split('-')[0]
         
         return supportedLocales.includes(normalizedLocale) ? normalizedLocale : 'en'
