@@ -1,0 +1,149 @@
+<script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
+<script src="https://unpkg.com/primevue/umd/primevue.min.js" ></script>
+<script src="https://unpkg.com/primeicons/primeicons.js" ></script>
+<script src="{{ 'global-product.js' | asset_url }}" ></script>
+<link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+
+
+<div id="global-product-table">
+  <div class="card">
+    
+    <!-- Loading Indicator -->
+    <div v-if="isLoading" class="loading-spinner">
+      Loading vendors...
+    </div>
+   <!-- Error/Empty Message -->
+   <div v-else-if="errorMessage" class="error-message">
+    $% errorMessage %
+  </div>
+    <!-- Data Table -->
+     <div v-else>
+     <div class="sold-by-text">Sold By</div>
+    <p-datatable
+      :value="vendorsList"
+      id="table-style"
+      class="modern-table"
+    >
+      <p-column field="brand_name" header="Vendor Name"></p-column>
+      <p-column field="price" header="Price" style="text-align: center;"></p-column>
+      <p-column field="actions" header="Actions" style="text-align: center;">
+        <template #body="slotProps">
+          <button class="p-button add-to-cart-btn" @click="addProductToCart(slotProps.data.vendor_variant_channel_id)">Add To Cart</button>
+        </template>
+      </p-column>
+    </p-datatable>
+    </div>
+  </div>
+</div>
+<style>
+#table-style {
+  width: 100% !important;
+  max-width: 100% !important;
+  table-layout: fixed;
+}
+@media (max-width: 768px) {
+  .modern-table {
+    font-size: 0.9rem;
+  }
+}
+
+.modern-table .p-datatable-thead > tr > th,
+.modern-table .p-datatable-tbody > tr > td {
+  width: auto;
+}
+
+.modern-table.p-datatable {
+            border: none;
+        }
+
+        .modern-table .p-datatable-header {
+            background: #f8fafc;
+            border: none;
+            padding: 0;
+        }
+
+        .modern-table .p-datatable-thead > tr > th {
+            background: {{ block.settings.table_header_color }} !important;
+            color: {{ block.settings.table_header_text_color }} !important;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 16px 20px;
+            border: none;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+            text-align: center;
+        }
+
+        .modern-table .p-datatable-thead > tr > th:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 1px;
+            background: #e2e8f0;
+        }
+
+        .modern-table .p-datatable-tbody > tr {
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .modern-table .p-datatable-tbody > tr > td {
+            border: none;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .modern-table .p-datatable-tbody > tr:hover {
+            background-color: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .modern-table .p-datatable-tbody > tr:last-child > td {
+            border-bottom: none;
+        }
+
+        .modern-table.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+</style>
+{% if product.tags contains 'st_global' %}
+<script>
+  window.isglobalproduct = true;
+</script>
+<style>
+[class^="product-form-buttons"],
+.product-form__buttons,
+.shopify-payment-button ,
+.product-form__quantity,
+.price,
+.price--large,
+.price--sold-out,
+.price--show-badge,
+.price-item--sale,
+.price-item--regular,
+.price-item--sale-label{ display: none !important; }
+</style>
+{% else %}
+  <script>
+    window.isglobalproduct = false;
+  </script>
+{% endif %}
+<style>
+.add-to-cart-btn {
+  background-color: {{ block.settings.add_to_cart_button_color }} !important;
+  border-color: {{ block.settings.add_to_cart_button_color }} !important;
+  color: {{ block.settings.add_to_cart_button_text_color }} !important;
+}
+.add-to-cart-btn:hover,
+.add-to-cart-btn:focus {
+  background-color: {{ block.settings.add_to_cart_button_color }} !important;
+  border-color: {{  block.settings.add_to_cart_button_color }} !important;
+  color: #ffffff !important;
+}
+</style>

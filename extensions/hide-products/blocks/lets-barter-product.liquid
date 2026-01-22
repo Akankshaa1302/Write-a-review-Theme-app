@@ -1,0 +1,16 @@
+{% schema %}
+    {
+      "name": "Let's Barter Product",
+      "target": "section",
+      "templates": ["product"],
+      "available_if": "{{ app.metafields.shipturtle.barter_feature }}",
+      "settings": [
+        
+      ]
+    }
+  {% endschema %}
+  <script src="{{ 'lets-barter-product.js' | asset_url }}"></script>
+  
+  {% render "lets-barter-product" %}
+
+  

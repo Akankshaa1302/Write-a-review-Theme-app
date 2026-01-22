@@ -2,7 +2,7 @@
   "en": {
     "sellers": {
       "searchVendors": "Search vendors...",
-      "searchVendor": "Search Vendor...",
+      "searchVendor": "Search Vendor",
       "filters": "Filters",
       "clear": "Clear",
       "country": "Country",
@@ -174,8 +174,8 @@
   },
   "de": {
     "sellers": {
-      "searchVendors": "Anbieter suchen...",
-      "searchVendor": "Anbieter suchen...",
+      "searchVendors": "Anbieter suchen",
+      "searchVendor": "Anbieter suchen",
       "filters": "Filter",
       "clear": "Löschen",
       "country": "Land",
@@ -348,7 +348,7 @@
   "es": {
     "sellers": {
       "searchVendors": "Buscar vendedores...",
-      "searchVendor": "Buscar vendedor...",
+      "searchVendor": "Buscar vendedor",
       "filters": "Filtros",
       "clear": "Limpiar",
       "country": "País",

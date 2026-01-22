@@ -1,0 +1,84 @@
+
+<style>
+    /* Custom CSS from block settings */
+  {% if block.settings.customCss != blank %}
+    /* ===== CUSTOM CSS START ===== */
+    {{ block.settings.customCss }}
+    /* ===== CUSTOM CSS END ===== */
+  {% endif %}
+</style>
+{% schema %}
+    {
+        
+    "name": "Shipturtle Booking",
+    "target": "section",
+    "javascript": "booking.js",
+    "stylesheet": "booking.css",
+    "templates": ["product"],
+    "available_if": "{{ app.metafields.shipturtle.booking_feature_availability_status }}",
+    "settings": [
+        {
+            "type": "text",
+            "id": "quantity_selector_id",
+            "label": "Quantity Selector ID"
+        },
+        {
+            "type": "text",
+            "id": "buy_buttons_id",
+            "label": "Buy Buttons ID"
+        },
+        {
+          "type": "text",
+          "id": "rental_type_calendar_placeholder",
+          "label": "Rental Type Input Field Placeholder"
+        },
+        {
+          "type": "text",
+          "id": "appointment_type_calendar_placeholder",
+          "label": "Appointment Type Input Field Placeholder"
+        },
+        {
+            "type": "checkbox",
+            "id": "auto_select_last_date",
+            "label": "Auto Select Last Date",
+            "default": false
+        },
+        {
+            "type": "checkbox",
+            "id": "hide_quantity_selector",
+            "label": "Hide Booking Quantity Selector",
+            "default": false
+        },
+        {
+            "type": "checkbox",
+            "id": "hide_duration",
+            "label": "Hide Duration",
+            "default": false
+        },
+        {
+            "type": "text",
+            "id": "booking_heading",
+            "label": "Booking Heading",
+            "default": "Pick a slot to continue"
+        },
+        {
+            "type": "text",
+            "id": "book_button_text",
+            "label": "Book Button Text",
+            "default": "book"
+        },
+        {
+            "type": "liquid",
+            "id": "customCss",
+            "label": "Custom CSS",
+            "info": "Add your own CSS styles. Scope them carefully to avoid affecting other elements. Example: .my-custom-class { color: red; }",
+            "default": "/*  Helpful CSS Selectors for Customization (Booking App): */\n\n/* Example 1: Change selected time slot background and text color */\n/*\n.st-appointment-radiobtn.selected {\n  background-color: black !important;\n  color: white !important;\n}\n*/\n\n/* Example 2: Customize the loader color */\n/*\n.loader {\n  background: \n    radial-gradient(farthest-side, black 94%, #0000) top/8px 8px no-repeat,\n    conic-gradient(#0000 30%, black);\n}\n*/\n\n/* Example 3: Change booking button background color */\n/*\n.st-book-btn {\n  background: red !important;\n  color: white !important;\n  border-radius: 8px;\n  font-weight: 600;\n}\n*/\n\n/* Example 4: Customize border color for time slot buttons */\n/*\n.st-appointment-radiobtn {\n  border-color: green !important;\n}\n*/\n\n/* Example 5: Change the text color of time slots */\n/*\n.slot-time {\n  color: black !important;\n  font-weight: 500;\n}\n*/\n\n/* Example 6: Customize input field styling */\n/*\n.st-booking-custom-input {\n  border: 2px solid #e5e7eb;\n  border-radius: 12px;\n  padding: 12px 16px;\n}\n\n.st-booking-custom-input:focus {\n  border-color: #3b82f6;\n  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);\n}\n*/\n\n/* Add your custom styles below this line */\n"
+        }
+
+    ]
+    }
+{% endschema %}
+
+<input type="hidden" id="quantitySelectorId" value="{{ block.settings.quantity_selector_id }}">
+<input type="hidden" id="buyButtonsId" value="{{ block.settings.buy_buttons_id }}">
+{% render "booking" %}

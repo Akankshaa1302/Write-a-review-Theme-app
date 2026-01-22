@@ -1,0 +1,240 @@
+#st-booking-and-rental {
+    
+}
+
+.rental-and-appointment-container {
+    /* display: block;
+    background-color: #242833;
+    border-radius: 1rem;
+    padding: 1rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%; */
+    margin-top: 1rem;
+}
+.st-booking-title {
+    /* margin: 10px 0px;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    color: #fff; */
+    text-align: center;
+}
+
+.booking-types-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+#st-booking-and-rental .dp__menu {
+    font-size: 16px;
+}
+#st-booking-and-rental .dp__action_buttons button {
+    padding: 14px 10px;
+    font-size: 14px;
+    /* color: #fff; */
+    border: none;
+}
+#st-booking-and-rental .dp__action_cancel {
+    background: red;
+}
+#st-booking-and-rental .dp__action_select {
+    background: #1976d2;
+}
+.st-booking-custom-input {
+    height: 30px;
+    font-size: 14px;
+}
+.st-booking-custom-input:focus-visible {
+    box-shadow: none;
+    outline: none;
+}
+.st-booking-custom-cell {
+    border-radius: 50%;
+}
+.dp__input_wrap svg {
+    height: 15px;
+    width: 15px;
+}
+.st-book-btn {
+    border: none;
+    background: #fff;
+    /* color: #000; */
+    width: 100%;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid lightgrey;
+    padding: 5px 0px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+.st-book-btn:disabled {
+    background: lightgrey;
+    cursor: not-allowed;
+}
+
+.st-rental-booking, .st-appointment-booking {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.st-rental-booking label, .st-appointment-booking label {
+    font-size: 14px;
+    font-weight: 600;
+    /* color: #fff; */
+}
+
+.time-slots-wrapper {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(150px, 1fr) );
+    gap: 5px;
+    padding-right: 5px;
+    margin-bottom: 10px;
+}
+
+.st-appointment-radiobtn {
+    position: relative;
+    display: block;
+    border: 2px solid rgba(0,0,0,0);
+    font-size: 12px;
+    cursor: pointer;
+    border-color:  #f7b156;
+    border-radius: 5px;
+}
+.st-appointment-radiobtn.selected {
+    background: #f7b156 !important;
+    /* color: #fff; */
+}
+.st-appointment-radiobtn.disabled {
+    cursor: not-allowed;
+    border: 1px solid lightgrey;
+    background: lightgrey;
+}
+.st-appointment-radiobtn label {
+    padding: 7px 10px;
+    width: 100%;
+    border-radius: 3px;
+    text-align: center;
+    margin: 0;
+    display: block;
+    font-size: 12px;
+    font-weight: 300;
+    text-transform: none;
+    cursor: pointer;
+    /* color: #fff; */
+    width: max-content;
+}
+.st-powered-by {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 10px;
+    /* color: #fff; */
+}
+
+.st-error-message {
+    color: red;
+    font-size: 12px;
+}
+/* HTML: <div class="loader"></div> */
+.loader {
+width: 30px;
+margin: auto;
+aspect-ratio: 1;
+border-radius: 50%;
+
+background: 
+    radial-gradient(farthest-side,#ffa516 94%,#0000) top/8px 8px no-repeat,
+    conic-gradient(#0000 30%,#ffa516);
+-webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 8px),#000 0);
+animation: l13 1s infinite linear;
+}
+@keyframes l13{ 
+    100%{transform: rotate(1turn)}
+}
+
+/* Moved From Snippet */
+.st_loader-container {
+    min-height: 500px;
+    display: flex;
+    justify-content: center;
+    margin-top: 4rem;
+}
+.st_loader {
+display: inline-block;
+position: relative;
+width: 35px;
+height: 35px;
+}
+.st_loader div {
+box-sizing: border-box;
+display: block;
+position: absolute;
+width: 35px;
+height: 35px;
+margin: 8px;
+border: 3px solid #5C5F60;
+border-radius: 50%;
+animation: st_loader 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+border-color: #5C5F60 transparent transparent transparent;
+}
+.st_loader div:nth-child(1) {
+animation-delay: -0.45s;
+}
+.st_loader div:nth-child(2) {
+animation-delay: -0.3s;
+}
+.st_loader div:nth-child(3) {
+animation-delay: -0.15s;
+}
+@keyframes st_loader {
+0% {
+    transform: rotate(0deg);
+}
+100% {
+    transform: rotate(360deg);
+}
+}
+.quantity-selector {
+    display: inline-flex;
+    align-items: center;
+    height: 3rem;
+    background: rgb(var(--input-background, transparent));
+    color: rgb(var(--input-text-color, 74 74 74));
+    border-radius: 0;
+    border-width: 1px;
+    border: 1px solid #ccc;
+}
+
+.qty-btn {
+background: transparent;
+border: none;
+padding: 0.5rem 1rem;
+cursor: pointer;
+font-size: 1rem;
+}
+
+.qty-input {
+    width: 3rem;
+    text-align: center;
+    font-size: 1rem;
+    margin: 0 0.25rem;
+    background: transparent;
+    font-family: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    font-style: inherit;
+    line-height: inherit;
+    text-transform: inherit;
+    color: inherit;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}

@@ -1,0 +1,44 @@
+
+<script>
+  window.variantID = {{ product.selected_or_first_available_variant.id | json }}
+  
+</script>
+
+{% render 'global-product' %}
+
+{% schema %}
+{
+  "name": "Global Products Table",
+  "target":"section",
+  "templates": ["product"],
+  "available_if": "{{ app.metafields.shipturtle.global_product_feature }}",
+  "settings": [
+      {
+        "type": "color",
+        "id": "add_to_cart_button_color",
+        "label": "Add to Cart Background Color",
+        "default": "#9aa9d3" 
+      },
+      {
+        "type": "color",
+        "id": "add_to_cart_button_text_color",
+        "label": "Add to Cart Text Color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id":"table_header_color",
+        "label": "Table Header Color",
+        "default": "#f1f5f9"
+      },
+      {
+        "type": "color",
+        "id":"table_header_text_color",
+        "label": "Table Header Text Color",
+        "default": "#475569"
+      }
+       
+    ]
+}
+ 
+{% endschema %}

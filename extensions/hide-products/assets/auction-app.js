@@ -19,12 +19,12 @@ function AuctionThemeAppExtension() {
       const targetDate = ref();
       
       // API URL
-      const apiBaseURL = 'https://api.beta.shipturtle.app/api/v2';
+      const apiBaseURL = 'https://api.shipturtle.com/api/v2';
       
       // DOM elements
       let makeAnOfferButton;
-      const productForm = document.querySelectorAll('product-form form[method="post"][action="/cart/add"]');
       const productPrice = document.querySelector('.product-block--price');
+      const productForm = document.querySelectorAll('product-form form[method="post"][action="/cart/add"]');
       
       // Error handling
       const titleCaseError = ref();
@@ -503,7 +503,7 @@ function AuctionThemeAppExtension() {
     const fetchHTML = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const stPreview = urlParams.get('st_preview') || null;
-      const { data } = await axios.get(`https://api.beta.shipturtle.app/auction?shop_domain=${Shopify.shop}&st_preview=${stPreview}`)
+      const { data } = await axios.get(`https://api.shipturtle.com/auction?shop_domain=${Shopify.shop}&st_preview=${stPreview}`)
       document.getElementById('app').innerHTML = data.html
       document.getElementById('auction-styling').innerHTML = data.css
     }

@@ -24,33 +24,23 @@
     // Load locale messages and settings
     const loadLocaleMessages = async () => {
         const locale = getShopifyLocale()
-        const messages = {}
         
         try {
-            // Get locale URLs from the HTML element
             const appElement = document.getElementById('seller-profile-app')
-            const enUrl = appElement?.getAttribute('data-lang-asset')
+            const langJSONUrl = appElement?.getAttribute('data-lang-asset')
             
-            if (!enUrl) {
+            if (!langJSONUrl) {
                 console.warn('No locale URL found, falling back to embedded messages')
                 return { messages: { en: {} }, locale: 'en' }
             }
             
-            // Load default English
-            const enResponse = await fetch(enUrl)
-            messages.en = await enResponse.json()
+            // Load lang.json which contains all locales
+            const response = await fetch(langJSONUrl)
+            const messages = await response.json()
             
-            // Load current locale if different from English
-            try {
-                const localeUrlAttr = `data-lang-asset`
-                const localeUrl = appElement?.getAttribute(localeUrlAttr)
-                
-                if (localeUrl) {
-                    const localeResponse = await fetch(localeUrl)
-                    messages[locale] = (await localeResponse.json())[locale]
-                }
-            } catch (error) {
-                console.warn(`Failed to load locale ${locale}, falling back to English`)
+            // Ensure English exists as fallback
+            if (!messages.en) {
+                messages.en = {}
             }
             
             return { messages, locale }
@@ -171,7 +161,7 @@
                     <div  v-if="isMobile" class="st-ext-col-12 st-ext-block st-ext-sm:st-ext-hidden st-ext-mb-4" >
                         <div class="st-ext-flex st-ext-gap-2">
                             <div class="st-ext-flex-1">
-                                <p-input-text v-model="filters.search" :placeholder="dynamicTranslations.searchPlaceholder" class="st-ext-w-full st-ext-text-sm"></p-input-text>
+                                <p-input-text v-model="filters.search" :placeholder="searchVendorText" class="st-ext-w-full st-ext-h-fullst-ext-text-sm"></p-input-text>
                             </div>
                             <p-button
                                 v-if="!showFilters"
@@ -237,9 +227,9 @@
 
                         <div v-else class="st-ext-flex st-ext-flex-column st-ext-gap-4">
                             <div class="st-ext-hidden st-ext-sm:block">
-                                <label class="st-ext-block st-ext-text-medium st-ext-font-medium st-ext-mb-2">Search [[ terminology.vendor ]]</label>
+                                <label class="st-ext-block st-ext-text-medium st-ext-font-medium st-ext-mb-2">[[ searchVendorText ]]</label>
                                 <div class="st-ext-w-full">
-                                    <p-input-text v-model="filters.search" :placeholder="'Search ' + terminology.vendor" class="st-ext-w-full st-ext-text-sm"></p-input-text>
+                                    <p-input-text v-model="filters.search" :placeholder="searchVendorText" class="st-ext-w-full st-ext-h-full st-ext-text-sm"></p-input-text>
                                 </div>
                             </div>
 
@@ -365,7 +355,7 @@
             </div>
         `,
         setup(props) {
-            const { t } = VueI18n.useI18n()
+            const { t, locale  } = VueI18n.useI18n()
             const vendors = ref([])
             const totalCount = ref(0)
             const loading = ref(true)
@@ -380,8 +370,14 @@
                 loadingText: t('sellers.loadingVendors').replace('vendors', terminology.value.vendors.toLowerCase()),
                 noResultsText: t('sellers.noVendorsFound').replace('vendors', terminology.value.vendors.toLowerCase()),
                 backToList: t('sellers.vendorDetails.backToVendors').replace('vendors', terminology.value.vendors),
-                showingResults: (start, end, total) => t('sellers.showingResults', { start, end, total }).replace('vendors', terminology.value.vendors.toLowerCase())
+                showingResults: (start, end, total) => t('sellers.showingResults', { start, end, total }).replace('vendors', terminology.value.vendors.toLowerCase()),
+                searchVendorText: `Search ${terminology.value.vendor}`
             }))
+
+            const searchVendorText = computed (() => {
+                if (locale.value === 'en') return dynamicTranslations.value.searchVendorText
+                else return t('sellers.searchVendor')
+            })
 
             const countryOptions = ref([])
             const stateOptions = ref([])
@@ -674,6 +670,7 @@
                 blockSettings,
                 terminology,
                 dynamicTranslations,
+                searchVendorText,
                 // methods
                 onCountryChange,
                 onPage,
@@ -1295,7 +1292,7 @@
         `,
         setup(props) {
             const isMobile = ref(window.innerWidth < 640)
-            const { t } = VueI18n.useI18n()
+            const { t, locale } = VueI18n.useI18n()
 
             const route = VueRouter.useRoute()
             const blockSettings = loadBlockSettings()
@@ -1309,7 +1306,7 @@
                 viewProduct: `View ${terminology.value.product}`,
                 noProducts: `No ${terminology.value.products.toLowerCase()}`,
                 tryAdjustingSearch: `Try adjusting your search terms.`,
-                vendorNoProducts: `This ${terminology.value.vendor.toLowerCase()} doesn't have any ${terminology.value.products.toLowerCase()} yet.`
+                vendorNoProducts: `This ${terminology.value.vendor.toLowerCase()} doesn't have any ${terminology.value.products.toLowerCase()} yet.`,
             }))
             
             const handle = computed(() => route.params.handle)
@@ -1494,7 +1491,7 @@
                 
                 reviewsLoading.value = true
                 try {
-                    const url = `/a/dashboard/vendor-reviews/${encodeURIComponent(vendorDetails.value.id)}?shop=${encodeURIComponent(shop)}`
+                    const url = `/a/dashboard/vendor-reviews/${encodeURIComponent(vendorDetails.value.slug)}?shop=${encodeURIComponent(shop)}`
                     const response = await fetch(url)
                     const data = await response.json()
                     

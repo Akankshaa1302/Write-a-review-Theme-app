@@ -1,0 +1,141 @@
+<script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/@vuepic/vue-datepicker@10.0.0"></script>
+<link rel="stylesheet" href="https://unpkg.com/@vuepic/vue-datepicker@latest/dist/main.css">
+<script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{ 'primevue-min.js' | asset_url }}"></script>
+<script src="{{ 'theme-aura-min.js' | asset_url }}"></script>
+
+<div
+  id="booking-loading-spinner"
+  class="loader"
+  style="display: none;"></div>
+
+<div
+  id="st-booking-and-rental"
+  style="display: none"
+  data-settings='{{ block.settings | json }}'>
+  {% unless block.settings.hide_quantity_selector %}
+    <div class="quantity-selector">
+      <button class="qty-btn" @click="decrementQuantity">-</button>
+      <input
+        type="text"
+        :value="quantitySelected"
+        @change="updateSelectedQuantity"
+        @update:modelValue="handleUpdateSelectedQuantity"
+        class="qty-input"
+        disabled />
+      <button class="qty-btn" @click="incrementQuantity">+</button>
+    </div>
+  {% endunless %}
+
+  {% unless block.settings.hide_duration %}
+    <div style="margin: 10px 0px;">
+      <p>{{ 'booking.duration' | t }}: %% duration %% %% durationFormat %%</p>
+    </div>
+  {% endunless %}
+
+  <p-card class="rental-and-appointment-container">
+    <template #title class="st-booking-title">
+      <h4 class="st-booking-title">{{ block.settings.booking_heading }}</h4>
+    </template>
+
+    <!-- Rental Booking Section -->
+    <template #content>
+      <div class="booking-types-container">
+        <div class="st-rental-booking" v-if="bookingType === 'rental'">
+          <vue-date-picker
+            v-model="selectedRentalDate"
+            placeholder="{% if block.settings.rental_type_calendar_placeholder != blank %}{{ block.settings.rental_type_calendar_placeholder }}{% else %}{{ 'booking.selectRentDates' | t }}{% endif %}"
+            input-class-name="st-booking-custom-input"
+            calendar-cell-class-name="st-booking-custom-cell"
+            :range="rangeConfig"
+            :min-date="cutoffDate"
+            :max-date="futureDays"
+            auto-apply
+            required
+            :enable-time-picker="false"
+            uid="rental-type"
+            :teleport="true"
+            :disabled-dates="disabledDates"></vue-date-picker>
+
+          <div v-if="isHourlyDuration && selectedRentalDate">
+            <div
+              class="loader"
+              v-if="fetchingAvailableSlots"
+              style="display: block !important;"></div>
+            <time-slot-selector
+              v-else
+              :checkingAvailability
+              :slots="availableRentalTimeSlots"
+              :booked-slots="bookedRentalTimeSlots"
+              @select="checkRentalSlotAvailability"></time-slot-selector>
+          </div>
+        </div>
+
+        <!-- Appointment Booking Section -->
+        <div class="st-appointment-booking" v-if="bookingType === 'appointment'">
+          <div style="display: flex; flex-direction: column;">
+            <label for="appointment-date-picker">{{ 'booking.pickDate' | t }}</label>
+            <vue-date-picker
+              v-model="appointmentDate"
+              placeholder="{% if block.settings.appointment_type_calendar_placeholder != blank %}{{ block.settings.appointment_type_calendar_placeholder }}{% else %}{{ 'booking.selectAppointmentDate' | t }}{% endif %}"
+              input-class-name="st-booking-custom-input"
+              calendar-cell-class-name="st-booking-custom-cell"
+              :markers="markers"
+              :max-date="futureDays"
+              :min-date="cutoffDate"
+              :enable-time-picker="false"
+              name="appointment-date-picker"
+              uid="appointment-type"
+              auto-apply
+              required
+              :disabled-dates="disabledDates"
+              :disabled-week-days="closedDays"
+              :teleport="true">
+              <template #marker="{ marker, day, date }">
+                <span class="custom-marker">{{ 'booking.notAvailable' | t }}</span>
+              </template>
+            </vue-date-picker>
+          </div>
+
+          <!-- Time Slot Selection for Appointments -->
+          <div v-if="appointmentDate">
+            <div
+              class="loader"
+              v-if="fetchingAvailableSlots"
+              style="display: block !important;"></div>
+            <time-slot-selector
+              v-else
+              :slots="availableAppointmentTimeSlots"
+              :booked-slots="bookedAppointmentTimeSlots"
+              @select="checkAppointmentSlotAvailability"></time-slot-selector>
+          </div>
+        </div>
+
+        <span class="st-error-message">%% errorMessage %%</span>
+        <div v-show="checkingAvailability">{{ 'booking.checkingAvailability' | t }}</div>
+
+        <p-button
+          :disabled="isAddToCartBtnDisabled"
+          @click="handleAddToCart"
+          name="add"
+          class="st-book-btn">
+          {{ block.settings.book_button_text }}
+          <div
+            class="loader"
+            style="margin: 0px !important"
+            v-show="addingToCart"></div>
+        </p-button>
+      </div>
+    </template>
+  </p-card>
+</div>
+
+<script>
+  window.translations = {
+    rentThisProduct: "{{ 'booking.rent-this-product' | t }}",
+    bookAppointment: "{{ 'booking.book-appointment' | t }}",
+    selectDateRangeDuration: "{{ 'booking.select-date-range-duration' | t }}"
+  };
+</script>

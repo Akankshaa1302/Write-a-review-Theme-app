@@ -1,0 +1,123 @@
+{% schema %}
+  {
+    "name": "Collection Hyperlocal",
+    "target": "body",
+    "javascript": "hyperlocal.js",
+    "available_if": "{{ app.metafields.shipturtle.hyperlocal_feature_is_enabled }}",
+    "settings": [
+      {
+        "type": "text",
+        "id": "zip_code_btn",
+        "label": "ZIP Code Button Text",
+        "default": "Change ZIP Code"
+      },
+      {
+        "type": "text",
+        "id": "popup_header",
+        "label": "Popup Header Text",
+        "default": "Enter ZIP Code"
+      },
+      {
+        "type": "text",
+        "id": "placeholder_text",
+        "label": "Placeholder Text",
+        "default": "Enter ZIP Code"
+      },
+      {
+        "type": "text",
+        "id": "current_zip_code",
+        "label": "Current ZIP Code Text",
+        "default": "Current ZIP Code"
+      },
+      {
+        "type": "text",
+        "id": "hyperlocalMetaFieldKey",
+        "label": "Hyperlocal Meta Field Key"
+      },
+      {
+        "type": "color",
+        "id": "button_background_color",
+        "label": "Button background color",
+        "default": "#000"
+      }
+    ]
+  }
+{% endschema %}
+
+<script>
+  const hyperlocalMetaFieldKey = "{{ block.settings.hyperlocalMetaFieldKey }}"
+
+  window.localStorage.setItem('hyperlocalMetaFieldKey', hyperlocalMetaFieldKey)
+
+  
+  if (meta.page.pageType === 'product') {
+    if (!window.hyperlocalMetaFieldKey) {
+      window.hyperlocalMetaFieldKey = "{{ block.settings.hyperlocalMetaFieldKey }}"
+      window.filterParamValue = `filter.p.m.shipturtle.${hyperlocalMetaFieldKey}`
+    }
+
+    const hyperLocalKey = window.hyperlocalMetaFieldKey.value || window.hyperlocalMetaFieldKey;
+    const metafieldData = {{ product.metafields.shipturtle | dig: hyperLocalKey | json }}[hyperLocalKey];
+        
+    try {
+      window.productMetafields = {
+        zipCodes: [...metafieldData]
+      };
+      console.log(window.productMetafields)
+    } catch (error) {
+      console.error(error)
+      window.productMetafields = {
+          zipCodes: null
+        };
+      }
+  }
+
+
+  if (meta.page.pageType === 'collection' || meta.page.pageType === 'searchresults') {
+    if (hyperlocalMetaFieldKey && hyperlocalMetaFieldKey !== '') {
+      window.hyperlocalMetaFieldKey = hyperlocalMetaFieldKey
+      window.filterParamValue = `filter.p.m.shipturtle.${hyperlocalMetaFieldKey}`
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchValue = urlParams.get(window.filterParamValue);
+    const visitorZip = document.cookie.split('; ').find(row => row.startsWith('visitor_zip='));
+    const zipValue = visitorZip ? visitorZip.split('=')[1] : '';
+
+    if ((searchValue || zipValue) &&searchValue !== zipValue) {
+      const url = new URL(window.location.href);
+      url.searchParams.set(window.filterParamValue, zipValue); // Update the parameter
+      window.history.pushState({}, '', url); // Update URL without reloading
+      window.location.reload()
+    }
+  }
+</script>
+
+<input
+  type="hidden"
+  id="hyperlocalMetaFieldKey"
+  value="{{ block.settings.hyperlocalMetaFieldKey }}" />
+
+<div>
+  <button id="zipcode-change-button" style="position: fixed; bottom: 20px; right: 20px; padding: 10px; background: {{ block.settings.button_background_color }}; color: white; border: none; border-radius: 50px; cursor: pointer; z-index: 1000000000000;">{{ block.settings.zip_code_btn }}</button>
+</div>
+<div>
+  <div id="zip-popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px 20px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); z-index: 1000000000000; max-width: 350px; width: 90%; text-align: center;">
+    <button id="close-popup" style="position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 24px; cursor: pointer; color: #333; padding: 0px;">&times;</button>
+    <h4 style="font-size: 16px; color: #555; text-align: center; margin-bottom: 20px;">{{ block.settings.popup_header }}</h4>
+    <p style="font-size: 12px;">Some products are only available in certain ZIP Locations, Please add zip code to see available products in your area</p>
+    <div style="display: inline-block; padding: 0px 12px; background-color: #174733; color: white; border-radius: 50px; font-size: 12px; font-weight: bold; margin-bottom: 20px; margin-top: 20px;">
+      <div style="display: flex; align-items: center; gap: 5px;">
+        <p>{{ block.settings.current_zip_code }}:
+        </p>
+        <p id="visitor-zip-code"></p>
+      </div>
+    </div>
+
+    <input
+      type="text"
+      id="zip-input"
+      placeholder="Enter ZIP Code"
+      style="margin-bottom: 15px; width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
+    <button id="zip-submit" style="background: {{ block.settings.button_background_color }}; color: white;" class="button button--secondary">Submit</button>
+  </div>
+</div>

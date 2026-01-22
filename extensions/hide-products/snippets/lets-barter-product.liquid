@@ -1,0 +1,365 @@
+<div id="lets-barter-product" v-cloak>
+    <!-- Button to show the dialog -->
+    <p-button class="make-an-offer-button" size="large" @click="showDialog" >Let's Barter</p-button>
+  
+    <!-- Success Message -->
+    <p style="color: green; margin-top: 1rem;" v-if="offerSuccess">Your offer request has been sent successfully</p>
+    <!-- Dialog component -->
+    <p-dialog modal v-model:visible="visible" header="Make your Barter Offer" @hide="handleCancel">
+        <form @submit.prevent="letsBarterOffer">
+            <!-- Form Fields -->
+            <span class="form-group-title">Your Information</span>
+            <div class="form-group-container">
+                <div class="form-group">
+                    <label for="full_name">Full Name *</label>
+                    <p-inputtext id="full_name" type="text" autocomplete="off" v-model="formFields.full_name" required placeholder="Enter your full name" class="form-input" />
+                </div>
+                <div class="form-group">
+                <label for="email">Email *</label>
+                <p-inputtext id="email" type="email" autocomplete="off" v-model="formFields.email" required placeholder="email@example.com" class="form-input" />
+            </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone_number">Phone Number *</label>
+                <p-inputtext id="phone_number" type="number" autocomplete="off" v-model="formFields.phone_number" required placeholder="(555) 1234-567" class="form-input" />
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address *</label>
+                <p-inputtext id="address" type="text" autocomplete="off" v-model="formFields.address" required placeholder="Street Address" class="form-input" />
+            </div>
+        <div class="form-group-three-container">
+
+            <div class="form-group">
+                <label for="city">City *</label>
+                <p-inputtext id="city" type="text" v-model="formFields.city" required placeholder="City" class="form-input" />
+            </div>
+
+            <div class="form-group">
+                <label for="state">State *</label>
+                <p-inputtext id="state" type="text" v-model="formFields.state" required placeholder="State" class="form-input" />
+            </div>
+
+            <div class="form-group">
+                <label for="zipcode">Zip Code *</label>
+                <p-inputtext id="zipcode" type="text" v-model="formFields.zipcode" required placeholder="12345" class="form-input" />
+            </div>
+            </div>
+            <!-- Barter Tips Section -->
+            <div class="barter-tips-box">
+                <div class="barter-tips-header">
+                    <span class="lightbulb-icon">💡</span>
+                    <strong>Barter Tips:</strong>
+                </div>
+                <ul class="barter-tips-list">
+                    <li>Offer items of similar value for better acceptance</li>
+                    <li>Include clear, well-lit photos from multiple angles</li>
+                    <li>Be honest about condition and any flaws</li>
+                    <li>Consider throwing in accessories to sweeten the deal</li>
+                </ul>
+            </div>
+            <span class="form-group-title">Your Offer</span>
+            <div class="form-group">
+                <label for="product_title">What are you offering? *</label>
+                <p-inputtext id="product_title" type="text" v-model="formFields.product_title" required placeholder="e.g. Gaming console, designer watch etc." class="form-input" />
+            </div>
+
+            <div class="form-group">
+                <label for="condition">Condition</label>
+                <div class="form-group-radio">
+
+                    <div class="form-group-radio-item">
+                        <p-radiobutton input-id="new" v-model="formFields.condition" name="condition" value="New" ></p-radiobutton>
+                        <div class="form-group-radio-text">
+                            <label for="new" class="radio-label">New</label>
+                            <div class="radio-description">Brand New. Unused. Unopened. Unworn and Undamaged.</div>
+                        </div>
+                    </div>
+                    <div class="form-group-radio-item">
+                        <p-radiobutton input-id="like_new" v-model="formFields.condition" name="condition" value="Like New" ></p-radiobutton>
+                        <div class="form-group-radio-text">
+                            <label for="like_new" class="radio-label" >Like new</label>
+                            <div class="radio-description">Gently Used. No tears or strains. Looks new.</div>
+                        </div>
+                    </div>
+                    <div class="form-group-radio-item">
+                        <p-radiobutton input-id="good"  v-model="formFields.condition" name="condition" value="Good" ></p-radiobutton>
+                        <div class="form-group-radio-text">
+                            <label for="good" class="radio-label">Good</label>
+                            <div class="radio-description" >Well Preserved. Light Wear.</div>
+                        </div >
+                    </div>
+                  
+                    <div class="form-group-radio-item">
+                        <p-radiobutton input-id="fair" v-model="formFields.condition" name="condition" value="Fair" ></p-radiobutton>
+                        <div class="form-group-radio-text">
+                            <label for="fair" class="radio-label">Fair</label>
+                            <div class="radio-description">Some signs of wear. It still has some life left.</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="describe_item">Describe your item *</label>
+                <p-textarea style="width: 100% !important;" row="6" id="describe_item" v-model="formFields.describe_item" required placeholder="Tell us about the condition, features, and why it's a fair trade...."/>
+            </div>
+
+            <div class="form-group">
+                <label for="upload_photos_or_videos">Upload Photos *</label>
+                <p-fileupload name="file" :custom-upload="true" @uploader="uploadFiles" :multiple="true"  accept="image/*">
+            <template #empty>
+                <span>Drag and drop files to here to upload.</span>
+            </template>
+        </p-fileupload>
+         <p v-if="!uploadComplete" style="color: orange; font-size: 14px; margin-top: 0.5rem;">
+        ⚠️ Please upload the chosen files before proceeding to submit.
+    </p>
+            </div>
+            <div class="form-group">
+                <label for="additional_message">Additional Message</label>
+                <p-textarea  style="width: 100% !important;" row="6" id="additional_message" v-model="formFields.additional_message" placeholder="Any other details you'd like to share...."/>
+            </div>
+
+
+            <!-- Form Error Message -->
+            <div v-if="formError" class="form-error-message">
+                <span>$% formErrorMessage %</span>
+            </div>
+
+            <!-- Action buttons (Cancel and Submit) -->
+            <div class="offer-action-buttons">
+                <p-button type="button" size="large" severity="secondary" @click="handleCancel" class="cancel-btn">Cancel</p-button>
+                <p-button class="offers-submit-btn" :disabled="submittingOfferLoading || !uploadComplete" type="submit" size="large" severity="primary">
+                    Submit Barter Offer
+                    <svg v-if="submittingOfferLoading" width="15" height="15" aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+                    </svg>
+                </p-button>
+            </div>
+        </form>
+    </p-dialog>
+</div>
+<script>
+    window.isCustomerEmail = {{ customer.email | json }};
+    window.customerFirstName = {{ customer.first_name | json }};
+    window.customerSecondName = {{ customer.last_name | json }};
+    if(window.customerFirstName || window.customerSecondName){
+        window.customerFullName = window.customerFirstName + ' ' + customerSecondName;
+    }
+    window.phoneNumber = {{ customer.phone | json }};
+    if(window.phoneNumber){
+        window.customerPhoneNumber = window.phoneNumber;
+    }
+</script>
+<style>
+    [class^="product-form-buttons"],
+        .product-form__buttons,
+        .shopify-payment-button { display:none !important}
+    /* Barter Tips Box Styling */
+    .barter-tips-box {
+        background-color: #FEF7E6;
+        border: 1px solid #F5D98B;
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .barter-tips-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        font-size: 15px;
+        color: #8B6914;
+    }
+
+    .lightbulb-icon {
+        font-size: 18px;
+    }
+
+    .barter-tips-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    .barter-tips-list li {
+        padding-left: 1.5rem;
+        position: relative;
+        margin-bottom: 0.5rem;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #5C4A1A;
+    }
+
+    .barter-tips-list li:before {
+        content: "•";
+        position: absolute;
+        left: 0.5rem;
+        font-weight: bold;
+        color: #8B6914;
+    }
+
+    .barter-tips-list li:last-child {
+        margin-bottom: 0;
+    }
+    .p-inputtextarea {
+            min-height: 500px; /* adjust as needed */
+            resize: vertical;  /* optional: allows vertical resizing */
+    }
+    .p-badge-warn{
+        display:none;
+    }
+    /* General Button Styling */
+    .form-group-radio-text {
+    display: flex;
+    flex-direction: column; 
+    margin-top: 18px;/* label on top, description below */
+}
+.radio-label {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+.radio-description {
+    font-size: 12px;
+    color: #666;
+}
+    .form-group-radio-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .make-an-offer-button {
+        background-color: orange;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        width: 100%;
+    }
+     [v-cloak]{
+        display:none;
+     }
+    /* Dialog Styling */
+    .p-dialog {
+        width: 60% !important;
+        margin: 0 auto;
+    }
+
+    .dialog-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Form Fields Styling */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        width: max-content;
+        text-wrap: nowrap;
+    }
+
+    .form-input {
+        width: 100% !important;
+        border-radius: 5px;
+        border: 1px solid black;
+        padding: 10px;
+        outline: none;
+        height: 30px;
+
+    }
+
+    .form-input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    /* Error Message Styling */
+    .form-error-message {
+        color: red;
+        font-size: 14px;
+        margin-bottom: 1rem;
+    }
+
+    /* Button Group */
+    .offer-action-buttons {
+        display: flex;
+        flex-direction:row;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .cancel-btn {
+        background-color: #ccc;
+    }
+
+    .offers-submit-btn {
+        background-color: #28a745;
+        color: white;
+        border-radius: 5px;
+    }
+
+    /* Spinner styling */
+    .spinner {
+        margin-left: 10px;
+        animation: rotate 1.5s linear infinite;
+    }
+    
+
+    .form-group-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        width: 100%;
+    }
+    .form-group-three-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        width: 100%;
+    }
+    .form-group-title {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 3rem;
+    }
+    @keyframes rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    @media (max-width: 768px) {
+        .p-dialog {
+            width: 90% !important;
+        }
+        .form-group-container {
+            grid-template-columns: 1fr;
+        }
+        .form-group-three-container {
+            grid-template-columns: 1fr;
+        }
+        .offer-action-buttons {
+            display: flex;
+            justify-content: center;
+            flex-direction:column;
+           
+        }
+    }
+</style>

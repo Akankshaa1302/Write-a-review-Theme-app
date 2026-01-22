@@ -7,7 +7,7 @@ application_url = "https://shopify.dev/apps/default-app-home"
 embedded = true
 
 [build]
-dev_store_url = "pradhanstagingstore.myshopify.com"
+dev_store_url = "akanksha-test-102.myshopify.com"
 
 [webhooks]
 api_version = "2025-07"
