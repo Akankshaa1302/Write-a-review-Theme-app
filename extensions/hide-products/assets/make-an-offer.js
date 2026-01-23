@@ -12,7 +12,7 @@ function MakeAnOfferCode(){
             const note = ref(null);
             const productPrice = ref(parseFloat(document.getElementById('product_price').value.replace(/[^0-9.]/g, '').replace(/^\./, '')));
             const submittingOfferLoading = ref(false);
-            const variantId = ref(ShopifyAnalytics?.meta?.product?.variants[0]?.id);
+            const variantId = ref(ShopifyAnalytics.meta.product.variants[0]?.id);
             const variantInventory = ref(window.makeAnOfferSettings?.variantInventory ?? null);
             const hasPendingOffer = ref(false);
             const restrictOfferQuantity = ref(window.makeAnOfferSettings?.restrictOfferQuantity || false);
@@ -137,7 +137,7 @@ function MakeAnOfferCode(){
             }
             const checkInventoryAndOffer = async () => {
                 if (!email.value) return;
-                const response = await fetch('https://apiuat.shipturtle.app/api/v2/variants/check-inventory-and-offers?variant_id=' + variantId.value + '&email=' + email.value + '&shop_domain=' + Shopify.shop, {
+                const response = await fetch('https://api.shipturtle.com/api/v2/variants/check-inventory-and-offers?variant_id=' + variantId.value + '&email=' + email.value + '&shop_domain=' + Shopify.shop, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
