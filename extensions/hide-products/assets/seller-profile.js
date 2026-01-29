@@ -848,7 +848,17 @@
                                                     <p-image :src="product.image" 
                                                         :alt="product.title" 
                                                         image-class="st-ext-w-full st-ext-h-full st-ext-object-contain"
-                                                        style="height: 300px; display: block;"></p-image>
+                                                        style="height: 300px; display: block;"></p-image>                                               
+                                                    <!-- Quick Buy Icon Button -->
+                                                    <button 
+                                                        @click="handleAddToCart(product)"
+                                                        :disabled="cartLoading[product.id]"
+                                                        class="st-ext-bg-white st-ext-flex st-ext-items-center st-ext-justify-center st-ext-border-none st-ext-cursor-pointer"
+                                                        style="position: absolute; top: 16px; right: 16px; z-index: 10; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden;"
+                                                        :title="'Quick Buy'">
+                                                        <i v-if="!cartLoading[product.id]" class="pi pi-shopping-bag" style="font-size: 22px; color: #1f2937;"></i>
+                                                        <i v-else class="pi pi-spin pi-spinner" style="font-size: 22px; color: #1f2937;"></i>
+                                                    </button>
                                                 </div>
                                                 
                                                 <!-- Product Info -->
@@ -858,7 +868,7 @@
                                                     </h3>
                                                     <div class="st-ext-text-gray-600 st-ext-text-lg st-ext-flex-1 st-ext-mb-1 st-ext-mt-1">
                                                         <span v-if="product.variants && product.variants.length > 0">
-    [[ parentCompany?.currencyCountry?.currency_symbol ]][[ product.variants[0].price ]]
+                                                            [[ parentCompany?.currencyCountry?.currency_symbol ]][[ product.variants[0].price ]]
                                                         </span>
                                                         <span v-if="product.variants_count > 1" class="st-ext-text-sm st-ext-text-gray-500 st-ext-ml-2">
                                                             +[[ product.variants_count - 1 ]] more
@@ -1343,6 +1353,37 @@
             const contactFormSubmitting = ref(false)
             const contactFormSuccess = ref(false)
             const contactFormError = ref('')
+            const cartLoading = ref({})
+
+            const handleAddToCart = async (product) => {
+                if (!product) return
+
+                if (product.variants_count > 1) {
+                    window.location.href = `/products/${product.handle}`
+                    return
+                }
+
+                // Add to cart
+                const variantId = product.variants[0].channel_id
+                cartLoading.value[product.id] = true
+
+                try {
+                    const formData = new FormData();
+                    formData.append('quantity', 1);
+                    formData.append('id', variantId);
+                    const response = await fetch('/cart/add.js', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    if(response.ok){
+                        window.location.href = `/cart`;
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error)
+                } finally {
+                    cartLoading.value[product.id] = false
+                }
+            }
 
             // Review form state
             const reviewForm = ref({
@@ -1721,6 +1762,8 @@
                 contactFormSuccess,
                 contactFormError,
                 submitContactForm,
+                handleAddToCart,
+                cartLoading,
                 terminology,
                 dynamicTranslations,
                 blockSettings
