@@ -2,6 +2,7 @@
     const { createApp, ref, computed, onMounted, watch } = Vue
     const { createRouter, createWebHashHistory } = VueRouter
     const { createI18n } = VueI18n
+    const { useToast } = PrimeVue
 
     // API Base URL
     const API_BASE_URL = 'https://api.shipturtle.com'
@@ -796,7 +797,7 @@
                             </div>
                         </div>
                     </div>
-
+                    <p-toast position="top-right"></p-toast>
                     <!-- Tabs -->
                     <div class="st-ext-w-full">
                         <p-tabview :scrollable="true" class="st-ext-custom-tabs st-ext-w-full">
@@ -1303,6 +1304,7 @@
         setup(props) {
             const isMobile = ref(window.innerWidth < 640)
             const { t, locale } = VueI18n.useI18n()
+            const toast = useToast()
 
             const route = VueRouter.useRoute()
             const blockSettings = loadBlockSettings()
@@ -1363,7 +1365,6 @@
                     return
                 }
 
-                // Add to cart
                 const variantId = product.variants[0].channel_id
                 cartLoading.value[product.id] = true
 
@@ -1376,7 +1377,12 @@
                         body: formData
                     })
                     if(response.ok){
-                        window.location.href = `/cart`;
+                        toast.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: t('sellers.vendorDetails.productAddedToCart') || 'Product added to cart successfully',
+                            life: 3000
+                        });
                     }
                 } catch (error) {
                     console.error('Error adding to cart:', error)

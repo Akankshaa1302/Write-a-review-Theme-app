@@ -54,6 +54,7 @@
         "productCategory": "Product: {category}"
       },
       "vendorDetails": {
+        "productAddedToCart": "Product added to cart",
         "backToVendors": "Back to Vendors",
         "loadingVendor": "Loading vendor details...",
         "vendorNotFound": "Vendor not found",
@@ -241,6 +242,7 @@
         "productCategory": "Produkt: {category}"
       },
       "vendorDetails": {
+        "productAddedToCart": "Produkt wurde zum Warenkorb hinzugefügt",
         "backToVendors": "Zurück zu Anbietern",
         "loadingVendor": "Anbieterdetails werden geladen...",
         "vendorNotFound": "Anbieter nicht gefunden",
@@ -429,6 +431,7 @@
         "productCategory": "Producto: {category}"
       },
       "vendorDetails": {
+        "productAddedToCart": "Producto añadido al carrito",
         "backToVendors": "Volver a vendedores",
         "loadingVendor": "Cargando detalles del vendedor...",
         "vendorNotFound": "Vendedor no encontrado",
@@ -617,6 +620,7 @@
         "productCategory": "Product: {category}"
       },
       "vendorDetails": {
+        "productAddedToCart": "Product toegevoegd aan winkelwagen",
         "backToVendors": "Terug naar verkopers",
         "loadingVendor": "Verkopersdetails laden...",
         "vendorNotFound": "Verkoper niet gevonden",
@@ -801,6 +805,7 @@
         "productCategory": "Produto: {category}"
       },
       "vendorDetails": {
+        "productAddedToCart": "Produto adicionado ao carrinho",
         "backToVendors": "Voltar aos vendedores",
         "loadingVendor": "A carregar detalhes do vendedor...",
         "vendorNotFound": "Vendedor não encontrado",
