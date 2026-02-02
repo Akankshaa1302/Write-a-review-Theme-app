@@ -47,6 +47,8 @@
   }
 {% endschema %}
 <link rel="stylesheet" href="{{ 'write-a-review.css' | asset_url }}" />
+<link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+<script src="{{ 'resources.js' | asset_url }}"></script>
 <script src="{{ 'write-a-review.js' | asset_url }}"></script>
 <script>
     window.customerEmail = {{ customer.email | json }};

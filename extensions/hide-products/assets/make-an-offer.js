@@ -1,28 +1,110 @@
-function MakeAnOfferCode(){
+async function MakeAnOfferCode(){
     const { createApp, ref, onBeforeMount, computed, onUnmounted } = Vue;
+    const { createI18n } = VueI18n
     const { useToast } = PrimeVue;
-
+    
+    // Locale detection from Shopify theme
+    const getShopifyLocale = () => {
+        // Try to get locale from Shopify Liquid or fall back to browser language
+        const shopifyLocale = document.documentElement.lang || 
+                             document.querySelector('html')?.getAttribute('lang') ||
+                             window.Shopify?.locale ||
+                             navigator.language.split('-')[0]
+        
+        // Map Shopify locales to our supported locales
+        const supportedLocales = ['en', 'de', 'es', "nl", "pt"]
+        const normalizedLocale = shopifyLocale.toLowerCase().split('-')[0]
+        
+        return supportedLocales.includes(normalizedLocale) ? normalizedLocale : 'en'
+    }
+    
+    // Load locale messages
+    const loadLocaleMessages = async () => {
+        const locale = getShopifyLocale()
+        const messages = {}
+        
+        try {
+            // Get locale URL from the HTML element
+            const appElement = document.getElementById('make-an-offer')
+            const langJSONUrl = appElement?.getAttribute('data-lang-asset')
+            
+            if (!langJSONUrl) {
+                console.warn('No locale URL found, falling back to embedded messages')
+                return { messages: { en: {} }, locale: 'en' }
+            }
+            
+            // Load lang.json which already contains all locales in correct structure
+            const langJSON = await fetch(langJSONUrl)
+            const allMessages = await langJSON.json()
+            
+            // Ensure English exists as fallback
+            if (!allMessages.en) {
+                allMessages.en = {}
+            }
+            
+            return { messages: allMessages, locale }
+        } catch (error) {
+            console.error('Failed to load locale messages:', error)
+            return { messages: { en: {} }, locale: 'en' }
+        }
+    }
+    
+    const { messages, locale } = await loadLocaleMessages()
+    
+    const i18n = createI18n({
+        legacy: false,
+        locale: locale,
+        fallbackLocale: 'en',
+        messages
+    })
+    
+    // Access block settings
+    const loadBlockSettings = () => {
+        try {
+            const appElement = document.getElementById('make-an-offer')
+            const settingsData = appElement?.getAttribute('data-settings')
+            
+            if (settingsData) {
+                return JSON.parse(settingsData)
+            }
+            return {
+                restrictOfferQuantity: false,
+                restrictOfferByCustomer: false,
+                hideMakeAnOfferButton: false,
+                variantInventory: null
+            }
+        } catch (error) {
+            console.error('Failed to load settings:', error)
+            return {}
+        }
+    }
+    
     const app = createApp({
         setup() {
+            const { t } = VueI18n.useI18n()
             const toast = useToast();
+            
+            // Load settings after composables
+            const settings = loadBlockSettings();
+            
             const visible = ref(false);
             const email = ref(document.getElementById('customer_email').value);
             const offerPrice = ref(null);
             const quantity = ref(null);
             const note = ref(null);
-            const productPrice = ref(parseFloat(document.getElementById('product_price').value.replace(/[^0-9.]/g, '').replace(/^\./, '')));
+            const productPrice = ref(parseFloat(document.getElementById('product_price')?.value?.replace(/[^0-9.]/g, '').replace(/^\./, '') || '0'));
             const submittingOfferLoading = ref(false);
-            const variantId = ref(ShopifyAnalytics.meta.product.variants[0]?.id);
-            const variantInventory = ref(window.makeAnOfferSettings?.variantInventory ?? null);
+            const variantId = ref(ShopifyAnalytics?.meta?.product?.variants?.[0]?.id || '');
+            const variantInventory = ref(settings?.variantInventory ?? null);
             const hasPendingOffer = ref(false);
-            const restrictOfferQuantity = ref(window.makeAnOfferSettings?.restrictOfferQuantity || false);
-            const restrictOfferByCustomer = ref(window.makeAnOfferSettings?.restrictOfferByCustomer || false);
-            const hideMakeAnOfferButton = ref(window.makeAnOfferSettings?.hideMakeAnOfferButton || false);
-
+            const restrictOfferQuantity = ref(settings?.restrictOfferQuantity || false);
+            const restrictOfferByCustomer = ref(settings?.restrictOfferByCustomer || false);
+            const hideMakeAnOfferButton = ref(settings?.hideMakeAnOfferButton || false);
+            
             const isSoldOut = computed(() => {
                 return variantInventory.value !== null && variantInventory.value <= 0;
             });
-
+            
             const isButtonVisible = computed(() => {
                 if (isSoldOut.value && hideMakeAnOfferButton.value) {
                     return false;
@@ -31,26 +113,26 @@ function MakeAnOfferCode(){
             });
             
             
-
+            
             const resetForm = () => {
                 offerPrice.value = null;
                 quantity.value = null;
                 note.value = null;
                 submittingOfferLoading.value = false;
             }
-
+            
             const handleCancel = () => {
                 visible.value = false;
                 resetForm();
             }
-
+            
             const validateInventoryLimit = () => {
                 if (restrictOfferQuantity.value && variantInventory.value !== null) {
                     if (quantity.value > variantInventory.value) {
                         toast.add({ 
                             severity: 'warn', 
-                            summary: 'Limit Reached', 
-                            detail: 'Quantity cannot exceed available inventory. ' + variantInventory.value + ' items available.', 
+                            summary: t('make_an_offer.limit_reached_summary'), 
+                            detail: t('make_an_offer.inventory_limit_detail', { count: variantInventory.value }), 
                             life: 3000 
                         });
                         return false;
@@ -58,52 +140,49 @@ function MakeAnOfferCode(){
                 }
                 return true;
             }
-
+            
             const validateCustomerOfferLimit = () => {
-                 if (restrictOfferByCustomer.value && hasPendingOffer.value) {
-                         toast.add({ 
-                            severity: 'warn', 
-                            summary: 'Limit Reached', 
-                            detail: 'You already have an pending offer for this product.', 
-                            life: 3000 
-                        });
-                        return false;
-                    }
+                if (restrictOfferByCustomer.value && hasPendingOffer.value) {
+                    toast.add({ 
+                        severity: 'warn', 
+                        summary: t('make_an_offer.limit_reached_summary'), 
+                        detail: t('make_an_offer.pending_offer_limit_detail'), 
+                        life: 3000 
+                    });
+                    return false;
+                }
                 return true;
             }
-
+            
             const makeOffer = async () => {
-        
                 submittingOfferLoading.value = true;
                 try {
                     if (!offerPrice.value || !quantity.value || !email.value) {
                         toast.add({ 
                             severity: 'warn', 
-                            summary: 'Validation Error', 
-                            detail: 'Please fill in all the required fields', 
+                            summary: t('make_an_offer.validation_error_summary'), 
+                            detail: t('make_an_offer.fill_required_fields_detail'), 
                             life: 3000 
                         });
                         return;
                     }
-
+                    
                     if (!validateInventoryLimit()) {
                         return;
-                    }
-                const response = await fetch('https://api.shipturtle.com/api/v2/orders/create-shopify-draft-order', {
+                    }                   
+                    const response = await fetch('https://api.shipturtle.com/api/v2/orders/create-shopify-draft-order', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(
-                            {
-                                "shop_domain": Shopify.shop,
-                                "variant_id": variantId.value,
-                                "quantity": quantity.value,
-                                "proposed_price": offerPrice.value,
-                                "note": note.value,
-                                "email": email.value
-                            }
-                        )
+                        body: JSON.stringify({
+                            "shop_domain": Shopify.shop,
+                            "variant_id": variantId.value,
+                            "quantity": quantity.value,
+                            "proposed_price": offerPrice.value,
+                            "note": note.value,
+                            "email": email.value
+                        })
                     })
                     const data = await response.json(); 
                     if (response.status === 201) {
@@ -111,24 +190,24 @@ function MakeAnOfferCode(){
                         resetForm();
                         toast.add({ 
                             severity: 'success', 
-                            summary: 'Success', 
-                            detail: 'Offer submitted successfully!', 
+                            summary: t('make_an_offer.success_summary'), 
+                            detail: t('make_an_offer.offer_submitted_success_detail'), 
                             life: 3000 
                         });
                         hasPendingOffer.value = true;
                     } else {
                         toast.add({ 
                             severity: 'error', 
-                            summary: 'Error', 
-                            detail: data.message || 'Error while submitting offer', 
+                            summary: t('make_an_offer.error_summary'), 
+                            detail: data.message || t('make_an_offer.submit_offer_error_detail'), 
                             life: 3000 
                         });
                     }   
                 } catch (error) {
                     toast.add({ 
                         severity: 'error', 
-                        summary: 'Error', 
-                        detail: 'An error occurred while processing your request.', 
+                        summary: t('make_an_offer.error_summary'), 
+                        detail: t('make_an_offer.generic_error_detail'), 
                         life: 3000 
                     });
                 } finally {
@@ -147,25 +226,25 @@ function MakeAnOfferCode(){
                 variantInventory.value = parseInt(data.data.inventory_quantity);
                 hasPendingOffer.value = data.data.has_pending_offer;
             }
-
+            
             const showDialog = () => {
                 try {
                     if (!validateCustomerOfferLimit()) {
                         return;
                     }
-
+                    
                     if(email.value) {
-                    visible.value = true;
+                        visible.value = true;
                     } else {
-                    toast.add({ 
-                        severity: 'warn', 
-                        summary: 'Login Required', 
-                        detail: 'Please login to make an offer', 
-                        life: 3000 
-                    });
-                    setTimeout(() => {
-                        window.location.href = "/account/login"
-                    }, 1500);
+                        toast.add({ 
+                            severity: 'warn', 
+                            summary: t('make_an_offer.login_required_summary'), 
+                            detail: t('make_an_offer.login_required_detail'), 
+                            life: 3000 
+                        });
+                        setTimeout(() => {
+                            window.location.href = "/account/login"
+                        }, 1500);
                     }
                 } catch (error) {
                     console.error('Error in showDialog:', error);
@@ -186,7 +265,7 @@ function MakeAnOfferCode(){
                     console.error(err);
                 }
             };
-
+            
             onUnmounted(() => {
                 const productForm = document.querySelectorAll('product-form form[method="post"][action="/cart/add"]');
                 if (productForm) {
@@ -195,7 +274,7 @@ function MakeAnOfferCode(){
                     });
                 }
             });
-
+            
             onBeforeMount(() => {
                 try{
                     checkInventoryAndOffer();
@@ -211,6 +290,7 @@ function MakeAnOfferCode(){
                 }
             })
             return {
+                t,
                 showDialog,
                 isSoldOut,
                 isButtonVisible,
@@ -227,27 +307,27 @@ function MakeAnOfferCode(){
                 productPrice
             };
         }
-    }); 
-
+    });
+    
     const Noir = PrimeVue.definePreset(PrimeVue.Themes.Aura, {
         semantic: {
-        primary: {
-            50: '{zinc.50}',
-            100: '{zinc.100}',
-            200: '{zinc.200}',
-            300: '{zinc.300}',
-            400: '{zinc.400}',
-            500: '{zinc.500}',
-            600: '{zinc.600}',
-            700: '{zinc.700}',
-            800: '{zinc.800}',
-            900: '{zinc.900}',
-            950: '{zinc.950}'
-        },
-        colorScheme: {
-            light: {
-                primary: {
-                    color: '{zinc.950}',
+            primary: {
+                50: '{zinc.50}',
+                100: '{zinc.100}',
+                200: '{zinc.200}',
+                300: '{zinc.300}',
+                400: '{zinc.400}',
+                500: '{zinc.500}',
+                600: '{zinc.600}',
+                700: '{zinc.700}',
+                800: '{zinc.800}',
+                900: '{zinc.900}',
+                950: '{zinc.950}'
+            },
+            colorScheme: {
+                light: {
+                    primary: {
+                        color: '{zinc.950}',
                         inverseColor: '#ffffff',
                         hoverColor: '{zinc.900}',
                         activeColor: '{zinc.800}'
@@ -275,8 +355,9 @@ function MakeAnOfferCode(){
                 }
             }
         }
-    });
-
+    });  
+    app.use(i18n);
+    
     app.use(PrimeVue.Config, {
         theme: {
             preset: Noir,
@@ -298,30 +379,14 @@ function MakeAnOfferCode(){
 }
 (function() {
     'use strict';
-    function loadScript(src) {
-        return new Promise((resolve, reject) => {
-            const s = document.createElement('script');
-            s.src = src;
-            s.async = false;            // preserve execution order
-            s.onload  = () => resolve(src);
-            s.onerror = () => reject(new Error(`Failed to load ${src}`));
-            document.head.appendChild(s);
-        });
+    if (window.ST_Resources) {
+        ST_Resources.loadDependencies(MakeAnOfferCode);
+    } else {
+        const interval = setInterval(() => {
+            if (window.ST_Resources) {
+                clearInterval(interval);
+                ST_Resources.loadDependencies(MakeAnOfferCode);
+            }
+        }, 50);
     }
-
-    // 2) List all your dependency URLs in order
-    const deps = [
-        'https://unpkg.com/vue@3/dist/vue.global.js',
-        'https://unpkg.com/primevue/umd/primevue.min.js',
-        'https://unpkg.com/@primevue/themes/umd/aura.min.js'
-    ];
-
-    // 3) Load them all, then bootstrap
-    Promise.all(deps.map(loadScript))
-    .then(() => {
-        MakeAnOfferCode()
-    })
-    .catch(err => {
-        console.error('Dependency load error:', err);
-    });
 })();
