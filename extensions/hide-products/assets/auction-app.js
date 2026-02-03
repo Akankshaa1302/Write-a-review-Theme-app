@@ -508,56 +508,25 @@ function AuctionThemeAppExtension() {
       document.getElementById('auction-styling').innerHTML = data.css
     }
 
-  function loadScript(src) {
-  return new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.async = false;            // preserve execution order
-    s.onload  = () => resolve(src);
-    s.onerror = () => reject(new Error(`Failed to load ${src}`));
-    document.head.appendChild(s);
-  });
-}
+  const extraDeps = [
+    'https://js.pusher.com/8.2.0/pusher.min.js',
+    'https://unpkg.com/axios/dist/axios.min.js'
+  ];
 
-// 2) List all your dependency URLs in order
-const deps = [
-  'https://unpkg.com/vue@3/dist/vue.global.prod.js',
-  'https://js.pusher.com/8.2.0/pusher.min.js',
-  'https://unpkg.com/axios/dist/axios.min.js',
-  'https://unpkg.com/primevue/umd/primevue.min.js',
-  'https://unpkg.com/@primevue/themes/umd/aura.min.js'
-];
-
-// 3) Load them all, then bootstrap
-Promise.all(deps.map(loadScript))
-  .then(async() => {
-    await fetchHTML()
-    AuctionThemeAppExtension();
-  })
-  .catch(err => {
-    console.error('Dependency load error:', err);
-  });
-  // function checkDependencies() {
-  //   const dependencies = {
-  //     'Vue': typeof Vue !== 'undefined',
-  //     'Pusher': typeof Pusher !== 'undefined', 
-  //     'axios': typeof axios !== 'undefined',
-  //     'PrimeVue': typeof PrimeVue !== 'undefined',
-      
-  //     // Add other dependencies you need
-  //   };
-    
-  //   const missing = Object.keys(dependencies).filter(dep => !dependencies[dep]);
-    
-  //   if (missing.length === 0) {
-  //     console.log('All dependencies loaded successfully');
-  //     AuctionThemeAppExtension()
-  //   } else {
-  //     console.log('Waiting for dependencies:', missing);
-  //     setTimeout(checkDependencies, 50);
-  //   }
-  // }
-  
-  // // Start checking dependencies
-  // checkDependencies();
+  if (window.ST_Resources) {
+    ST_Resources.loadDependencies(async () => {
+      await fetchHTML();
+      AuctionThemeAppExtension();
+    }, extraDeps);
+  } else {
+    const interval = setInterval(() => {
+      if (window.ST_Resources) {
+        clearInterval(interval);
+        ST_Resources.loadDependencies(async () => {
+          await fetchHTML();
+          AuctionThemeAppExtension();
+        }, extraDeps);
+      }
+    }, 50);
+  }
 })();
