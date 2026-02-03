@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+function BookingRentalAndAppointment() {
     const TimeSlotSelector = {
         name: 'TimeSlotSelector',
         props: ['slots', 'bookedSlots', 'checkingAvailability'],
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
             async function addToCartDailyRentalProduct() {
             try {
                 addingToCart.value = true;
-                if (selectedRentalDate.value && isSelectedRentalDateValid.value) {
+                if (selectedRentalDate.value && isSelectedRentalDateValid.value && numberofDaysSelected.value > 0) {
                 await axios.post('/cart/add.js', {
                     items: [{
                     id: variantId.value,
@@ -449,9 +449,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 return dates;
             });
 
+            const isOneDayDurationRentalTypeWithAutoSelect = computed(() => {
+                return blockSettings.value.autoSelectLastDate && Number(duration.value) === 1; 
+            })
+
             const rangeConfig = computed(() => {
-                const isOneDayDurationRentalTypeWithAutoSelect = blockSettings.value.autoSelectLastDate && Number(duration.value) === 1
-                if (isHourlyDuration.value || isOneDayDurationRentalTypeWithAutoSelect) return false;
+                if (isHourlyDuration.value || isOneDayDurationRentalTypeWithAutoSelect.value) return false;
 
                 return {
                     minMaxRawRange: true,
@@ -467,7 +470,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 return bookingRule.value?.fixed_booking_time_duration?.format
             })
             const numberofDaysSelected = computed(() => {
-                if (!selectedRentalDate.value || !selectedRentalDate.value[0] || !selectedRentalDate.value[1]) return 0;
+
+                if (isOneDayDurationRentalTypeWithAutoSelect.value) return 1;
+
+                if (!selectedRentalDate.value[0] || !selectedRentalDate.value[1]) return 0;
+                
                 const differenceInDays = dateFns.differenceInDays(
                     selectedRentalDate.value[1],
                     selectedRentalDate.value[0]
@@ -565,9 +572,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     errorMessage.value = ''
 
                     if (!isHourlyDuration.value) {
-                        const isOneDayDurationRentalTypeWithAutoSelect = blockSettings.value.autoSelectLastDate && Number(duration.value) === 1;
                         
-                        if (isOneDayDurationRentalTypeWithAutoSelect) {
+                        if (isOneDayDurationRentalTypeWithAutoSelect.value) {
                             // Set end date and start date to the same date.
                             startDate.value = formatDate(newVal);
                             endDate.value = formatDate(newVal);
@@ -825,4 +831,24 @@ document.addEventListener("DOMContentLoaded", function () {
     app.component('p-card', PrimeVue.Card);
 
     app.mount('#st-booking-and-rental');
-})
+}
+(function() {
+        'use strict';
+        
+        const extraDeps = [
+            'https://unpkg.com/@vuepic/vue-datepicker@10.0.0',
+            'https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js',
+            'https://unpkg.com/axios/dist/axios.min.js'
+        ];
+        
+        if (window.ST_Resources) {
+            ST_Resources.loadDependencies(BookingRentalAndAppointment, extraDeps);
+        } else {
+            const interval = setInterval(() => {
+                if (window.ST_Resources) {
+                    clearInterval(interval);
+                    ST_Resources.loadDependencies(BookingRentalAndAppointment, extraDeps);
+                }
+            }, 50);
+        }
+})();

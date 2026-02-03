@@ -5,12 +5,22 @@ window.ST_Resources = {
             const isPrimeVue = src.includes('primevue.min.js');
             const isI18n = src.includes('vue-i18n.global.prod.js');
             const isAura = src.includes('aura.min.js');
+            const isPusher = src.includes('pusher.min.js');
+            const isAxios = src.includes('axios.min.js');
+            const isVueRouter = src.includes('vue-router.global.js');
+            const isDateFns = src.includes('date-fns');
+            const isVueDatePicker = src.includes('vue-datepicker');
 
             const checkGlobal = () => {
                 if (isVue) return !!window.Vue;
                 if (isPrimeVue) return !!window.PrimeVue;
                 if (isI18n) return !!window.VueI18n;
                 if (isAura) return !!window.PrimeVue?.Themes?.Aura;
+                if (isPusher) return !!window.Pusher;
+                if (isAxios) return !!window.axios;
+                if (isVueRouter) return !!window.VueRouter;
+                if (isDateFns) return !!window.dateFns;
+                if (isVueDatePicker) return !!window.VueDatePicker;
                 return true;
             };
 
@@ -50,7 +60,7 @@ window.ST_Resources = {
         });
     },
 
-    loadDependencies: function(callback) {
+    loadDependencies: function(callback, extraDeps = []) {
         const deps = [];
         if (!window.Vue) {
             deps.push('https://unpkg.com/vue@3.5.1/dist/vue.global.js');
@@ -65,10 +75,20 @@ window.ST_Resources = {
             deps.push('https://unpkg.com/@primevue/themes/umd/aura.min.js');
         }
 
-        Promise.all(deps.map(this.loadScript))
+        if (extraDeps && extraDeps.length > 0) {
+            extraDeps.forEach(src => {
+                if (!this.checkExtraDependencyLoaded(src)) {
+                    deps.push(src);
+                }
+            });
+        }
+
+        Promise.all(deps.map(this.loadScript.bind(this)))
             .then(() => {
                 const finalCheck = setInterval(() => {
-                    if (window.Vue && window.PrimeVue && window.VueI18n && window.PrimeVue?.Themes?.Aura) {
+                    const coreLoaded = window.Vue && window.PrimeVue && window.VueI18n && window.PrimeVue?.Themes?.Aura;
+                    const extraLoaded = extraDeps.length === 0 || extraDeps.every(dep => this.checkExtraDependencyLoaded(dep));
+                    if (coreLoaded && extraLoaded) {
                         clearInterval(finalCheck);
                         callback();
                     }
@@ -77,5 +97,18 @@ window.ST_Resources = {
             .catch(err => {
                 console.error('Dependency load error:', err);
             });
+    },
+
+    checkExtraDependencyLoaded: function(src) {
+
+        if (!src) return true;
+
+        if (src.includes('pusher.min.js')) return !!window.Pusher;
+        if (src.includes('axios.min.js')) return !!window.axios;
+        if (src.includes('vue-router.global.js')) return !!window.VueRouter;
+        if (src.includes('date-fns')) return !!window.dateFns;
+        if (src.includes('vue-datepicker')) return !!window.VueDatePicker;
+        
+        return !!document.querySelector(`script[src="${src}"]`);
     }
 };

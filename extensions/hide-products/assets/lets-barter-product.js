@@ -209,30 +209,14 @@ function MakeanbarterOfferCode() {
   
 (function() {
     'use strict';
-    function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = src;
-      s.async = false;            // preserve execution order
-      s.onload  = () => resolve(src);
-      s.onerror = () => reject(new Error(`Failed to load ${src}`));
-      document.head.appendChild(s);
-    });
-  }
-  
-  // 2) List all your dependency URLs in order
-  const deps = [
-    'https://unpkg.com/vue@3/dist/vue.global.js',
-    'https://unpkg.com/primevue/umd/primevue.min.js',
-    'https://unpkg.com/@primevue/themes/umd/aura.min.js'
-  ];
-  
-  // 3) Load them all, then bootstrap
-  Promise.all(deps.map(loadScript))
-    .then(() => {
-     MakeanbarterOfferCode()
-    })
-    .catch(err => {
-      console.error('Dependency load error:', err);
-    });
+    if (window.ST_Resources) {
+        ST_Resources.loadDependencies(MakeanbarterOfferCode);
+    } else {
+        const interval = setInterval(() => {
+            if (window.ST_Resources) {
+                clearInterval(interval);
+                ST_Resources.loadDependencies(MakeanbarterOfferCode);
+            }
+        }, 50);
+    }
 })();
