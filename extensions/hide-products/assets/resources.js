@@ -7,7 +7,7 @@ window.ST_Resources = {
             const isAura = src.includes('aura.min.js');
             const isPusher = src.includes('pusher.min.js');
             const isAxios = src.includes('axios.min.js');
-            const isVueRouter = src.includes('vue-router.global.js');
+            const isVueRouter = src.includes('vue-router.global.prod.js');
             const isDateFns = src.includes('date-fns');
             const isVueDatePicker = src.includes('vue-datepicker');
 
@@ -61,6 +61,7 @@ window.ST_Resources = {
     },
 
     loadDependencies: function(callback, extraDeps = []) {
+        console.log("Dependency start loading");
         const deps = [];
         if (!window.Vue) {
             deps.push('https://unpkg.com/vue@3.5.1/dist/vue.global.js');
@@ -90,6 +91,7 @@ window.ST_Resources = {
                     const extraLoaded = extraDeps.length === 0 || extraDeps.every(dep => this.checkExtraDependencyLoaded(dep));
                     if (coreLoaded && extraLoaded) {
                         clearInterval(finalCheck);
+                        console.log("Dependency stop loading");
                         callback();
                     }
                 }, 50);
@@ -105,7 +107,7 @@ window.ST_Resources = {
 
         if (src.includes('pusher.min.js')) return !!window.Pusher;
         if (src.includes('axios.min.js')) return !!window.axios;
-        if (src.includes('vue-router.global.js')) return !!window.VueRouter;
+        if (src.includes('vue-router.global.prod.js')) return !!window.VueRouter;
         if (src.includes('date-fns')) return !!window.dateFns;
         if (src.includes('vue-datepicker')) return !!window.VueDatePicker;
         

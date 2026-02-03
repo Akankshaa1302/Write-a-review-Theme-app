@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+function GlobalProductCode() {
   const { createApp, ref, onMounted, watch } = Vue;
 
       const container = document.getElementById("global-product-table");
@@ -145,4 +145,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   app.config.compilerOptions.delimiters = ["$%", "%"];
   app.mount("#global-product-table");
-});
+}
+
+(function() {
+    'use strict';
+    
+    if (window.ST_Resources) {
+        ST_Resources.loadDependencies(GlobalProductCode);
+    } else {
+        const interval = setInterval(() => {
+            if (window.ST_Resources) {
+                clearInterval(interval);
+                ST_Resources.loadDependencies(GlobalProductCode);
+            }
+        }, 50);
+    }
+})();
