@@ -1,8 +1,46 @@
-;(function () {
+// Store app instance globally to allow unmounting if needed
+window.__sellerProfileAppInstance = window.__sellerProfileAppInstance || null;
+
+function mountSellerProfile () {
+    // Check if already mounted to prevent double-mounting
+    const appElement = document.getElementById('seller-profile-app');
+    if (!appElement) {
+        console.warn('seller-profile-app element not found');
+        return;
+    }
+    
+    // If already mounted and app instance exists, validate it's functional
+    if (appElement.__mounted && window.__sellerProfileAppInstance) {
+        // Additional validation: check if the app instance has the expected structure
+        // This handles edge cases where the instance exists but isn't fully functional
+        try {
+            const app = window.__sellerProfileAppInstance;
+            if (app && app._instance && app.config) {
+                console.log('Seller profile app already mounted and validated - router should handle navigation');
+                return;
+            } else {
+                // App instance exists but seems invalid, reset and remount
+                console.warn('App instance exists but appears invalid, remounting...');
+                appElement.__mounted = false;
+                window.__sellerProfileAppInstance = null;
+            }
+        } catch (e) {
+            // Error accessing app instance, reset and remount
+            console.warn('Error validating app instance, remounting:', e);
+            appElement.__mounted = false;
+            window.__sellerProfileAppInstance = null;
+        }
+    }
+    
+    // If element says it's mounted but no app instance (cached page scenario), reset the flag
+    if (appElement.__mounted && !window.__sellerProfileAppInstance) {
+        console.warn('Cached page detected: resetting mount flag');
+        appElement.__mounted = false;
+    }
+    
     const { createApp, ref, computed, onMounted, watch } = Vue
     const { createRouter, createWebHashHistory } = VueRouter
     const { createI18n } = VueI18n
-    const { useToast } = PrimeVue
 
     // API Base URL
     const API_BASE_URL = 'https://api.shipturtle.com'
@@ -57,8 +95,10 @@
             const appElement = document.getElementById('seller-profile-app')
             const settingsData = appElement?.getAttribute('data-settings')
             
+            
             if (settingsData) {
-                return JSON.parse(settingsData)
+                const parsedSettings = JSON.parse(settingsData)
+                return parsedSettings
             }
             
             // Return default settings if none found
@@ -89,43 +129,43 @@
     }
 
     // Vendor List component
-        // LocalStorage key for vendor list state
-        const VENDOR_LIST_STATE_KEY = 'shipturtle_vendor_list_state'
-        
-        // Default state
-        const defaultVendorListState = {
-            first: 0,
-            filters: {
-                search: '',
-                country: null,
-                state: null,
-                vendorCategory: null,
-                productCategory: null
-            }
+    // LocalStorage key for vendor list state
+    const VENDOR_LIST_STATE_KEY = 'shipturtle_vendor_list_state'
+    
+    // Default state
+    const defaultVendorListState = {
+        first: 0,
+        filters: {
+            search: '',
+            country: null,
+            state: null,
+            vendorCategory: null,
+            productCategory: null
         }
+    }
 
-        // Load state from localStorage
-        const loadVendorListState = () => {
-            try {
-                const saved = localStorage.getItem(VENDOR_LIST_STATE_KEY)
-                return saved ? JSON.parse(saved) : { ...defaultVendorListState }
-            } catch (error) {
-                console.warn('Failed to load vendor list state from localStorage:', error)
-                return { ...defaultVendorListState }
-            }
+    // Load state from localStorage
+    const loadVendorListState = () => {
+        try {
+            const saved = localStorage.getItem(VENDOR_LIST_STATE_KEY)
+            return saved ? JSON.parse(saved) : { ...defaultVendorListState }
+        } catch (error) {
+            console.warn('Failed to load vendor list state from localStorage:', error)
+            return { ...defaultVendorListState }
         }
+    }
 
-        // Save state to localStorage
-        const saveVendorListStateToStorage = (state) => {
-            try {
-                localStorage.setItem(VENDOR_LIST_STATE_KEY, JSON.stringify(state))
-            } catch (error) {
-                console.warn('Failed to save vendor list state to localStorage:', error)
-            }
+    // Save state to localStorage
+    const saveVendorListStateToStorage = (state) => {
+        try {
+            localStorage.setItem(VENDOR_LIST_STATE_KEY, JSON.stringify(state))
+        } catch (error) {
+            console.warn('Failed to save vendor list state to localStorage:', error)
         }
+    }
 
-        // Initialize state from localStorage
-        const vendorListState = loadVendorListState()
+    // Initialize state from localStorage
+    const vendorListState = loadVendorListState()
 
     const VendorList = {
         name: 'VendorList',
@@ -575,6 +615,11 @@
                 }
                 
                 await fetchVendors()
+                
+                const script = document.createElement('script')
+                script.textContent = blockSettings.value.customJavaScript
+                script.setAttribute('type', 'text/javascript')
+                document.head.appendChild(script)
             })
 
             const displayVendors = computed(() => {
@@ -797,7 +842,7 @@
                             </div>
                         </div>
                     </div>
-                    <p-toast position="top-right"></p-toast>
+
                     <!-- Tabs -->
                     <div class="st-ext-w-full">
                         <p-tabview :scrollable="true" class="st-ext-custom-tabs st-ext-w-full">
@@ -849,17 +894,7 @@
                                                     <p-image :src="product.image" 
                                                         :alt="product.title" 
                                                         image-class="st-ext-w-full st-ext-h-full st-ext-object-contain"
-                                                        style="height: 300px; display: block;"></p-image>                                               
-                                                    <!-- Quick Buy Icon Button -->
-                                                    <button 
-                                                        @click="handleAddToCart(product)"
-                                                        :disabled="cartLoading[product.id]"
-                                                        class="st-ext-bg-white st-ext-flex st-ext-items-center st-ext-justify-center st-ext-border-none st-ext-cursor-pointer"
-                                                        style="position: absolute; top: 16px; right: 16px; z-index: 10; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden;"
-                                                        :title="'Quick Buy'">
-                                                        <i v-if="!cartLoading[product.id]" class="pi pi-shopping-bag" style="font-size: 22px; color: #1f2937;"></i>
-                                                        <i v-else class="pi pi-spin pi-spinner" style="font-size: 22px; color: #1f2937;"></i>
-                                                    </button>
+                                                        style="height: 300px; display: block;"></p-image>
                                                 </div>
                                                 
                                                 <!-- Product Info -->
@@ -869,7 +904,7 @@
                                                     </h3>
                                                     <div class="st-ext-text-gray-600 st-ext-text-lg st-ext-flex-1 st-ext-mb-1 st-ext-mt-1">
                                                         <span v-if="product.variants && product.variants.length > 0">
-                                                            [[ parentCompany?.currencyCountry?.currency_symbol ]][[ product.variants[0].price ]]
+    [[ parentCompany?.currencyCountry?.currency_symbol ]][[ product.variants[0].price ]]
                                                         </span>
                                                         <span v-if="product.variants_count > 1" class="st-ext-text-sm st-ext-text-gray-500 st-ext-ml-2">
                                                             +[[ product.variants_count - 1 ]] more
@@ -1304,7 +1339,6 @@
         setup(props) {
             const isMobile = ref(window.innerWidth < 640)
             const { t, locale } = VueI18n.useI18n()
-            const toast = useToast()
 
             const route = VueRouter.useRoute()
             const blockSettings = loadBlockSettings()
@@ -1355,41 +1389,6 @@
             const contactFormSubmitting = ref(false)
             const contactFormSuccess = ref(false)
             const contactFormError = ref('')
-            const cartLoading = ref({})
-
-            const handleAddToCart = async (product) => {
-                if (!product) return
-
-                if (product.variants_count > 1) {
-                    window.location.href = `/products/${product.handle}`
-                    return
-                }
-
-                const variantId = product.variants[0].channel_id
-                cartLoading.value[product.id] = true
-
-                try {
-                    const formData = new FormData();
-                    formData.append('quantity', 1);
-                    formData.append('id', variantId);
-                    const response = await fetch('/cart/add.js', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    if(response.ok){
-                        toast.add({
-                            severity: 'success',
-                            summary: 'Success',
-                            detail: t('sellers.vendorDetails.productAddedToCart') || 'Product added to cart successfully',
-                            life: 3000
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error adding to cart:', error)
-                } finally {
-                    cartLoading.value[product.id] = false
-                }
-            }
 
             // Review form state
             const reviewForm = ref({
@@ -1768,8 +1767,6 @@
                 contactFormSuccess,
                 contactFormError,
                 submitContactForm,
-                handleAddToCart,
-                cartLoading,
                 terminology,
                 dynamicTranslations,
                 blockSettings
@@ -1894,8 +1891,14 @@
         app.config.compilerOptions.delimiters = ['[[', ']]'];
         app.use(router)
         app.mount('#seller-profile-app')
+
+        const mountedElement = document.getElementById('seller-profile-app');
+        mountedElement.__mounted = true;
+        window.__sellerProfileAppInstance = app;
     }
 
     // Initialize the app
     initializeApp()
-})()
+}
+
+mountSellerProfile()

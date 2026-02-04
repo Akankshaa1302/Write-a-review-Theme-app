@@ -31,23 +31,23 @@
 </style>
 
 <!-- Vue 3 -->
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/vue@3.5.1/dist/vue.global.prod.js"></script>
 <!-- Vue Router 4 -->
-<script src="https://unpkg.com/vue-router@4/dist/vue-router.global.prod.js"></script>
+<script src="https://unpkg.com/vue-router@4.6.0/dist/vue-router.global.prod.js"></script>
 <!-- Vue I18n -->
-<script src="https://unpkg.com/vue-i18n@9/dist/vue-i18n.global.js"></script>
+<script src="https://unpkg.com/vue-i18n@9/dist/vue-i18n.global.prod.js"></script>
 <!-- PrimeIcons -->
 <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
 <!-- PrimeVue core (UMD) -->
 <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
 <script src="https://unpkg.com/@primevue/themes/umd/aura.min.js"></script>
+<script src="{{ 'seller-profile.js' | asset_url }}" id="st-seller-profile-script"></script>
+<link rel="stylesheet" href="{{ 'st-primevue.css' | asset_url }}">
 {% schema %}
   {
     "name": "Seller Profile",
     "target": "section",
     "templates": ["page"],
-    "stylesheet": "st-primevue.css",
-    "javascript": "seller-profile.js",
     "settings": [
       {
         "type": "header",
@@ -241,61 +241,3 @@
 {% endschema %}
 
 <link rel="stylesheet" href="{{ 'seller-profile.css' | asset_url }}">
-
-<!-- Custom JavaScript from block settings -->
-{% if block.settings.customJavaScript != blank %}
-  <script>
-    // Helper API for custom JavaScript
-    window.SellerProfileAPI = {
-      // Get the main app element
-      getAppElement: function() {
-        return document.getElementById('seller-profile-app');
-      },
-      
-      // Add custom CSS dynamically
-      addCustomCSS: function(cssText) {
-        const style = document.createElement('style');
-        style.textContent = cssText;
-        document.head.appendChild(style);
-        return style;
-      },
-      
-      // Wait for a specific element to appear
-      waitForElement: function(selector, callback, timeout = 5000) {
-        const startTime = Date.now();
-        const checkElement = function() {
-          const element = document.querySelector(selector);
-          if (element) {
-            callback(element);
-          } else if (Date.now() - startTime < timeout) {
-            setTimeout(checkElement, 100);
-          }
-        };
-        checkElement();
-      },
-      
-      // Access block settings
-      getSettings: function() {
-        const appElement = this.getAppElement();
-        try {
-          return JSON.parse(appElement.getAttribute('data-settings') || '{}');
-        } catch (e) {
-          return {};
-        }
-      }
-    };
-    
-    // Wait for Vue app to be initialized before running custom JavaScript
-    document.addEventListener('DOMContentLoaded', function() {
-      // Wait a bit more to ensure Vue components are fully mounted
-      setTimeout(function() {
-        try {
-          // Custom JavaScript from admin settings
-          {{ block.settings.customJavaScript }}
-        } catch (error) {
-          console.error('Error in custom JavaScript:', error);
-        }
-      }, 1000);
-    });
-  </script>
-{% endif %}
