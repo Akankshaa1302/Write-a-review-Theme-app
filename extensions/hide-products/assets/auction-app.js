@@ -509,8 +509,8 @@ function AuctionThemeAppExtension() {
     }
 
   const extraDeps = [
-    'https://js.pusher.com/8.2.0/pusher.min.js',
-    'https://unpkg.com/axios/dist/axios.min.js'
+    { src: 'https://js.pusher.com/8.2.0/pusher.min.js', global: 'Pusher' },
+    { src: 'https://unpkg.com/axios/dist/axios.min.js', global: 'axios' }
   ];
 
   if (window.ST_Resources) {
