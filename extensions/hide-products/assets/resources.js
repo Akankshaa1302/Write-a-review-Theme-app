@@ -92,18 +92,18 @@ window.ST_Resources = {
             });
     },
 
-    checkExtraDependencyLoaded: function(dep) {
-        const { src, global } = dep;
+    // checkExtraDependencyLoaded: function(dep) {
+    //     const { src, global } = dep;
 
-        if (global) {
-            const parts = global.split('.');
-            let current = window;
-            for (const part of parts) {
-                current = current?.[part];
-                if (!current) return false;
-            }
-            return true;
-        }
-        return !!document.querySelector(`script[src="${src}"]`);
-    }
+    //     if (global) {
+    //         const parts = global.split('.');
+    //         let current = window;
+    //         for (const part of parts) {
+    //             current = current?.[part];
+    //             if (!current) return false;
+    //         }
+    //         return true;
+    //     }
+    //     return !!document.querySelector(`script[src="${src}"]`);
+    // }
 };
