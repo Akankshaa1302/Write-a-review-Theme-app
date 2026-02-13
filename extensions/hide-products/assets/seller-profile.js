@@ -41,6 +41,7 @@ function mountSellerProfile () {
     const { createApp, ref, computed, onMounted, watch } = Vue
     const { createRouter, createWebHashHistory } = VueRouter
     const { createI18n } = VueI18n
+    const { useToast } = PrimeVue
 
     // API Base URL
     const API_BASE_URL = 'https://api.shipturtle.com'
@@ -194,7 +195,7 @@ function mountSellerProfile () {
                 </div>
                 <div class="st-ext-text-center st-ext-mb-6 st-ext-mt-4">
                     <p-skeleton v-if="loading" width="20rem" height="2rem" class="st-ext-mx-auto"></p-skeleton>
-                    <h2 v-else class="st-ext-text-2xl st-ext-font-semibold">[[ pageTitle ]]</h2>
+                    <h2 v-else class="st-ext-font-semibold">[[ pageTitle ]]</h2>
                 </div>
 
                 <div class="st-ext-grid">
@@ -359,7 +360,7 @@ function mountSellerProfile () {
                                             [[ (vendor.brand_name || vendor.title)?.charAt(0)?.toUpperCase() ]]
                                         </div>
                                         <div class="st-ext-flex-1 st-ext-min-w-0">
-                                            <h3 class="st-ext-font-medium st-ext-text-base st-ext-text-gray-900 st-ext-m-0 st-ext-mb-1 st-ext-capitalize">[[ vendor.brand_name || vendor.title ]]</h3>
+                                            <h3 class="st-ext-font-medium st-ext-text-gray-900 st-ext-m-0 st-ext-mb-1 st-ext-capitalize">[[ vendor.brand_name || vendor.title ]]</h3>
                                             <div class="st-ext-text-xs st-ext-text-gray-500" v-if="showLocation">
                                                 [[ vendor.city || vendor.state || '' ]][[ vendor.country ? (vendor.city || vendor.state ? ', ' : '') + vendor.country_detail?.name : '' ]]
                                             </div>
@@ -823,7 +824,7 @@ function mountSellerProfile () {
 
                                 <!-- Vendor Details -->
                                 <div class="st-ext-flex-1">
-                                    <h1 class="st-ext-text-3xl st-ext-font-bold st-ext-text-gray-900 st-ext-mb-1 st-ext-capitalize">
+                                    <h1 class="st-ext-font-bold st-ext-text-gray-900 st-ext-mb-1 st-ext-capitalize">
                                         [[ vendorDetails.brand_name || vendorDetails.title ]]
                                     </h1>
 
@@ -842,7 +843,7 @@ function mountSellerProfile () {
                             </div>
                         </div>
                     </div>
-
+                    <p-toast position="top-right"></p-toast>
                     <!-- Tabs -->
                     <div class="st-ext-w-full">
                         <p-tabview :scrollable="true" class="st-ext-custom-tabs st-ext-w-full">
@@ -894,17 +895,27 @@ function mountSellerProfile () {
                                                     <p-image :src="product.image" 
                                                         :alt="product.title" 
                                                         image-class="st-ext-w-full st-ext-h-full st-ext-object-contain"
-                                                        style="height: 300px; display: block;"></p-image>
+                                                        style="height: 300px; display: block;"></p-image>                                               
+                                                    <!-- Quick Buy Icon Button -->
+                                                    <button 
+                                                        @click="handleAddToCart(product)"
+                                                        :disabled="cartLoading[product.id]"
+                                                        class="st-ext-bg-white st-ext-flex st-ext-items-center st-ext-justify-center st-ext-border-none st-ext-cursor-pointer"
+                                                        style="position: absolute; top: 16px; right: 16px; z-index: 10; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden;"
+                                                        :title="'Add To Cart'">
+                                                        <i v-if="!cartLoading[product.id]" class="pi pi-shopping-bag" style="font-size: 22px; color: #1f2937;"></i>
+                                                        <i v-else class="pi pi-spin pi-spinner" style="font-size: 22px; color: #1f2937;"></i>
+                                                    </button>
                                                 </div>
                                                 
                                                 <!-- Product Info -->
                                                 <div class="st-ext-p-1 st-ext-flex st-ext-flex-column st-ext-flex-1">
-                                                    <h3 class="st-ext-text-gray-900 st-ext-mb-1 st-ext-mt-1 st-ext-text-lg st-ext-text-capitalize">
+                                                    <h3 class="st-ext-text-gray-900 st-ext-mb-1 st-ext-mt-1 st-ext-text-capitalize">
                                                         [[ product.title ]]
                                                     </h3>
                                                     <div class="st-ext-text-gray-600 st-ext-text-lg st-ext-flex-1 st-ext-mb-1 st-ext-mt-1">
                                                         <span v-if="product.variants && product.variants.length > 0">
-    [[ parentCompany?.currencyCountry?.currency_symbol ]][[ product.variants[0].price ]]
+                                                            [[ parentCompany?.currencyCountry?.currency_symbol ]][[ product.variants[0].price ]]
                                                         </span>
                                                         <span v-if="product.variants_count > 1" class="st-ext-text-sm st-ext-text-gray-500 st-ext-ml-2">
                                                             +[[ product.variants_count - 1 ]] more
@@ -923,7 +934,7 @@ function mountSellerProfile () {
                                     <!-- No Products Message -->
                                     <div v-else class="st-ext-text-center st-ext-py-12">
                                         <i class="pi pi-shopping-cart st-ext-text-3xl st-ext-text-gray-400 st-ext-mb-4"></i>
-                                        <h3 class="st-ext-text-xl st-ext-font-medium st-ext-text-gray-900 st-ext-mb-2">[[ dynamicTranslations.noProducts ]]</h3>
+                                        <h3 class="st-ext-font-medium st-ext-text-gray-900 st-ext-mb-2">[[ dynamicTranslations.noProducts ]]</h3>
                                         <p class="st-ext-text-gray-600">
                                             <span v-if="productSearch">[[ dynamicTranslations.tryAdjustingSearch ]]</span>
                                             <span v-else>[[ dynamicTranslations.vendorNoProducts ]]</span>
@@ -943,7 +954,7 @@ function mountSellerProfile () {
 
                             <p-tabpanel v-if="hasTab('events')" :header="$t('sellers.vendorDetails.events')">
                                 <div class="st-ext-space-y-4">
-                                    <h3 class="st-ext-text-xl st-ext-font-semibold">[[ $t('sellers.vendorDetails.eventsTitle') ]]</h3>
+                                    <h3 class="st-ext-font-semibold">[[ $t('sellers.vendorDetails.eventsTitle') ]]</h3>
                                     <div v-if="vendorDetails?.events" v-html="vendorDetails.events" class="st-ext-prose st-ext-max-w-none st-ext-text-gray-700"></div>
                                     <p v-else class="st-ext-text-gray-600">No events information available.</p>
                                 </div>
@@ -954,7 +965,7 @@ function mountSellerProfile () {
                                 <!-- Review Rating Section (Left Side) -->
                                 <div class="st-ext-col-12 st-ext-lg:st-ext-col-4">
                                     <div class="st-ext-bg-white st-ext-rounded-lg st-ext-shadow-sm st-ext-border st-ext-border-gray-200 st-ext-p-2 st-ext-md:st-ext-p-6 st-ext-h-fit">
-                                    <h3 class="st-ext-text-3xl st-ext-font-bold st-ext-text-gray-900 st-ext-mb-6">[[ $t('sellers.vendorDetails.reviews') ]]</h3>
+                                    <h3 class="st-ext-font-bold st-ext-text-gray-900 st-ext-mb-6">[[ $t('sellers.vendorDetails.reviews') ]]</h3>
 
                                     <!-- Loading State -->
                                     <div v-if="reviewsLoading" class="st-ext-text-center st-ext-py-8">
@@ -988,7 +999,7 @@ function mountSellerProfile () {
                                 <!-- Review Form Section (Right Side) -->
                                 <div class="st-ext-col-12 st-ext-lg:st-ext-col-8">
                                     <div class="st-ext-bg-white st-ext-rounded-lg st-ext-shadow-sm st-ext-border st-ext-border-gray-200 st-ext-p-2 st-ext-md:st-ext-p-6">
-                                     <h3 class="st-ext-text-xl st-ext-font-semibold st-ext-text-gray-900 st-ext-mb-6">Leave a Review</h3>
+                                     <h3 class="st-ext-font-semibold st-ext-text-gray-900 st-ext-mb-6">Leave a Review</h3>
 
                                     <form @submit.prevent="submitReview" class="st-ext-space-y-4">
                                         <!-- Name Fields Row -->
@@ -1108,7 +1119,7 @@ function mountSellerProfile () {
 
                                 <!-- Past Reviews Section -->
                                 <div class="st-ext-bg-white st-ext-rounded-lg st-ext-shadow-sm st-ext-border st-ext-border-gray-200 st-ext-p-4 st-ext-md:st-ext-p-6">
-                                 <h3 class="st-ext-text-xl st-ext-font-bold st-ext-text-gray-900 st-ext-mb-6">[[ $t('sellers.vendorDetails.recentReviews') ]]</h3>
+                                 <h3 class="st-ext-font-bold st-ext-text-gray-900 st-ext-mb-6">[[ $t('sellers.vendorDetails.recentReviews') ]]</h3>
 
                                  <!-- Loading State -->
                                  <div v-if="reviewsLoading" class="st-ext-text-center st-ext-py-12">
@@ -1232,7 +1243,7 @@ function mountSellerProfile () {
                                         <!-- Contact Form (Right) -->
                                         <div class="st-ext-col-12 st-ext-md:st-ext-col-6">
                                             <div class="st-ext-bg-white st-ext-border st-ext-border-round-lg st-ext-p-3 st-ext-md:st-ext-p-4">
-                                                <h3 class="st-ext-text-xl st-ext-font-semibold st-ext-text-gray-900 st-ext-mb-4">Send us a Message</h3>
+                                                <h3 class="st-ext-font-semibold st-ext-text-gray-900 st-ext-mb-4">Send us a Message</h3>
 
                                                 <form @submit.prevent="submitContactForm" class="st-ext-space-y-4">
                                                     <!-- Name and Email Row -->
@@ -1309,7 +1320,7 @@ function mountSellerProfile () {
 
                             <p-tabpanel v-if="hasTab('about')" :header="$t('sellers.vendorDetails.about')">
                                 <div class="st-ext-space-y-4">
-                                    <h3 class="st-ext-text-xl st-ext-font-semibold">[[ $t('sellers.vendorDetails.about') ]]</h3>
+                                    <h3 class="st-ext-font-semibold">[[ $t('sellers.vendorDetails.about') ]]</h3>
                                     <div class="st-ext-prose st-ext-max-w-none">
                                         <div v-if="vendorDetails?.about_us" v-html="vendorDetails.about_us" class="st-ext-text-gray-700"></div>
                                         <p v-else class="st-ext-text-gray-600">[[ $t('sellers.vendorDetails.noDescription') ]]</p>
@@ -1319,7 +1330,7 @@ function mountSellerProfile () {
 
                             <p-tabpanel v-if="hasTab('policy')" :header="$t('sellers.vendorDetails.policy')">
                                 <div class="st-ext-space-y-4">
-                                    <h3 class="st-ext-text-xl st-ext-font-semibold">[[ $t('sellers.vendorDetails.policyTitle') ]]</h3>
+                                    <h3 class="st-ext-font-semibold">[[ $t('sellers.vendorDetails.policyTitle') ]]</h3>
                                     <div v-if="vendorDetails?.policy" v-html="vendorDetails.policy" class="st-ext-prose st-ext-max-w-none st-ext-text-gray-700"></div>
                                     <p v-else class="st-ext-text-gray-600">No policy information available.</p>
                                 </div>
@@ -1331,7 +1342,7 @@ function mountSellerProfile () {
                 <!-- Error State -->
                 <div v-else class="st-ext-text-center st-ext-py-12">
                     <i class="pi pi-exclamation-triangle st-ext-text-3xl st-ext-text-gray-400 st-ext-mb-4"></i>
-                    <h3 class="st-ext-text-xl st-ext-font-medium st-ext-text-gray-900 st-ext-mb-2">Vendor not found</h3>
+                    <h3 class="st-ext-font-medium st-ext-text-gray-900 st-ext-mb-2">Vendor not found</h3>
                     <p class="st-ext-text-gray-600">The vendor you're looking for doesn't exist or has been removed.</p>
                 </div>
             </div>
@@ -1339,6 +1350,7 @@ function mountSellerProfile () {
         setup(props) {
             const isMobile = ref(window.innerWidth < 640)
             const { t, locale } = VueI18n.useI18n()
+            const toast = useToast()
 
             const route = VueRouter.useRoute()
             const blockSettings = loadBlockSettings()
@@ -1389,6 +1401,41 @@ function mountSellerProfile () {
             const contactFormSubmitting = ref(false)
             const contactFormSuccess = ref(false)
             const contactFormError = ref('')
+            const cartLoading = ref({})
+
+            const handleAddToCart = async (product) => {
+                if (!product) return
+
+                if (product.variants_count > 1) {
+                    window.location.href = `/products/${product.handle}`
+                    return
+                }
+
+                const variantId = product.variants[0].channel_id
+                cartLoading.value[product.id] = true
+
+                try {
+                    const formData = new FormData();
+                    formData.append('quantity', 1);
+                    formData.append('id', variantId);
+                    const response = await fetch('/cart/add.js', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    if(response.ok){
+                        toast.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: t('sellers.vendorDetails.productAddedToCart'),
+                            life: 3000
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error)
+                } finally {
+                    cartLoading.value[product.id] = false
+                }
+            }
 
             // Review form state
             const reviewForm = ref({
@@ -1767,6 +1814,8 @@ function mountSellerProfile () {
                 contactFormSuccess,
                 contactFormError,
                 submitContactForm,
+                handleAddToCart,
+                cartLoading,
                 terminology,
                 dynamicTranslations,
                 blockSettings
