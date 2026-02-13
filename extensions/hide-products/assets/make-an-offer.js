@@ -92,7 +92,7 @@ async function MakeAnOfferCode(){
             const offerPrice = ref(null);
             const quantity = ref(null);
             const note = ref(null);
-            const productPrice = ref(parseFloat(document.getElementById('product_price')?.value?.replace(/[^0-9.]/g, '').replace(/^\./, '') || '0'));
+            const productPrice = ref(parseFloat(document.getElementById('product_price').value.replace(/[^0-9.]/g, '').replace(/^\./, '')));
             const submittingOfferLoading = ref(false);
             const variantId = ref(ShopifyAnalytics?.meta?.product?.variants?.[0]?.id || '');
             const variantInventory = ref(settings?.variantInventory ?? null);
@@ -104,7 +104,7 @@ async function MakeAnOfferCode(){
             const isSoldOut = computed(() => {
                 return variantInventory.value !== null && variantInventory.value <= 0;
             });
-            
+
             const isButtonVisible = computed(() => {
                 if (isSoldOut.value && hideMakeAnOfferButton.value) {
                     return false;
@@ -113,19 +113,19 @@ async function MakeAnOfferCode(){
             });
             
             
-            
+
             const resetForm = () => {
                 offerPrice.value = null;
                 quantity.value = null;
                 note.value = null;
                 submittingOfferLoading.value = false;
             }
-            
+
             const handleCancel = () => {
                 visible.value = false;
                 resetForm();
             }
-            
+
             const validateInventoryLimit = () => {
                 if (restrictOfferQuantity.value && variantInventory.value !== null) {
                     if (quantity.value > variantInventory.value) {
@@ -140,7 +140,7 @@ async function MakeAnOfferCode(){
                 }
                 return true;
             }
-            
+
             const validateCustomerOfferLimit = () => {
                 if (restrictOfferByCustomer.value && hasPendingOffer.value) {
                     toast.add({ 
@@ -153,8 +153,9 @@ async function MakeAnOfferCode(){
                 }
                 return true;
             }
-            
+
             const makeOffer = async () => {
+        
                 submittingOfferLoading.value = true;
                 try {
                     if (!offerPrice.value || !quantity.value || !email.value) {
@@ -166,7 +167,7 @@ async function MakeAnOfferCode(){
                         });
                         return;
                     }
-                    
+
                     if (!validateInventoryLimit()) {
                         return;
                     }                   
@@ -226,13 +227,13 @@ async function MakeAnOfferCode(){
                 variantInventory.value = parseInt(data.data.inventory_quantity);
                 hasPendingOffer.value = data.data.has_pending_offer;
             }
-            
+
             const showDialog = () => {
                 try {
                     if (!validateCustomerOfferLimit()) {
                         return;
                     }
-                    
+
                     if(email.value) {
                         visible.value = true;
                     } else {
@@ -265,7 +266,7 @@ async function MakeAnOfferCode(){
                     console.error(err);
                 }
             };
-            
+
             onUnmounted(() => {
                 const productForm = document.querySelectorAll('product-form form[method="post"][action="/cart/add"]');
                 if (productForm) {
@@ -274,7 +275,7 @@ async function MakeAnOfferCode(){
                     });
                 }
             });
-            
+
             onBeforeMount(() => {
                 try{
                     checkInventoryAndOffer();
@@ -307,27 +308,27 @@ async function MakeAnOfferCode(){
                 productPrice
             };
         }
-    });
-    
+    }); 
+
     const Noir = PrimeVue.definePreset(PrimeVue.Themes.Aura, {
         semantic: {
-            primary: {
-                50: '{zinc.50}',
-                100: '{zinc.100}',
-                200: '{zinc.200}',
-                300: '{zinc.300}',
-                400: '{zinc.400}',
-                500: '{zinc.500}',
-                600: '{zinc.600}',
-                700: '{zinc.700}',
-                800: '{zinc.800}',
-                900: '{zinc.900}',
-                950: '{zinc.950}'
-            },
-            colorScheme: {
-                light: {
-                    primary: {
-                        color: '{zinc.950}',
+        primary: {
+            50: '{zinc.50}',
+            100: '{zinc.100}',
+            200: '{zinc.200}',
+            300: '{zinc.300}',
+            400: '{zinc.400}',
+            500: '{zinc.500}',
+            600: '{zinc.600}',
+            700: '{zinc.700}',
+            800: '{zinc.800}',
+            900: '{zinc.900}',
+            950: '{zinc.950}'
+        },
+        colorScheme: {
+            light: {
+                primary: {
+                    color: '{zinc.950}',
                         inverseColor: '#ffffff',
                         hoverColor: '{zinc.900}',
                         activeColor: '{zinc.800}'
