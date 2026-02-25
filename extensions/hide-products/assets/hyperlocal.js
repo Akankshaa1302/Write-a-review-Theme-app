@@ -1,5 +1,60 @@
 
-document.addEventListener('DOMContentLoaded', function () {
+const getShopifyLocale = () => {
+    const shopifyLocale =
+        document.documentElement.lang ||
+        document.querySelector('html')?.getAttribute('lang') ||
+        window.Shopify?.locale ||
+        navigator.language.split('-')[0]
+
+    const supportedLocales = ['en', 'de', 'es', 'nl', 'pt']
+    const normalized = shopifyLocale.toLowerCase().split('-')[0]
+    return supportedLocales.includes(normalized) ? normalized : 'en'
+};
+
+const loadHyperlocalI18n = async () => {
+    const locale = getShopifyLocale()
+    const messages = {}
+
+    try {
+        const appElement = document.getElementById('hyperlocal-app');
+        const langJSONUrl = appElement?.getAttribute('data-lang-asset');
+
+        if (!langJSONUrl) {
+            console.warn('No locale URL found, using key as fallback.');
+            return { messages: { en: {} }, locale: 'en' }
+        }
+
+        const langJSON = await fetch(langJSONUrl);
+        const allMessages = await langJSON.json();
+
+        // Ensure English exists as fallback
+        if (!allMessages.en) {
+            allMessages.en = {}
+        }
+
+        return { messages: allMessages, locale }
+    } catch (err) {
+        console.error('Failed to load locale messages:', error)
+        return { messages: { en: {} }, locale: 'en' }
+    }
+};
+
+document.addEventListener('DOMContentLoaded', async function () {
+    const { messages, locale } = await loadHyperlocalI18n();
+
+    const t = (key) => {
+        const keys = key.split('.');
+        let current = messages[locale] || {};
+        for (const k of keys) {
+            current = current?.[k];
+            if (current === undefined) break;
+        }
+
+        if (current === undefined) {
+            current = messages.en?.[key];
+        }
+        return current;
+    };
     const getCookie = (name) => {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
@@ -16,10 +71,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const zipPopup = document.getElementById('zip-popup')
 
         zipPopup.style.display = 'block'
-        const currentZip = getCookie('visitor_zip') || 'Not set';
+        const currentZip = getCookie('visitor_zip') || t('hyperlocal.not_set');
         
         const visitorZipCode = document.getElementById('visitor-zip-code')
         visitorZipCode.textContent = currentZip
+
+        const zipSubmit = document.getElementById('zip-submit')
+        if (zipSubmit) zipSubmit.textContent = t('hyperlocal.submit')
+
+        const zipDesc = document.getElementById('zip-description')
+        if (zipDesc) zipDesc.textContent = t('hyperlocal.zip_description')
 
         document.getElementById('zip-submit').addEventListener('click', () => {
             const zip = document.getElementById('zip-input').value;
@@ -124,9 +185,11 @@ window.onload = function () {
 
 }
 
-document.addEventListener('DOMContentLoaded', () => {
 
+document.addEventListener('DOMContentLoaded', async () => {
     if (meta.page.pageType === 'product') {
+        const t = await loadHyperlocalI18n();
+
         const main = document.querySelector('main')
 
         const visitorZip = document.cookie.split('; ').find(row => row.startsWith('visitor_zip='));
@@ -141,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const div = document.createElement('div')
                 div.style.textAlign = 'center'
                 div.style.margin = "3rem 0"
-                div.textContent = 'This product is not available in your area.'
+                div.textContent = t('hyperlocal.product_not_available')
                 main.appendChild(div);
             }
         } else {
@@ -149,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const div = document.createElement('div')
                 div.style.textAlign = 'center'
                 div.style.margin = "3rem 0"
-                div.textContent = 'Please enter your ZIP code to view this product.'
+                div.textContent = t('hyperlocal.enter_zip_to_view')
                 main.appendChild(div);
         }
     }

@@ -185,6 +185,14 @@
       "generic_error_detail": "An error occurred while processing your request.",
       "login_required_summary": "Login Required",
       "login_required_detail": "Please login to make an offer"
+    },
+    "hyperlocal": {
+      "zip_description": "Some products are only available in certain ZIP Locations, Please add zip code to see available products in your area",
+      "zip_placeholder": "Enter ZIP Code",
+      "submit": "Submit",
+      "not_set": "Not set",
+      "product_not_available": "This product is not available in your area.",
+      "enter_zip_to_view": "Please enter your ZIP code to view this product."
     }
   },
   "de": {
@@ -373,6 +381,14 @@
       "generic_error_detail": "Beim Verarbeiten Ihrer Anfrage ist ein Fehler aufgetreten.",
       "login_required_summary": "Anmeldung erforderlich",
       "login_required_detail": "Bitte melden Sie sich an, um ein Angebot zu machen"
+    },
+    "hyperlocal": {
+      "zip_description": "Einige Produkte sind nur in bestimmten Postleitzahlgebieten verfügbar. Bitte geben Sie Ihre Postleitzahl ein, um die in Ihrer Region verfügbaren Produkte zu sehen.",
+      "zip_placeholder": "Postleitzahl eingeben",
+      "submit": "Absenden",
+      "not_set": "Nicht festgelegt",
+      "product_not_available": "Dieses Produkt ist in Ihrer Region nicht verfügbar.",
+      "enter_zip_to_view": "Bitte geben Sie Ihre Postleitzahl ein, um dieses Produkt anzuzeigen."
     }
 
   },
@@ -562,6 +578,14 @@
         "generic_error_detail": "Ocurrió un error al procesar tu solicitud.",
         "login_required_summary": "Inicio de sesión requerido",
         "login_required_detail": "Por favor, inicia sesión para hacer una oferta"
+    },
+    "hyperlocal": {
+      "zip_description": "Algunos productos solo están disponibles en ciertos códigos postales. Por favor, introduce tu código postal para ver los productos disponibles en tu área.",
+      "zip_placeholder": "Introduce el código postal",
+      "submit": "Enviar",
+      "not_set": "No establecido",
+      "product_not_available": "Este producto no está disponible en tu área.",
+      "enter_zip_to_view": "Por favor, introduce tu código postal para ver este producto."
     }
 
   },
@@ -747,7 +771,15 @@
       "generic_error_detail": "Er is een fout opgetreden bij het verwerken van je verzoek.",
       "login_required_summary": "Inloggen vereist",
       "login_required_detail": "Log in om een bod te doen"
-    }
+    },
+    "hyperlocal": {
+      "zip_description": "Sommige producten zijn alleen beschikbaar in bepaalde postcodegebieden. Voer uw postcode in om de beschikbare producten in uw regio te bekijken.",
+      "zip_placeholder": "Voer postcode in",
+      "submit": "Verzenden",
+      "not_set": "Niet ingesteld",
+      "product_not_available": "Dit product is niet beschikbaar in uw regio.",
+      "enter_zip_to_view": "Voer uw postcode in om dit product te bekijken."
+  }
 
   },
   "pt": {
@@ -932,6 +964,14 @@
       "generic_error_detail": "Ocorreu um erro ao processar sua solicitação.",
       "login_required_summary": "Login necessário",
       "login_required_detail": "Faça login para fazer uma oferta"
+    },
+    "hyperlocal": {
+      "zip_description": "Sommige producten zijn alleen beschikbaar in bepaalde postcodegebieden. Voer uw postcode in om de beschikbare producten in uw regio te bekijken.",
+      "zip_placeholder": "Voer postcode in",
+      "submit": "Verzenden",
+      "not_set": "Niet ingesteld",
+      "product_not_available": "Dit product is niet beschikbaar in uw regio.",
+      "enter_zip_to_view": "Voer uw postcode in om dit product te bekijken."
     }
   }
 }

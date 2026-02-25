@@ -1,0 +1,38 @@
+<div id="st-live-chat-app" data-block-settings="{{ block.settings | json }}"></div>
+
+<style>
+  /* Block-specific overrides */
+  .st-live-chat-block {
+    display: block;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Live Chat",
+  "target": "section",
+  "templates": ["product"],
+  "settings": [
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Chat Button Color",
+      "default": "#4F46E5"
+    }
+  ]
+}
+{% endschema %}
+
+<link rel="stylesheet" href="{{ 'live-chat.css' | asset_url }}" />
+<link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+<script src="{{ 'resources.js' | asset_url }}"></script>
+<script src="{{ 'live-chat.js' | asset_url }}"></script>
+<script>
+  window.customerId = {{ customer.id | json }};
+  window.customerEmail = {{ customer.email | json }};
+  window.productVendor = {{ product.vendor | json }};
+  window.customerName = {{ customer.name | json }};
+  window.stLiveChatConfig = {
+    buttonColor: {{ block.settings.button_color | json }}
+  };
+</script>
