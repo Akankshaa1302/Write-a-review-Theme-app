@@ -7,9 +7,19 @@ value="{{ customer.email }}" />
     .st-customer-chat-cta-section {
         background: {{ block.settings.stChatWithSellerBtnBgColor }} !important;
         color: {{ block.settings.stChatWithSellerBtnTxtColor }} !important;
+        min-height: {{ block.settings.stChatBtnHeight }}px !important;
     }
     .chat-with-seller {
         color: {{ block.settings.stPopupTxtColor }} !important;
+    }
+
+    .chat-with-seller,
+    .chat-with-seller input,
+    .chat-with-seller textarea,
+    .chat-with-seller label,
+    .chat-with-seller button,
+    .chat-with-seller p {
+        font-size: {{ block.settings.stChatFontSize }}px !important;
     }
     .chat-submit-btn-custom-styling {
         color: {{ block.settings.stChatSubmitBtnTxtColor }} !important;
@@ -107,6 +117,12 @@ value="{{ customer.email }}" />
             "id": "stChatFontSize",
             "label": "Font Size(px)",
             "default": 14
+        },
+        {
+            "type": "number",
+            "id": "stChatBtnHeight",
+            "label": "Button Height(px)",
+            "default": 50
         }
         ]
     }
@@ -119,7 +135,7 @@ value="{{ customer.email }}" />
     <p class="chat-with-seller-btn">{% if block.settings.stChatWithSellerBtnTxt == 'Chat With Seller' %}{{ 'customer-chat.chat-with-seller' | t }}{% else %}{{ block.settings.stChatWithSellerBtnTxt }}{% endif %}</p>
 </div>
 <div class="chat-with-seller-container" id="chat-with-seller-container">
-    <div class="chat-with-seller" style="font-size: {{ block.settings.stChatFontSize }}px">
+    <div class="chat-with-seller">
         <div class="chat-with-seller-header">
             <p class="chat-with-seller-header-title">{% if block.settings.stChatHeaderText == 'Chat With Seller' %}{{ 'customer-chat.chat-with-seller' | t }}{% else %}{{ block.settings.stChatHeaderText }}{% endif %}</p>
             <p class="st-chat-with-seller-close" id="st-chat-with-seller-close">
@@ -142,9 +158,7 @@ value="{{ customer.email }}" />
                 <label for="customer-chat">{{ 'customer-chat.message' | t }}*</label>
                 <textarea id="customer-chat-user-request" name="customer-chat"
                 rows="{{ block.settings.stChatTxtBoxRows }}" cols="50"
-                placeholder="{{ block.settings.stChatTxtBoxPlaceholder }}"
-                style="font-size: {{ block.settings.stChatFontSize }}px;
-                font-family: {{ block.settings.stChatFontFamily.family }};">
+                placeholder="{{ block.settings.stChatTxtBoxPlaceholder }}">
                 </textarea>
             </div>
             <div id="customer-chat-success"></div>
