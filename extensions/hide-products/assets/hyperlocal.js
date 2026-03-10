@@ -187,14 +187,27 @@ window.onload = function () {
 
 
 document.addEventListener('DOMContentLoaded', async () => {
-    if (meta.page.pageType === 'product') {
-        const t = await loadHyperlocalI18n();
+    const { messages, locale } = await loadHyperlocalI18n();
 
+    const t = (key) => {
+        const keys = key.split('.');
+        let current = messages[locale] || {};
+        for (const k of keys) {
+            current = current?.[k];
+            if (current === undefined) break;
+        }
+
+        if (current === undefined) {
+            current = messages.en?.[key];
+        }
+        return current;
+    };
+    if (meta.page.pageType === 'product') {
         const main = document.querySelector('main')
 
         const visitorZip = document.cookie.split('; ').find(row => row.startsWith('visitor_zip='));
         const zipValue = visitorZip ? visitorZip.split('=')[1] : '';
-
+    
         if (zipValue) {
             if (!window.productMetafields.zipCodes || window.productMetafields.zipCodes.length === 0) {
                 return

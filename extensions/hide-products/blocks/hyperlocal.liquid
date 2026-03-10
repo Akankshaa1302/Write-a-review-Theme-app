@@ -97,6 +97,7 @@
   id="hyperlocalMetaFieldKey"
   value="{{ block.settings.hyperlocalMetaFieldKey }}" />
 
+<div id="hyperlocal-app" data-lang-asset="{{ 'lang.json' | asset_url }}">
 <div>
   <button id="zipcode-change-button" style="position: fixed; bottom: 20px; right: 20px; padding: 10px; background: {{ block.settings.button_background_color }}; color: white; border: none; border-radius: 50px; cursor: pointer; z-index: 1000000000000;">{{ block.settings.zip_code_btn }}</button>
 </div>
@@ -104,7 +105,7 @@
   <div id="zip-popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px 20px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); z-index: 1000000000000; max-width: 350px; width: 90%; text-align: center;">
     <button id="close-popup" style="position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 24px; cursor: pointer; color: #333; padding: 0px;">&times;</button>
     <h4 style="font-size: 16px; color: #555; text-align: center; margin-bottom: 20px;">{{ block.settings.popup_header }}</h4>
-    <p style="font-size: 12px;">Some products are only available in certain ZIP Locations, Please add zip code to see available products in your area</p>
+    <p id="zip-description" style="font-size: 12px;"></p>
     <div style="display: inline-block; padding: 0px 12px; background-color: #174733; color: white; border-radius: 50px; font-size: 12px; font-weight: bold; margin-bottom: 20px; margin-top: 20px;">
       <div style="display: flex; align-items: center; gap: 5px;">
         <p>{{ block.settings.current_zip_code }}:
@@ -116,8 +117,9 @@
     <input
       type="text"
       id="zip-input"
-      placeholder="Enter ZIP Code"
+      placeholder="{{ block.settings.placeholder_text }}"
       style="margin-bottom: 15px; width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
-    <button id="zip-submit" style="background: {{ block.settings.button_background_color }}; color: white;" class="button button--secondary">Submit</button>
+    <button id="zip-submit" style="background: {{ block.settings.button_background_color }}; color: white;" class="button button--secondary"></button>
   </div>
+</div>
 </div>
