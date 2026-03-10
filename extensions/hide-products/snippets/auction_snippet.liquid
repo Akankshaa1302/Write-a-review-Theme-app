@@ -175,7 +175,6 @@
     </section>
     <section v-if="auctionTimerData.status === 'active'  && isBuyoutPriceGreaterThanProxyBid">
       <div class="separator mb-3"></div>
-      <h2> [[checkProxyBidValueToBidAmount]]</h2>
        <div v-if="auctionTimerData.is_buyout_enabled === true && auctionTimerData.show_buyout_price === true" class="grid">
          <div class="col">
            <h5 v-if="!auctionSettingsData.hide_price" class="text-center mb-3"><i class="custom-text-color-orange">Buy</i> it Now @ [[auctionTimerData.buyout_price]]</h5>
@@ -195,4 +194,3 @@
     </p>
   </div>
 </div>
-

@@ -1,0 +1,195 @@
+<script src="{{ 'vuejs-min.js' | asset_url }}"></script>
+<link href="https://cdn.jsdelivr.net/npm/flatpickr@4/dist/flatpickr.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4/dist/flatpickr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-flatpickr-component@11"></script>
+
+<style>
+  .st-loader {
+    width: 20px;
+    margin: auto;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: block !important;
+    background: radial-gradient(farthest-side,#000 94%,#0000) top / 8px 8px no-repeat, conic-gradient(#0000 30%, #000);
+    -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 8px),#000 0);
+    animation: l13 1s infinite linear;
+  }
+  @keyframes l13 {
+    100% {
+      transform: rotate(1turn)
+    }
+  }
+</style>
+<div id="skeleton-loader" class="skeleton-loading-container">
+  <div
+    id="filters-skeleton-loader"
+    class="filters-skeleton-loading skeleton-loading"
+    style="display: block !important"></div>
+  <div
+    id="products-skeleton-loader"
+    class="products-skeleton-loading"
+    style="display: flex !important"></div>
+</div>
+<div id="collection-products" style="display: none;">
+  <link
+    href="//736f65-99.myshopify.com/cdn/shop/t/4/assets/theme.css?v=17298538508129538591727172693"
+    rel="stylesheet"
+    type="text/css"
+    media="all">
+  <div class="search-bar-section">
+    <form class="search-bar" @submit.prevent="handleSubmit">
+      <div class="search-field">
+        <label for="search-q">Search For</label>
+        <input
+          v-model="service"
+          type="text"
+          id="search-q"
+          name="q"
+          placeholder="Searching for?">
+      </div>
+      <div class="search-field">
+        <label for="from-date">From</label>
+        <flat-pickr
+          v-model="startDate"
+          :config="config"
+          class="form-control"
+          placeholder="Select start date"
+          name="start-date"
+          :required="endDate" />
+      </div>
+      <div class="search-field">
+        <label for="to-date">To</label>
+        <flat-pickr
+          v-model="endDate"
+          :config="config"
+          class="form-control"
+          placeholder="Select end date"
+          name="end-date"
+          :required="startDate" />
+      </div>
+      <button type="submit" class="search-button">Search</button>
+    </form>
+  </div>
+  <div
+    id="products-grid-skeleton-loader"
+    class="products-skeleton-loading"
+    style="display: flex !important"></div>
+  <div id="ProductGridContainer">
+    <div class="collection__results" v-if="products.length > 0">
+      <div class="v-stack gap-6">
+        <div class="v-stack gap-4 md:hidden">
+          <p class="text-center">$% products.length % products</p>
+        </div>
+
+        <div selector=".product-list > *" style="opacity: 1;">
+          <div
+            class="product-list"
+            role="region"
+            aria-live="polite">
+            <product-card
+              v-for="product in products"
+              :handle="product.handle"
+              class="show-product product-card product-card--blends product-card--show-secondary-media bg-custom text-custom"
+              style="--background: 255 255 255; --text-color: 26 26 26; opacity: 1; transform: translateY(0px);">
+              <div class="product-card__figure">
+                <a :href="`/products/${product.handle}`">
+                  <img
+                    :src="`${product.image}?v=1723030227&amp;width=610`"
+                    :alt="product.title"
+                    :srcset="`${product.image}?v=1723030227&amp;width=200 200w, ${product.image}?v=1723030227&amp;width=300 300w, ${product.image}?v=1723030227&amp;width=400 400w, ${product.image}?v=1723030227&amp;width=500 500w, ${product.image}?v=1723030227&amp;width=600 600w`"
+                    width="610"
+                    height="610"
+                    sizes="(max-width: 699px) calc(100vw / 2 - 40px), (max-width: 1200px) calc(100vw / 3 - 64px), calc((100vw - 96px) / 3 - (24px / 3 * 2))"
+                    class="product-card__image product-card__image--primary aspect-natural">
+                  <img
+                    :src="`${product.image}?v=1723030242&amp;width=85`"
+                    :alt="product.title"
+                    width="85"
+                    height="85"
+                    loading="lazy"
+                    class="product-card__image product-card__image--secondary object-fill"
+                    fetchpriority="low"
+                    sizes="(max-width: 699px) calc(100vw / 2 - 40px), (max-width: 1200px) calc(100vw / 3 - 64px), calc((100vw - 96px) / 3 - (24px / 3 * 2))">
+                </a>
+              {% comment %} 
+                                                                                <div class="product-card__quick-buy"> 
+                                                                                <form method="post" action="/cart/add" accept-charset="UTF-8" class="shopify-product-form" enctype="multipart/form-data" is="product-form"> 
+                                                                                <input type="hidden" name="form_type" value="product"> 
+                                                                                <input type="hidden" name="utf8" value="✓"> 
+                                                                                <input type="hidden" name="id" :value="product.variants[0]?.channel_id"> 
+                                                                                <div class="pointer-fine:hidden"> 
+                                                                                <button type="submit" is="custom-button" class="product-card__mobile-quick-buy-button" aria-label="+ Quick add"> 
+                                                                                <div> 
+                                                                                <svg role="presentation" fill="none" stroke-width="2" focusable="false" width="16" height="14" class="icon icon-quick-buy-cart" viewBox="0 0 16 14"> 
+                                                                                <path d="M7.75 4.75H2.283a1 1 0 0 0-.97 1.244l1.574 6.25a1 1 0 0 0 .97.756h7.787a1 1 0 0 0 .97-.756l1.573-6.25a1 1 0 0 0-.97-1.244H7.75Zm0 0V1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path> 
+                                                                                </svg> 
+                                                                                </div> 
+                                                                                <span class="button__loader"> 
+                                                                                <span></span> 
+                                                                                <span></span> 
+                                                                                <span></span> 
+                                                                                </span> 
+                                                                                </button> 
+                                                                                </div> 
+                                                                                <div class="pointer-coarse:hidden"> 
+                                                                                <button type="submit" class="button" is="custom-button"> 
+                                                                                <div>+ Quick add</div> 
+                                                                                <span class="button__loader"> 
+                                                                                <span></span> 
+                                                                                <span></span> 
+                                                                                <span></span> 
+                                                                                </span> 
+                                                                                </button> 
+                                                                                </div> 
+                                                                                <input type="hidden" name="product-id" :value="product.channel_id"> 
+                                                                                </form>
+                                                                                </div> 
+                                                                      {% endcomment %}
+
+              </div>
+              <div class="product-card__info">
+                <div class="v-stack gap-0.5 w-full">
+                  <span class="product-card__title">
+                    <a
+                      :href="'/products/' + product.handle"
+                      class="bold"
+                      data-instant="">$% product.title %</a>
+                  </span>
+                  <price-list class="price-list">
+                    <sale-price class="text-subdued">
+                      <span class="sr-only">Sale price</span>£$% product.variants[0]?.price %
+                    </sale-price>
+                  </price-list>
+                </div>
+              </div>
+            </product-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-if="next_page_url && !isLoading" class="st-loadMore-container">
+    <button
+      :disabled="loadingMore"
+      class="st-loadMore"
+      @click="loadMore">
+      <div v-if="loadingMore" class="st-loader"></div>
+      Load More
+    </button>
+  </div>
+  <div class="no-results-found" v-if="products.length === 0">
+    <p>No results found</p>
+  </div>
+</div>
+<script>
+    const skeletonLoaderContainer = document.getElementById('products-skeleton-loader');
+    for (let i = 0; i < 20; i++) {
+        const skeletonLoaderCard = document.createElement('div');
+        skeletonLoaderCard.classList.add('skeleton-card');
+        skeletonLoaderCard.innerHTML = `
+        <div class="skeleton-card__image skeleton-loading" style="display: block !important"></div>
+        <div class="skeleton-card__title skeleton-loading" style="display: block !important"></div>
+        <div class="skeleton-card__description skeleton-loading" style="display: block !important"></div>`
+        skeletonLoaderContainer.appendChild(skeletonLoaderCard);
+    }
+</script>

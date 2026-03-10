@@ -1,0 +1,14 @@
+<input type="hidden" name="shipturtle_loggedin_customerEmail" id="shipturtle_loggedin_customerEmail" value="{% if customer %}{{ customer.email }}{% else %}0{% endif %}" />
+{% schema %}
+{
+  "name": "Shipturtle C2C Dashboard",
+  "target": "body",
+  "javascript": "c2c.js",
+  "available_if": "{{ app.metafields.shipturtle.c2c_dashboard_availability_status }}"
+}
+{% endschema %}
+<script>
+  window.customerAccountLoginURL = "{{ routes.account_login_url }}"
+</script>
+
+

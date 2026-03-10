@@ -1,0 +1,104 @@
+<script src="{{ 'vuejs-min.js' | asset_url }}" defer></script>
+<script src="{{ 'primevue.min.js' | asset_url }}" defer></script>
+<script src="{{ 'theme-aura.min.js' | asset_url }}" defer></script>
+
+<div id="custom-order-page-loading-spinner" style="display: block;"></div>
+<div id="custom-order-page" style="display: none">
+  <div>
+    <h3 class="page-title">{{ 'orders.your-orders' | t }}</h3>
+  </div>
+  <div v-if="ordersItems && ordersItems.length > 0" class="orders-container">
+    <p-card
+      class="custom-card"
+      v-for="(item, index) in ordersItems"
+      :key="index">
+      <template #header>
+        <div class="design-header">
+          <p class="status">
+            <strong>{{ 'orders.order' | t }}</strong>
+          </p>
+          <p class="update-date">{{ 'orders.last-updated' | t }} [[ item.processed_at ]]</p>
+        </div>
+      </template>
+      <template #title>
+        <a :href="'/products/' + item.variant?.product.handle">
+          <p-carousel
+            :value="[item.variant]"
+            :num-visible="1"
+            :num-scroll="1">
+            <template #item="slotProps">
+              <img class="d-block" :src="(slotProps.data && slotProps.data.image_link)">
+            </template>
+          </p-carousel>
+        </a>
+      </template>
+      <template #content>
+        <a :href="'/products/' + item.variant?.product.handle">
+          [[ item.title ]]
+        </a>
+      </template>
+
+      <template #footer>
+        <div class="design-footer">
+          <p-button
+            v-if="item.variant?.product.meta_data && item.variant.product.meta_data[metaFieldKey]?.value.length > 0"
+            :disabled="downloadInProgress"
+            class="p-button-outlined download-button"
+            @click="download(item.variant.product.meta_data)">
+            {{ 'orders.download' | t }}
+          </p-button>
+        </div>
+      </template>
+    </p-card>
+  </div>
+
+  <div style="display: flex; justify-content: center; align-items: center;">
+    <p-progress-spinner
+      v-if="fetchingOrders"
+      style="width: 30px; height: 30px"
+      strokeWidth="12"
+      fill="transparent"
+      animationDuration=".5s"
+      aria-label="Custom ProgressSpinner" />
+  </div>
+  <div v-if="ordersItems.length === 0 && !fetchingOrders" style="text-align: center;">{{ 'orders.you-havenot-placed-any-orders-yet' | t }}</div>
+  <p-paginator
+    v-model:first="first"
+    @page="updatePageChanged"
+    :rows="perPageOrderRows"
+    :total-records="totalOrdersCount"
+    :rows-per-page-options="totalOptions"></p-paginator>
+
+
+</div>
+
+<input
+  type="hidden"
+  id="metaFieldKey"
+  value="{{ block.settings.metaFieldKey }}" />
+<script>
+  const customerEmail = "{{customer.email }}"
+  if (!customerEmail) {
+    window.location.href = "/account"
+  }
+  
+  if (customerEmail) {
+    window.customOrderPageGlobals = {
+      customerEmail: customerEmail,
+      currency: "{{ cart.currency.symbol }}"
+    }
+  }
+</script>
+<style>
+  .buy-again-button {
+    background-color: {{ block.settings.buy_again_button_bg_color }};
+    color: {{ block.settings.buy_again_text_color }};
+  }
+  .download-button,
+  .p-paginator-page.p-paginator-page-selected,
+  .p-select-option.p-select-option-selected,
+  .p-select-option.p-select-option-selected.p-focus {
+    background-color: {{ block.settings.download_button_bg_color }};
+    color: {{ block.settings.download_text_color }};
+  }
+</style>

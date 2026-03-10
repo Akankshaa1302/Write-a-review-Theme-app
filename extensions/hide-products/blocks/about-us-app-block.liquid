@@ -1,0 +1,30 @@
+{% schema %}
+    {
+    "name": "Vendor About Us",
+    "target": "section",
+    "templates": ["product"],
+    "available_if": "{{ app.metafields.shipturtle.show_vendor_about_us_on_product_page }}",
+    "settings": [
+        {
+        "id": "stAboutUsTitle",
+        "type": "text",
+        "label": "Title",
+        "default": "About Us"
+        },
+        { 
+        "type": "number", 
+        "id": "stAboutUsTitleSize", 
+        "label": "Title Font size(px)", 
+        "default": 16
+        },
+        { 
+        "type": "number", 
+        "id": "stTextFontSize", 
+        "label": "Text Font size(px)", 
+        "default": 14
+        }
+        ]
+    }
+{% endschema %}
+
+{% render 'about-us-app-snippet' %}

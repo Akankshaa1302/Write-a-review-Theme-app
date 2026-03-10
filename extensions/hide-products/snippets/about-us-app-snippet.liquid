@@ -1,0 +1,48 @@
+<script src="{{ 'vuejs-min.js' | asset_url }}"></script>
+
+<style>
+    .st-vendor-about-us {
+        border: 1px solid #cbcbcb;
+        padding: 15px;
+        box-shadow: 0 2px 4px #00000038;
+        border-radius: 10px;
+    }
+</style>
+<div class="st-vendor-about-us" id="st-vendor-about-us" style="display: none;">
+    <h5 style="font-size: {{ block.settings.stAboutUsTitleSize }}px; margin: 0px; font-weight: 700;">{{ block.settings.stAboutUsTitle }}</h5>
+    <div id="st-vendor-about-us-content" style="font-size: {{ block.settings.stTextFontSize }}px" v-html="vendorAboutUsContent"></div>
+</div>
+
+<input type="hidden" id="st-vendor-name" value="{{ product.vendor }}">
+
+<script>
+    const { createApp, ref, onMounted } = Vue;
+
+    const app = createApp({
+        setup() {
+            const visible = ref(false);
+            const baseUrl = ref('https://api.shipturtle.com/about-us');
+            const vendorName = ref(document.getElementById('st-vendor-name').value);
+            const vendorAboutUsContent = ref(null);
+
+            onMounted(async () => {
+                const url = `${baseUrl.value}/${Shopify.shop}/${vendorName.value}`
+                const response = await fetch(url)
+                const data = await response.json()
+                if (data.has_about_us_content) {
+                    vendorAboutUsContent.value = data.about_us
+                    document.getElementById('st-vendor-about-us').style.display = 'block'
+                }
+            })
+
+            return {
+                baseUrl,
+                vendorName,
+                vendorAboutUsContent
+            }
+        }
+    });
+    
+    app.config.compilerOptions.delimiters = ['$%', '%'];
+    app.mount('#st-vendor-about-us')
+</script>

@@ -548,7 +548,7 @@ async function writeaReview() {
         
         const getHoneyPot = async () => {
           try {
-            const res = await fetch('https://api.beta.shipturtle.app/api/v2/honeypot-data');
+            const res = await fetch('https://api.shipturtle.com/api/v2/honeypot-data');
             const { honeypot } = await res.json();
             
             honeypotData.value = {

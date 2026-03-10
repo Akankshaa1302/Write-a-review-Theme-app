@@ -1,0 +1,48 @@
+{% if customer %}
+<div id="auction-loading-spinner" class="loader">
+</div>
+<div id="auctionList" style="display:none;">
+    <p-tabs v-model:value="selectedTab">
+        <p-tab-list>
+            <p-tab value="winning">
+                Won Auctions
+            </p-tab>
+            <p-tab value="running">
+                Running Auctions
+            </p-tab>
+        </p-tab-list>
+        <p-tab-panels>
+            <p-tab-panel value="winning">
+                {% render 'won_auctions' %}
+            </p-tab-panel>
+            <p-tab-panel value="running">
+               {% render 'running_auctions' %}
+            </p-tab-panel>
+            </p-tab-panels>
+    </p-tabs>
+</div>
+<script>
+    window.customerData = {
+      id: {{ customer.id | json }},
+      email: {{ customer.email | json }},
+      first_name: {{ customer.first_name | json }},
+      last_name: {{ customer.last_name | json }}
+    };
+   </script>
+   {% else %}
+<h4 style="display:flex;justify-content:center;color:red">Please Login/Create account to see Auction details.</h4>
+{% endif %}
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+<script src="https://unpkg.com/@primevue/themes/umd/aura.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/primeflex@latest/primeflex.css">
+{% schema %}
+{
+  "name": "Auction List App",
+  "target": "section",
+  "available_if": "{{ app.metafields.shipturtle.auction_feature }}",
+  "stylesheet" : "auction_list.css",
+  "javascript" : "auction_list.js",
+}
+{% endschema %}

@@ -44,7 +44,7 @@ function mountSellerProfile () {
     const { useToast } = PrimeVue
 
     // API Base URL
-    const API_BASE_URL = 'https://api.shipturtle.com'
+    const API_BASE_URL = 'https://api-v2.shipturtle.com'
 
     // Locale detection from Shopify theme
     const getShopifyLocale = () => {
@@ -119,13 +119,33 @@ function mountSellerProfile () {
         }
     }
 
-    // Helper function to get terminology with fallback
+    // Helper function to get terminology with fallback and casing variants
     const getTerminology = (blockSettings) => {
+        const createCasingVariants = (term) => ({
+            original: term,
+            lowercase: term.toLowerCase(),
+            uppercase: term.toUpperCase(),
+            sentence: term.charAt(0).toUpperCase() + term.slice(1).toLowerCase(),
+            title: term.split(' ').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            ).join(' ')
+        })
+
+        const vendor = blockSettings.vendorTerm || 'Vendor'
+        const vendors = blockSettings.vendorTermPlural || 'Vendors'
+        const product = blockSettings.productTerm || 'Product'
+        const products = blockSettings.productTermPlural || 'Products'
+
         return {
-            vendor: blockSettings.vendorTerm || 'Vendor',
-            vendors: blockSettings.vendorTermPlural || 'Vendors',
-            product: blockSettings.productTerm || 'Product', 
-            products: blockSettings.productTermPlural || 'Products'
+            vendor: vendor,
+            vendors: vendors,
+            product: product,
+            products: products,
+            // Casing variants for each term
+            vendorCases: createCasingVariants(vendor),
+            vendorsCases: createCasingVariants(vendors),
+            productCases: createCasingVariants(product),
+            productsCases: createCasingVariants(products)
         }
     }
 
@@ -203,7 +223,7 @@ function mountSellerProfile () {
                     <div  v-if="isMobile" class="st-ext-col-12 st-ext-block st-ext-sm:st-ext-hidden st-ext-mb-4" >
                         <div class="st-ext-flex st-ext-gap-2">
                             <div class="st-ext-flex-1">
-                                <p-input-text v-model="filters.search" :placeholder="searchVendorText" class="st-ext-w-full st-ext-h-fullst-ext-text-sm"></p-input-text>
+                                <p-input-text v-model="filters.search" :placeholder="dynamicTranslations.searchPlaceholder" class="st-ext-w-full st-ext-h-fullst-ext-text-sm"></p-input-text>
                             </div>
                             <p-button
                                 v-if="!showFilters"
@@ -235,11 +255,11 @@ function mountSellerProfile () {
                                 <i class="pi pi-times st-ext-cursor-pointer st-ext-text-xs" @click="removeFilter('state')"></i>
                             </span>
                             <span v-if="filters.vendorCategory" class="st-ext-inline-flex st-ext-align-items-center st-ext-gap-1 st-ext-px-3 st-ext-py-1 st-ext-bg-purple-100 st-ext-text-purple-800 st-ext-text-sm st-ext-rounded-full">
-                                [[ $t('sellers.filter.vendorCategory', { category: getVendorCategoryName(filters.vendorCategory) }) ]]
+                                [[ dynamicTranslations.vendorCategoryFilter(getVendorCategoryName(filters.vendorCategory)) ]]
                                 <i class="pi pi-times st-ext-cursor-pointer st-ext-text-xs" @click="removeFilter('vendorCategory')"></i>
                             </span>
                             <span v-if="filters.productCategory" class="st-ext-inline-flex st-ext-align-items-center st-ext-gap-1 st-ext-px-3 st-ext-py-1 st-ext-bg-orange-100 st-ext-text-orange-800 st-ext-text-sm st-ext-rounded-full">
-                                [[ $t('sellers.filter.productCategory', { category: getProductCategoryName(filters.productCategory) }) ]]
+                                [[ dynamicTranslations.productCategoryFilter(getProductCategoryName(filters.productCategory)) ]]
                                 <i class="pi pi-times st-ext-cursor-pointer st-ext-text-xs" @click="removeFilter('productCategory')"></i>
                             </span>
                         </div>
@@ -271,7 +291,7 @@ function mountSellerProfile () {
                             <div class="st-ext-hidden st-ext-sm:block">
                                 <label class="st-ext-block st-ext-text-medium st-ext-font-medium st-ext-mb-2">[[ searchVendorText ]]</label>
                                 <div class="st-ext-w-full">
-                                    <p-input-text v-model="filters.search" :placeholder="searchVendorText" class="st-ext-w-full st-ext-h-full st-ext-text-sm"></p-input-text>
+                                    <p-input-text v-model="filters.search" :placeholder="dynamicTranslations.searchPlaceholder" class="st-ext-w-full st-ext-h-full st-ext-text-sm"></p-input-text>
                                 </div>
                             </div>
 
@@ -286,12 +306,12 @@ function mountSellerProfile () {
                             </div>
 
                             <div v-if="showVendorCategory">
-                                <label class="st-ext-block  st-ext-font-medium st-ext-mb-2">[[ $t('sellers.vendorCategory') ]]</label>
+                                <label class="st-ext-block  st-ext-font-medium st-ext-mb-2">[[ dynamicTranslations.vendorCategoryText ]]</label>
                                 <p-select :options="vendorCategoryOptions" optionLabel="name" optionValue="id" :placeholder="$t('sellers.all')" class="st-ext-w-full st-ext-text-sm vendor-dropdown" v-model="filters.vendorCategory" :showClear="true"></p-select>
                             </div>
 
                             <div v-if="showProductCategory">
-                                <label class="st-ext-block st-ext-font-medium st-ext-mb-2">[[ $t('sellers.productCategory') ]]</label>
+                                <label class="st-ext-block st-ext-font-medium st-ext-mb-2">[[ dynamicTranslations.productCategoryText ]]</label>
                                 <p-select :options="productCategoryOptions" optionLabel="title" optionValue="id" :placeholder="$t('sellers.all')" class="st-ext-w-full st-ext-text-sm vendor-dropdown" v-model="filters.productCategory" :showClear="true"></p-select>
                             </div>
 
@@ -408,18 +428,21 @@ function mountSellerProfile () {
 
             // Dynamic translations with terminology
             const dynamicTranslations = computed(() => ({
-                searchPlaceholder: t('sellers.searchVendors').replace('vendors', terminology.value.vendors.toLowerCase()),
-                loadingText: t('sellers.loadingVendors').replace('vendors', terminology.value.vendors.toLowerCase()),
-                noResultsText: t('sellers.noVendorsFound').replace('vendors', terminology.value.vendors.toLowerCase()),
-                backToList: t('sellers.vendorDetails.backToVendors').replace('vendors', terminology.value.vendors),
-                showingResults: (start, end, total) => t('sellers.showingResults', { start, end, total }).replace('vendors', terminology.value.vendors.toLowerCase()),
-                searchVendorText: `Search ${terminology.value.vendor}`
+                searchPlaceholder: locale.value === 'en' ? t('sellers.searchVendors', { vendors: terminology.value.vendorsCases.lowercase }) : t('sellers.searchVendors'),
+                loadingText: locale.value === 'en' ? t('sellers.loadingVendors', { vendors: terminology.value.vendorsCases.lowercase }) : t('sellers.loadingVendors'),
+                noResultsText: locale.value === 'en' ? t('sellers.noVendorsFound', { vendors: terminology.value.vendorsCases.lowercase }) : t('sellers.noVendorsFound'),
+                backToVendors: locale.value === 'en' ? t('sellers.vendorDetails.backToVendors', { vendors: terminology.value.vendorsCases.sentence }) : t('sellers.vendorDetails.backToVendors'),
+                showingResults: (start, end, total) => locale.value === 'en' ? t('sellers.showingResults', { start, end, total, vendors: terminology.value.vendorsCases.lowercase }) : t('sellers.showingResults', { start, end, total }),
+                searchVendorText: locale.value === 'en' ? t('sellers.searchVendor', { vendor: terminology.value.vendorCases.sentence }) : t('sellers.searchVendor'),
+                vendorCategoryText: locale.value === 'en' ? t('sellers.vendorCategory', { vendor: terminology.value.vendorCases.sentence }) : t('sellers.vendorCategory'),
+                productCategoryText: locale.value === 'en' ? t('sellers.productCategory', { product: terminology.value.productCases.sentence }) : t('sellers.productCategory'),
+                vendorCategoryFilter: (category) => locale.value === 'en' ? t('sellers.filter.vendorCategory', { vendor: terminology.value.vendorCases.sentence, category }) : t('sellers.filter.vendorCategory', { category }),
+                productCategoryFilter: (category) => locale.value === 'en' ? t('sellers.filter.productCategory', { product: terminology.value.productCases.sentence, category }) : t('sellers.filter.productCategory', { category })
             }))
 
-            const searchVendorText = computed (() => {
-                if (locale.value === 'en') return dynamicTranslations.value.searchVendorText
-                else return t('sellers.searchVendor')
-            })
+            const searchVendorText = computed(() => dynamicTranslations.value.searchVendorText)
+            const vendorCategoryText = computed(() => dynamicTranslations.value.vendorCategoryText)
+            const productCategoryText = computed(() => dynamicTranslations.value.productCategoryText)
 
             const countryOptions = ref([])
             const stateOptions = ref([])
@@ -666,7 +689,7 @@ function mountSellerProfile () {
             }
 
             const isDefaultLogoLink = (logoLink) => {
-                return logoLink === `${API_BASE_URL}/assets/no-logo.jpeg` || logoLink === 'https://api.shipturtle.com/assets/no-logo.png';
+                return logoLink === `${API_BASE_URL}/assets/no-logo.jpeg` || logoLink === 'https://api-v2.shipturtle.com/assets/no-logo.png';
             }
 
             const truncateHtml = (html, maxLen = 100) => {
@@ -718,6 +741,8 @@ function mountSellerProfile () {
                 terminology,
                 dynamicTranslations,
                 searchVendorText,
+                vendorCategoryText,
+                productCategoryText,
                 // methods
                 onCountryChange,
                 onPage,
@@ -756,7 +781,7 @@ function mountSellerProfile () {
                 <!-- Back Button -->
                 <div class="st-ext-mb-4">
                     <router-link to="/">
-                        <p-button icon="pi pi-arrow-left" :label="'Back to ' + terminology.vendors" outlined size="small" />
+                        <p-button icon="pi pi-arrow-left" :label="dynamicTranslations.backToVendors" outlined size="small" />
                     </router-link>
                 </div>
 
@@ -936,7 +961,7 @@ function mountSellerProfile () {
                                         <i class="pi pi-shopping-cart st-ext-text-3xl st-ext-text-gray-400 st-ext-mb-4"></i>
                                         <h3 class="st-ext-font-medium st-ext-text-gray-900 st-ext-mb-2">[[ dynamicTranslations.noProducts ]]</h3>
                                         <p class="st-ext-text-gray-600">
-                                            <span v-if="productSearch">[[ dynamicTranslations.tryAdjustingSearch ]]</span>
+                                            <span v-if="productSearch">[[ $t('sellers.vendorDetails.tryAdjustingSearch') ]]</span>
                                             <span v-else>[[ dynamicTranslations.vendorNoProducts ]]</span>
                                         </p>
                                     </div>
@@ -1076,11 +1101,11 @@ function mountSellerProfile () {
 
                                         <!-- Review Description -->
                                         <div>
-                                        <label for="reviewDescription" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">Review Description *</label>
+                                        <label for="reviewDescription" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.reviewDescription') ]]</label>
                                         <p-textarea
                                             id="reviewDescription"
                                             v-model="reviewForm.description"
-                                            placeholder="Share your experience with this vendor..."
+                                            :placeholder="dynamicTranslations.reviewDescriptionPlaceholder"
                                             rows="4"
                                             class="st-ext-w-full st-ext-text-sm"
                                              :class="{'st-ext-border-red-500': reviewFormErrors.description}"
@@ -1163,7 +1188,7 @@ function mountSellerProfile () {
                                     <i class="pi pi-star st-ext-text-4xl"></i>
                                     </div>
                                     <h3 class="st-ext-text-lg st-ext-font-medium st-ext-text-gray-500 st-ext-mb-2">[[ $t('sellers.vendorDetails.noReviewsYet') ]]</h3>
-                                    <p class="st-ext-text-base st-ext-text-gray-400">[[ $t('sellers.vendorDetails.beFirstToReview') ]]</p>
+                                    <p class="st-ext-text-base st-ext-text-gray-400">[[ dynamicTranslations.beFirstToReview ]]</p>
                                 </div>
                                 </div>
 
@@ -1358,13 +1383,17 @@ function mountSellerProfile () {
             
             // Dynamic translations with terminology 
             const dynamicTranslations = computed(() => ({
-                productsTab: terminology.value.products,
-                searchProductsPlaceholder: `Search ${terminology.value.products.toLowerCase()}`,
-                sortProductsPlaceholder: `Sort ${terminology.value.products.toLowerCase()}`,
-                viewProduct: `View ${terminology.value.product}`,
-                noProducts: `No ${terminology.value.products.toLowerCase()}`,
-                tryAdjustingSearch: `Try adjusting your search terms.`,
-                vendorNoProducts: `This ${terminology.value.vendor.toLowerCase()} doesn't have any ${terminology.value.products.toLowerCase()} yet.`,
+                productsTab: locale.value === 'en' ? t('sellers.vendorDetails.products', { products: terminology.value.productsCases.sentence }) : t('sellers.vendorDetails.products'),
+                searchProductsPlaceholder: locale.value === 'en' ? t('sellers.vendorDetails.searchProductsPlaceholder', { products: terminology.value.productsCases.lowercase }) : t('sellers.vendorDetails.searchProductsPlaceholder'),
+                sortProductsPlaceholder: locale.value === 'en' ? t('sellers.vendorDetails.sortProductsPlaceholder', { products: terminology.value.productsCases.lowercase }) : t('sellers.vendorDetails.sortProductsPlaceholder'),
+                viewProduct: locale.value === 'en' ? t('sellers.vendorDetails.viewProduct', { product: terminology.value.productCases.sentence }) : t('sellers.vendorDetails.viewProduct'),
+                noProducts: locale.value === 'en' ? t('sellers.vendorDetails.noProducts', { products: terminology.value.productsCases.sentence }) : t('sellers.vendorDetails.noProducts'),
+                vendorNoProducts: locale.value === 'en' ? t('sellers.vendorDetails.vendorNoProducts', { vendor: terminology.value.vendorCases.lowercase, products: terminology.value.productsCases.sentence }) : t('sellers.vendorDetails.vendorNoProducts'),
+                backToVendors: locale.value === 'en' ? t('sellers.vendorDetails.backToVendors', { vendors: terminology.value.vendorsCases.lowercase }) : t('sellers.vendorDetails.backToVendors'),
+                beFirstToReview: locale.value === 'en' ? t('sellers.vendorDetails.beFirstToReview', { vendor: terminology.value.vendorCases.lowercase }) : t('sellers.vendorDetails.beFirstToReview'),
+                reviewDescriptionPlaceholder: locale.value === 'en' ? t('sellers.vendorDetails.reviewDescriptionPlaceholder', { vendor: terminology.value.vendorCases.lowercase }) : t('sellers.vendorDetails.reviewDescriptionPlaceholder'),
+                productAddedToCartSuccess: locale.value === 'en' ? t('sellers.vendorDetails.productAddedToCartSuccess', { product: terminology.value.productCases.sentence }) : t('sellers.vendorDetails.productAddedToCartSuccess'),
+                productAddedToCartError: locale.value === 'en' ? t('sellers.vendorDetails.productAddedToCartError', { product: terminology.value.productCases.sentence }) : t('sellers.vendorDetails.productAddedToCartError'),
             }))
             
             const handle = computed(() => route.params.handle)
@@ -1418,6 +1447,7 @@ function mountSellerProfile () {
                     const formData = new FormData();
                     formData.append('quantity', 1);
                     formData.append('id', variantId);
+                    
                     const response = await fetch('/cart/add.js', {
                         method: 'POST',
                         body: formData
@@ -1426,12 +1456,25 @@ function mountSellerProfile () {
                         toast.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: t('sellers.vendorDetails.productAddedToCart'),
+                            detail: dynamicTranslations.value.productAddedToCartSuccess,
+                            life: 3000
+                        });
+                    } else {
+                        toast.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: dynamicTranslations.value.productAddedToCartError,
                             life: 3000
                         });
                     }
                 } catch (error) {
                     console.error('Error adding to cart:', error)
+                    toast.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: dynamicTranslations.value.productAddedToCartError,
+                        life: 3000
+                    });
                 } finally {
                     cartLoading.value[product.id] = false
                 }

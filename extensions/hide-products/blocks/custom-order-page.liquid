@@ -1,0 +1,61 @@
+{% render 'custom-order-page' %}
+
+{% schema %}
+  {
+    "name": "Your Orders",
+    "target": "section",
+    "stylesheet": "custom-order-page.css",
+    "javascript": "custom-order-page.js",
+    "available_if": "{{ app.metafields.shipturtle.custom_order_page_availability_status }}",
+    "templates": ["page"],
+    "settings": [
+      {
+        "type": "color",
+        "id": "buy_again_button_bg_color",
+        "label": "Buy Again Background Color",
+        "default": "#000"
+      },
+      {
+        "type": "color",
+        "id": "buy_again_text_color",
+        "label": "Buy Again Text Color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "download_button_bg_color",
+        "label": "Download Background Color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "download_text_color",
+        "label": "Download Text Color",
+        "default": "#000"
+      },
+      {
+        "type": "text",
+        "id": "metaFieldKey",
+        "label": "Meta Field Key"
+      }
+    ]
+  }
+
+{% endschema %}
+
+
+<script>
+
+ window.customerData = {
+  id: "{{ customer.id }}",
+  email: "{{ customer.email }}",
+  first_name: "{{ customer.first_name }}",
+  last_name: "{{ customer.last_name }}"
+  };
+  
+  if (!window.customerData.id || !window.customerData.email)
+  {
+    window.location.href = "/account/login";
+  }
+  
+</script>

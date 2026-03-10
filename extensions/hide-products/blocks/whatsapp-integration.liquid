@@ -1,0 +1,13 @@
+{% render 'whatsapp-integration' %}
+
+{% schema %}
+{
+  "name": "Whatsapp Integration",
+  "available_if": "{{ app.metafields.shipturtle.vendor_whatsapp_chat_availability_status }}",
+  "target":"section",
+ "settings": [
+
+ ]
+}
+ 
+{% endschema %}

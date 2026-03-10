@@ -1,0 +1,33 @@
+<p-datatable :value="wonAuctions">
+    <p-column field="product_image" header="Image">
+       <template #body="slotProps">
+        <img :src="slotProps.data.product.image" width="70" height="70" class="rounded"/>
+       </template>
+    </p-column>
+    <p-column header="Product">
+        <template #body="slotProps">
+            [[slotProps.data.product.name]]
+        </template>
+    </p-column>
+    <p-column header="Winning Bid">
+        <template #body="slotProps">
+            [[slotProps.data.bid_details.winning_bid]]
+
+        </template>
+    </p-column>
+    <p-column header="Amount to Pay">
+        <template #body="slotProps">
+            [[slotProps.data.bid_details.final_price]]
+        </template>
+    </p-column>
+    <p-column header="Buy-Out Period">
+        <template #body="slotProps">
+            [[ countdowns[slotProps.index] ]]
+           </template>
+    </p-column>
+    <p-column header="Actions">
+        <template #body="slotProps">
+            <button @click="openCheckoutLink(slotProps.index)">Buy Now</button>
+           </template>
+    </p-column>
+</p-datatable>

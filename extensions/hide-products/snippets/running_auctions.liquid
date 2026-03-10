@@ -1,0 +1,20 @@
+<p-datatable :value="runningAuctions">
+    <p-column field="product_image" header="Image">
+       <template #body="slotProps">
+        <img :src="slotProps.data.product_image" width="70" height="70" class="rounded"/>
+       </template>
+    </p-column>
+    <p-column field="product_name" header="Product"></p-column>
+    <p-column field="your_current_bid" header="Your Bid"></p-column>
+    <p-column field="highest_bid" header="Highest Bid"></p-column>
+    <p-column header="Ends In">
+        <template #body="slotProps">
+            [[endTime(slotProps.index)]]
+        </template>
+    </p-column>
+    <p-column header="Actions">
+        <template #body="slotProps">
+            <button @click="openRunningAuction(slotProps.index)">View</button>
+           </template>
+    </p-column>
+</p-datatable>

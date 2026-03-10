@@ -31,17 +31,18 @@
 </style>
 
 <!-- Vue 3 -->
-<script src="https://unpkg.com/vue@3.5.1/dist/vue.global.prod.js"></script>
+<script src="{{ 'vuejs-min.js' | asset_url }}" defer type="text/javascript"></script>
+
 <!-- Vue Router 4 -->
-<script src="https://unpkg.com/vue-router@4.6.0/dist/vue-router.global.prod.js"></script>
+<script src="{{ 'vue-router.min.js' | asset_url }}" defer type="text/javascript"></script>
 <!-- Vue I18n -->
-<script src="https://unpkg.com/vue-i18n@9/dist/vue-i18n.global.prod.js"></script>
+<script src="{{ 'vue-i18n.min.js' | asset_url }}" defer type="text/javascript"></script>
 <!-- PrimeIcons -->
 <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
 <!-- PrimeVue core (UMD) -->
-<script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
-<script src="https://unpkg.com/@primevue/themes/umd/aura.min.js"></script>
-<script src="{{ 'seller-profile.js' | asset_url }}" id="st-seller-profile-script"></script>
+<script src="{{ 'primevue.min.js' | asset_url }}" defer></script>
+<script src="{{ 'aura.min.js' | asset_url }}" defer></script>
+<script src="{{ 'seller-profile.js' | asset_url }}" defer id="st-seller-profile-script"></script>
 <link rel="stylesheet" href="{{ 'st-primevue.css' | asset_url }}">
 {% schema %}
   {
