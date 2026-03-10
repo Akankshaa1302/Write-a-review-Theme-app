@@ -149,7 +149,7 @@ value="{{ customer.email }}" />
             </div>
             <div id="customer-chat-success"></div>
             <div id="customer-chat-error"></div>
-            <button type="submit" id="submit-customer-query" class="chat-submit-btn-custom-styling">
+            <button type="submit" form="chat-with-seller-form" id="submit-customer-query" class="chat-submit-btn-custom-styling">
                 {{ 'customer-chat.submit' | t }}
             </button>
         </form>
@@ -260,7 +260,9 @@ value="{{ customer.email }}" />
     if(chatWithSellerForm){
         chatWithSellerForm.addEventListener('submit', submitForm, false);
     }else{
-       submitButton.addEventListener('submit', submitForm, false);
+       submitButton.removeAttribute('type')
+       submitButton.removeAttribute('form')
+       submitButton.addEventListener('click', submitForm, false);
     }
     
     closePopupBtn.addEventListener('click', hideForm)
