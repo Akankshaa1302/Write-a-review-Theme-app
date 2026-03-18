@@ -381,12 +381,12 @@ async function MakeAnOfferCode(){
 (function() {
     'use strict';
     if (window.ST_Resources) {
-        ST_Resources.loadDependencies(MakeAnOfferCode);
+        ST_Resources.loadDependencies(MakeAnOfferCode, [], 'Make an Offer');
     } else {
         const interval = setInterval(() => {
             if (window.ST_Resources) {
                 clearInterval(interval);
-                ST_Resources.loadDependencies(MakeAnOfferCode);
+                ST_Resources.loadDependencies(MakeAnOfferCode, [], 'Make an Offer');
             }
         }, 50);
     }

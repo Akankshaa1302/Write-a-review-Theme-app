@@ -640,12 +640,12 @@ async function writeaReview() {
 (function() {
     'use strict';
     if (window.ST_Resources) {
-        ST_Resources.loadDependencies(writeaReview);
+        ST_Resources.loadDependencies(writeaReview, [], 'Write a Review');
     } else {
         const interval = setInterval(() => {
             if (window.ST_Resources) {
                 clearInterval(interval);
-                ST_Resources.loadDependencies(writeaReview);
+                ST_Resources.loadDependencies(writeaReview, [], 'Write a Review');
             }
         }, 50);
     }

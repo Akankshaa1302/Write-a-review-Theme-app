@@ -210,12 +210,12 @@ function MakeanbarterOfferCode() {
 (function() {
     'use strict';
     if (window.ST_Resources) {
-        ST_Resources.loadDependencies(MakeanbarterOfferCode);
+        ST_Resources.loadDependencies(MakeanbarterOfferCode, [], 'Lets Barter Product');
     } else {
         const interval = setInterval(() => {
             if (window.ST_Resources) {
                 clearInterval(interval);
-                ST_Resources.loadDependencies(MakeanbarterOfferCode);
+                ST_Resources.loadDependencies(MakeanbarterOfferCode, [], 'Lets Barter Product');
             }
         }, 50);
     }

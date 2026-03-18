@@ -509,15 +509,15 @@ function AuctionThemeAppExtension() {
     }
 
   const extraDeps = [
-    { src: 'https://js.pusher.com/8.2.0/pusher.min.js', global: 'Pusher' },
-    { src: 'https://unpkg.com/axios/dist/axios.min.js', global: 'axios' }
+    { src: window.ST_Resources?._assetBase ? window.ST_Resources?._assetBase + 'pusher.min.js' : 'https://js.pusher.com/8.2.0/pusher.min.js', global: 'Pusher' },
+    { src: window.ST_Resources?._assetBase ? window.ST_Resources?._assetBase + 'axios.min.js' : 'https://unpkg.com/axios/dist/axios.min.js', global: 'axios' }
   ];
 
   if (window.ST_Resources) {
     ST_Resources.loadDependencies(async () => {
       await fetchHTML();
       AuctionThemeAppExtension();
-    }, extraDeps);
+    }, extraDeps, 'Auction App');
   } else {
     const interval = setInterval(() => {
       if (window.ST_Resources) {
@@ -525,7 +525,7 @@ function AuctionThemeAppExtension() {
         ST_Resources.loadDependencies(async () => {
           await fetchHTML();
           AuctionThemeAppExtension();
-        }, extraDeps);
+        }, extraDeps, 'Auction App');
       }
     }, 50);
   }

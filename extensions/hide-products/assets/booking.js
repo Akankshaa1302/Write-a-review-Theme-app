@@ -836,18 +836,18 @@ function BookingRentalAndAppointment() {
         'use strict';
         
         const extraDeps = [
-            { src: 'https://unpkg.com/@vuepic/vue-datepicker@10.0.0', global: 'VueDatePicker' },
-            { src: 'https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js', global: 'dateFns' },
-            { src: 'https://unpkg.com/axios/dist/axios.min.js', global: 'axios' }
+            { src: window.ST_Resources?._assetBase ? window.ST_Resources._assetBase + 'vue-datepicker.min.js' : 'https://unpkg.com/@vuepic/vue-datepicker@10.0.0', global: 'VueDatePicker' },
+            { src: window.ST_Resources?._assetBase ? window.ST_Resources._assetBase + 'date-fns.min.js' : 'https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js', global: 'dateFns' },
+            { src: window.ST_Resources?._assetBase ? window.ST_Resources._assetBase + 'axios.min.js' : 'https://unpkg.com/axios/dist/axios.min.js', global: 'axios' }
         ];
         
         if (window.ST_Resources) {
-            ST_Resources.loadDependencies(BookingRentalAndAppointment, extraDeps);
+            ST_Resources.loadDependencies(BookingRentalAndAppointment, extraDeps, 'Booking Rental and Appointment');
         } else {
             const interval = setInterval(() => {
                 if (window.ST_Resources) {
                     clearInterval(interval);
-                    ST_Resources.loadDependencies(BookingRentalAndAppointment, extraDeps);
+                    ST_Resources.loadDependencies(BookingRentalAndAppointment, extraDeps, 'Booking Rental and Appointment');
                 }
             }, 50);
         }

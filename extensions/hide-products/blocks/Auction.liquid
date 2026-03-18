@@ -35,12 +35,11 @@
   {
     "name": "Auction App",
     "target": "section",
-    "available_if": "{{ app.metafields.shipturtle.auction_feature }}",
     "templates": ["product"]
   }
 {% endschema %}
 <link rel="stylesheet" href="{{ 'auction-app.css' | asset_url }}" />
 
-<link rel="stylesheet" href="https://unpkg.com/primeflex@latest/primeflex.css">
-<script src="{{ 'resources.js' | asset_url }}"></script>
-<script id="auction-theme-app-extension" src="{{ 'auction-app.js' | asset_url }}"></script>
+<link rel="stylesheet" href="{{ 'prime-flex-min.css' | asset_url }}">
+<script src="{{ 'resources.js' | asset_url }}" defer></script>
+<script id="auction-theme-app-extension" src="{{ 'auction-app.js' | asset_url }}" defer></script>

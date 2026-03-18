@@ -44,12 +44,15 @@ window.onload = () => {
             return;
         }
 
+        const currentScriptSrc = document.currentScript?.src || '';
+        const assetBase = currentScriptSrc.substring(0, currentScriptSrc.lastIndexOf('/') + 1);
+
         const deps = [
-            'https://unpkg.com/vue@3.5.1/dist/vue.global.prod.js',
-            'https://unpkg.com/vue-router@4.6.0/dist/vue-router.global.prod.js',
-            'https://unpkg.com/vue-i18n@9/dist/vue-i18n.global.prod.js',
-            'https://unpkg.com/primevue/umd/primevue.min.js',
-            'https://unpkg.com/@primevue/themes/umd/aura.min.js',
+            assetBase ? `${assetBase}vuejs-min.js` : 'https://unpkg.com/vue@3.5.1/dist/vue.global.prod.js',
+            assetBase ? `${assetBase}vue-router.min.js` : 'https://unpkg.com/vue-router@4.6.0/dist/vue-router.global.prod.js',
+            assetBase ? `${assetBase}vue-i18n.min.js` : 'https://unpkg.com/vue-i18n@9/dist/vue-i18n.global.prod.js',
+            assetBase ? `${assetBase}primevue.min.js` : 'https://unpkg.com/primevue/umd/primevue.min.js',
+            assetBase ? `${assetBase}aura.min.js` : 'https://unpkg.com/@primevue/themes/umd/aura.min.js',
         ];
 
         // Add the seller profile script(seller-profile.js) to the dependencies.

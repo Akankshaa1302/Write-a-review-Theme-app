@@ -32,16 +32,15 @@
    {% else %}
 <h4 style="display:flex;justify-content:center;color:red">Please Login/Create account to see Auction details.</h4>
 {% endif %}
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
-<script src="https://unpkg.com/@primevue/themes/umd/aura.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/primeflex@latest/primeflex.css">
+<script src="{{ 'axios.min.js' | asset_url }}" defer></script>
+<script src="{{ 'vuejs-min.js' | asset_url }}" defer></script>
+<script src="{{ 'primevue.min.js' | asset_url }}" defer></script>
+<script src="{{ 'aura.min.js' | asset_url }}" defer></script>
+<link rel="stylesheet" href="{{ 'prime-flex-min.css' | asset_url }}">
 {% schema %}
 {
   "name": "Auction List App",
   "target": "section",
-  "available_if": "{{ app.metafields.shipturtle.auction_feature }}",
   "stylesheet" : "auction_list.css",
   "javascript" : "auction_list.js",
 }

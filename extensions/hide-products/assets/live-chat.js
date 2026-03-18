@@ -455,20 +455,20 @@ function LiveChatThemeAppExtension() {
   'use strict';
 
   const extraDeps = [
-    { src: 'https://js.pusher.com/8.2.0/pusher.min.js', global: 'Pusher' },
+    { src: window.ST_Resources?._assetBase ? window.ST_Resources._assetBase + 'pusher.min.js' : 'https://js.pusher.com/8.2.0/pusher.min.js', global: 'Pusher' },
   ];
 
   if (window.ST_Resources) {
     ST_Resources.loadDependencies(async () => {
       LiveChatThemeAppExtension();
-    }, extraDeps);
+    }, extraDeps, 'Live Chat');
   } else {
     const interval = setInterval(() => {
       if (window.ST_Resources) {
         clearInterval(interval);
         ST_Resources.loadDependencies(async () => {
           LiveChatThemeAppExtension();
-        }, extraDeps);
+        }, extraDeps, 'Live Chat');
       }
     }, 50);
   }

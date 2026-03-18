@@ -151,12 +151,12 @@ function GlobalProductCode() {
     'use strict';
     
     if (window.ST_Resources) {
-        ST_Resources.loadDependencies(GlobalProductCode);
+        ST_Resources.loadDependencies(GlobalProductCode, [], 'Global Product');
     } else {
         const interval = setInterval(() => {
             if (window.ST_Resources) {
                 clearInterval(interval);
-                ST_Resources.loadDependencies(GlobalProductCode);
+                ST_Resources.loadDependencies(GlobalProductCode, [], 'Global Product');
             }
         }, 50);
     }
