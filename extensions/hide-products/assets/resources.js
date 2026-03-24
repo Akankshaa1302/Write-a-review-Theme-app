@@ -97,9 +97,10 @@ window.ST_Resources = {
                 const failedScript = err.src || err.message || 'Unknown script';
                 const shopDomain = window.Shopify?.shop;
                 const timestamp = new Date().toISOString();
-                
+                const networkType = navigator.connection?.effectiveType || undefined;
+
                 const payload = {
-                message: `🚨 *Shopify Theme App Dependency Failed*\n*Feature:* ${featureName}\n*Shopify Domain:* ${shopDomain}\n*Failed Script:* <${failedScript}>\n*Timestamp:* ${timestamp}`,
+                message: `🚨 *Shopify Theme App Dependency Failed*\n*Feature:* ${featureName}\n*Shopify Domain:* ${shopDomain}\n*Failed Script:* <${failedScript}>\n*Timestamp:* ${timestamp}\n*Network Type:* ${networkType}`,
                 via: 'slack',
                 channel: 'shopify-theme-app-dependency-alerts'
                 };
