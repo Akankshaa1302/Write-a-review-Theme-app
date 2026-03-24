@@ -1,4 +1,5 @@
-
+<script src="{{ 'resources.js' | asset_url }}" defer></script>
+<script src="{{ 'booking.js' | asset_url }}" defer></script>
 <style>
     /* Custom CSS from block settings */
   {% if block.settings.customCss != blank %}
@@ -12,7 +13,6 @@
         
     "name": "Shipturtle Booking",
     "target": "section",
-    "javascript": "booking.js",
     "stylesheet": "booking.css",
     "templates": ["product"],
     "settings": [
