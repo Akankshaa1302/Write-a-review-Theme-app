@@ -2,7 +2,7 @@
   {
     "name": "Collection Hyperlocal",
     "target": "body",
-    "javascript": "hyperlocal-min.js",
+    "javascript": "hyperlocal.js",
     "settings": [
       {
         "type": "text",
@@ -40,6 +40,18 @@
         "default": "#000"
       },
       {
+        "type": "textarea",
+        "id": "popup_description_text",
+        "label": "Popup Description Text",
+        "default": "Some products are only available in certain ZIP Locations, Please add zip code to see available products in your area"
+      },
+      {
+        "type": "text",
+        "id": "popup_logo_url",
+        "label": "Popup Logo Image URL",
+        "info": "URL of the logo image to display at the top of the ZIP code popup."
+      },
+      {
         "type": "liquid",
         "id": "customCss",
         "label": "Custom CSS",
@@ -67,7 +79,8 @@
   "buttonBackgroundColor": {{ block.settings.button_background_color | json }},
   "submitLabel": "Submit",
   "introCopyProduct": {{ 'Some products are only available in certain ZIP Locations. Please add zip code to see if this product is available in your area.' | json }},
-  "introCopyDefault": {{ 'Some products are only available in certain ZIP Locations. Please add zip code to see available products in your area.' | json }}
+  "introCopyDefault": {{ block.settings.popup_description_text | json }},
+  "popupLogoUrl": {{ block.settings.popup_logo_url | json }}
 }
 </script>
 

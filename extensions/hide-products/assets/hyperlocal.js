@@ -57,6 +57,7 @@ function initStHyperlocalEmbedFromJson() {
     introCopyProduct: cfg.introCopyProduct,
     introCopyDefault: cfg.introCopyDefault,
     isProductTemplate: cfg.isProductTemplate,
+    popupLogoUrl: cfg.popupLogoUrl,
   };
 
   if (cfg.isProductTemplate) {
@@ -471,6 +472,7 @@ function getHyperlocalUiSettings() {
     currentZipCode: c.currentZipCode || 'Current ZIP Code',
     buttonBackgroundColor: c.buttonBackgroundColor || '#000',
     submitLabel: c.submitLabel || 'Submit',
+    popupLogoUrl: c.popupLogoUrl || '',
     introCopy:
       intro ||
       'Some products are only available in certain ZIP Locations. Please add zip code to see available products in your area.',
@@ -577,6 +579,15 @@ function injectZipPopupUi() {
   zipForm.appendChild(zipSubmit);
 
   zipPopup.appendChild(closeBtn);
+
+  if (s.popupLogoUrl) {
+    const logo = document.createElement('img');
+    logo.src = s.popupLogoUrl;
+    logo.alt = 'Logo';
+    logo.style.cssText = 'display:block;max-width:120px;max-height:60px;margin:0 auto 16px';
+    zipPopup.appendChild(logo);
+  }
+
   zipPopup.appendChild(h4);
   zipPopup.appendChild(introP);
   zipPopup.appendChild(badgeWrap);
