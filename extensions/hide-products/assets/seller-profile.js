@@ -986,213 +986,163 @@ function mountSellerProfile () {
                             </p-tabpanel>
 
                         <p-tabpanel v-if="hasTab('reviews')" :header="$t('sellers.vendorDetails.reviews')">
-                            <div class="st-ext-grid st-ext-mb-8">
-                                <!-- Review Rating Section (Left Side) -->
-                                <div class="st-ext-col-12 st-ext-lg:st-ext-col-4">
-                                    <div class="st-ext-bg-white st-ext-rounded-lg st-ext-shadow-sm st-ext-border st-ext-border-gray-200 st-ext-p-2 st-ext-md:st-ext-p-6 st-ext-h-fit">
-                                    <h3 class="st-ext-font-bold st-ext-text-gray-900 st-ext-mb-6">[[ $t('sellers.vendorDetails.reviews') ]]</h3>
-
-                                    <!-- Loading State -->
-                                    <div v-if="reviewsLoading" class="st-ext-text-center st-ext-py-8">
-                                        <div class="st-ext-inline-block st-ext-animate-spin st-ext-rounded-full st-ext-h-12 st-ext-w-12 st-ext-border-b-2 st-ext-border-blue-600 st-ext-mb-4"></div>
-                                        <div class="st-ext-text-xl st-ext-text-gray-600 st-ext-font-medium">[[ $t('sellers.vendorDetails.loadingReviews') ]]</div>
+                            <!-- Reviews Summary + CTA Row -->
+                            <div class="st-ext-grid st-ext-grid-nogutter st-ext-border st-ext-border-gray-200 st-ext-rounded-lg st-ext-overflow-hidden st-ext-mb-6">
+                                <!-- Left: Overall Rating -->
+                                <div class="st-ext-col-12 st-ext-md:st-ext-col-4 st-ext-p-4" style="border-right: 1px solid #e5e7eb;">
+                                    <h3 class="st-ext-font-bold st-ext-text-gray-900 st-ext-mb-4">[[ $t('sellers.vendorDetails.overallRating') ]]</h3>
+                                    <div v-if="reviewsLoading">
+                                        <p-skeleton width="5rem" height="5rem" class="st-ext-mb-2"></p-skeleton>
+                                        <p-skeleton width="8rem" height="1.5rem" class="st-ext-mb-2"></p-skeleton>
+                                        <p-skeleton width="10rem" height="1rem"></p-skeleton>
                                     </div>
-
-                                    <!-- Reviews Data -->
                                     <div v-else>
-                                        <!-- Overall Rating -->
-                                        <div class="st-ext-mb-6">
-                                        <div class="st-ext-text-4xl st-ext-font-bold st-ext-text-black-alpha-90 st-ext-mb-2">[[ reviewsAvg.toFixed(1) ]]</div>
-                                         <div class="st-ext-text-lg st-ext-text-gray-600 st-ext-mb-4">out of 5</div>
-
-                                        <!-- Star Rating Display -->
-                                        <div class="st-ext-flex st-ext-justify-content-start st-ext-gap-1 st-ext-mb-4">
-                                            <i
-                                            v-for="star in 5"
-                                            :key="star"
-                                            :class="star <= Math.round(reviewsAvg) ? 'pi pi-star-fill st-ext-text-yellow-400' : 'pi pi-star st-ext-text-yellow-400'"
-                                             class="st-ext-text-xl"></i>
+                                        <div class="st-ext-flex st-ext-align-items-baseline st-ext-gap-1 st-ext-mb-1">
+                                            <span style="font-size: 5rem; font-weight: bold; line-height: 1;">[[ reviewsAvg.toFixed(1) ]]</span>
+                                            <span class="st-ext-text-gray-500 st-ext-text-lg">/5</span>
                                         </div>
-
-                                        <div class="st-ext-text-base st-ext-text-gray-500">[[ $t('sellers.vendorDetails.totalReviews') ]]: [[ reviewsCount ]]</div>
+                                        <p-rating :model-value="Number(reviewsAvg)" readonly :cancel="false" class="st-ext-mb-2"></p-rating>
+                                        <p class="st-ext-text-gray-500 st-ext-text-sm">[[ $t('sellers.vendorDetails.basedOnReviews', { count: reviewsCount }) ]]</p>
+                                        <!-- Star distribution bars -->
+                                        <div class="st-ext-mt-4 st-ext-flex st-ext-flex-column st-ext-gap-2">
+                                            <div v-for="star in [5,4,3,2,1]" :key="star" class="st-ext-flex st-ext-align-items-center st-ext-gap-2">
+                                                <span class="st-ext-text-sm st-ext-text-gray-600" style="min-width: 3.5rem;">[[ star ]] [[ $t('sellers.vendorDetails.star') ]]</span>
+                                                <div class="st-ext-flex-1 st-ext-rounded-full st-ext-overflow-hidden" style="height: 8px; background: #e5e7eb;">
+                                                    <div class="st-ext-rounded-full" style="height: 8px; background: #eab308; transition: width 0.3s;"
+                                                        :style="{ width: reviewsCount > 0 ? ((ratingDistribution[star-1] / reviewsCount) * 100) + '%' : '0%' }"></div>
+                                                </div>
+                                                <span class="st-ext-text-sm st-ext-text-gray-500" style="min-width: 1rem;">[[ ratingDistribution[star-1] ]]</span>
+                                            </div>
                                         </div>
-
-                                    </div>
                                     </div>
                                 </div>
 
-                                <!-- Review Form Section (Right Side) -->
-                                <div class="st-ext-col-12 st-ext-lg:st-ext-col-8">
-                                    <div class="st-ext-bg-white st-ext-rounded-lg st-ext-shadow-sm st-ext-border st-ext-border-gray-200 st-ext-p-2 st-ext-md:st-ext-p-6">
-                                     <h3 class="st-ext-font-semibold st-ext-text-gray-900 st-ext-mb-6">Leave a Review</h3>
+                                <!-- Right: Write a Review CTA + reviews list -->
+                                <div class="st-ext-col-12 st-ext-md:st-ext-col-8 st-ext-p-4">
+                                    <div class="st-ext-flex st-ext-flex-column st-ext-gap-2 st-ext-mb-2">
+                                        <p-button @click="showReviewDialog" size="large" style="width: fit-content;" :loading="checkingEligibility" :disabled="checkingEligibility">
+                                            [[ userHasReviewed ? $t('sellers.vendorDetails.editReview') : $t('sellers.vendorDetails.writeReview') ]]
+                                        </p-button>
+                                        <span class="st-ext-text-gray-500 st-ext-text-sm">[[ $t('sellers.vendorDetails.writeExperienceText') ]]</span>
+                                    </div>
 
-                                    <form @submit.prevent="submitReview" class="st-ext-space-y-4">
-                                        <!-- Name Fields Row -->
-                                        <div class="st-ext-grid st-ext-grid-cols-1 st-ext-sm:st-ext-grid-cols-2 st-ext-gap-4 st-ext-m-auto">
-                                        <div>
-                                            <label for="reviewFirstName" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.firstName') ]] *</label>
-                                            <p-input-text
-                                            id="reviewFirstName"
-                                            v-model="reviewForm.firstName"
-                                            :placeholder="$t('sellers.vendorDetails.enterFirstName')"
-                                            class="st-ext-w-full st-ext-text-sm"
-                                             :class="{'st-ext-border-red-500': reviewFormErrors.firstName}"
-                                             required></p-input-text>
-                                            <small v-if="reviewFormErrors.firstName" class="st-ext-text-red-500 st-ext-text-sm">[[ reviewFormErrors.firstName ]]</small>
+                                    <!-- Loading -->
+                                    <div v-if="reviewsLoading" class="st-ext-flex st-ext-flex-column st-ext-gap-4">
+                                        <div v-for="n in 2" :key="n">
+                                            <p-skeleton width="40%" height="1.2rem" class="st-ext-mb-2"></p-skeleton>
+                                            <p-skeleton width="6rem" height="1rem" class="st-ext-mb-2"></p-skeleton>
+                                            <p-skeleton width="100%" height="1rem" class="st-ext-mb-1"></p-skeleton>
+                                            <p-skeleton width="70%" height="1rem"></p-skeleton>
                                         </div>
+                                    </div>
 
-                                        <div>
-                                            <label for="reviewLastName" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.lastName') ]] *</label>
-                                            <p-input-text
-                                            id="reviewLastName"
-                                            v-model="reviewForm.lastName"
-                                            :placeholder="$t('sellers.vendorDetails.enterLastName')"
-                                            class="st-ext-w-full st-ext-text-sm"
-                                             :class="{'st-ext-border-red-500': reviewFormErrors.lastName}"
-                                             required></p-input-text>
-                                            <small v-if="reviewFormErrors.lastName" class="st-ext-text-red-500 st-ext-text-sm">[[ reviewFormErrors.lastName ]]</small>
+                                    <!-- Reviews list -->
+                                    <div v-else-if="reviews && reviews.length > 0">
+                                        <div v-for="(review, index) in reviews" :key="review.id">
+                                            <div class="sp-review-item">
+                                                <h4 class="st-ext-font-semibold st-ext-text-gray-900 st-ext-mb-1 sp-review-title">[[ review.title ]]</h4>
+                                                <p-rating :model-value="Number(review.ratings)" readonly :cancel="false" class="st-ext-mb-2"></p-rating>
+                                                <p class="st-ext-text-gray-700 st-ext-text-sm st-ext-mb-2">[[ review.description ]]</p>
+                                                <div class="st-ext-text-gray-500 st-ext-text-sm">
+                                                    [[ $t('sellers.vendorDetails.reviewBy') ]] [[ review.given_by ]]
+                                                    <span class="st-ext-mx-1">|</span>
+                                                    [[ new Date(review.created_at).toLocaleDateString() ]]
+                                                </div>
+                                            </div>
+                                            <hr v-if="index < reviews.length - 1" class="sp-review-divider" />
                                         </div>
+                                        <div class="st-ext-mt-4" v-if="reviewsTotal > reviewsPageSize">
+                                            <p-paginator :rows="reviewsPageSize" :total-records="reviewsTotal" v-model:first="reviewsFirst" @page="onReviewPage" />
                                         </div>
+                                    </div>
 
-                                        <!-- Email Field -->
-                                        <div>
-                                        <label for="reviewEmail" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.email') ]] *</label>
-                                        <p-input-text
-                                            id="reviewEmail"
-                                            v-model="reviewForm.email"
-                                            type="email"
-                                            :placeholder="$t('sellers.vendorDetails.enterEmailAddress')"
-                                            class="st-ext-w-full st-ext-text-sm"
-                                             :class="{'st-ext-border-red-500': reviewFormErrors.email}"
-                                             required></p-input-text>
-                                        <small v-if="reviewFormErrors.email" class="st-ext-text-red-500 st-ext-text-sm">[[ reviewFormErrors.email ]]</small>
-                                        </div>
+                                    <!-- No reviews -->
+                                    <div v-else class="st-ext-text-center st-ext-py-8">
+                                        <i class="pi pi-star st-ext-text-4xl st-ext-text-gray-300 st-ext-mb-3"></i>
+                                        <p class="st-ext-text-gray-500">[[ $t('sellers.vendorDetails.noReviewsYet') ]]</p>
+                                    </div>
+                                </div>
+                            </div>
 
-                                        <!-- Review Title -->
-                                        <div>
-                                        <label for="reviewTitle" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.reviewTitle') ]]</label>
-                                        <p-input-text
-                                            id="reviewTitle"
-                                            v-model="reviewForm.title"
+                            <!-- Review Dialog -->
+                            <p-dialog modal v-model:visible="reviewDialogVisible" @hide="handleReviewDialogClose" style="width: 600px; max-width: 90vw;">
+                                <template #header>
+                                    <div class="sp-review-dialog-header">
+                                        <span class="st-ext-font-bold sp-review-dialog-title">[[ userHasReviewed ? $t('sellers.vendorDetails.editReview') : $t('sellers.vendorDetails.leaveAReview') ]]</span>
+                                        <span class="sp-verified-tag">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#1976d2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                                            [[ $t('sellers.vendorDetails.verifiedPurchaser') ]]
+                                        </span>
+                                    </div>
+                                </template>
+
+                                <form @submit.prevent="submitReview" class="st-ext-flex st-ext-flex-column st-ext-gap-4">
+                                    <!-- Star rating (centered, large) -->
+                                    <div class="st-ext-text-center st-ext-mb-2">
+                                        <p-rating v-model="reviewForm.rating" :cancel="false" style="--p-rating-icon-size: 2.5rem;"></p-rating>
+                                        <small v-if="reviewFormErrors.rating" class="st-ext-text-red-500 st-ext-block st-ext-mt-1">[[ reviewFormErrors.rating ]]</small>
+                                    </div>
+
+                                    <!-- Review Description -->
+                                    <div>
+                                        <label class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.reviewDescription') ]]</label>
+                                        <p-textarea v-model="reviewForm.description" rows="5" class="st-ext-w-full st-ext-text-sm"
+                                            :placeholder="$t('sellers.vendorDetails.reviewDescriptionPlaceholder')"
+                                            :class="{'st-ext-border-red-500': reviewFormErrors.description}"></p-textarea>
+                                        <small v-if="reviewFormErrors.description" class="st-ext-text-red-500">[[ reviewFormErrors.description ]]</small>
+                                    </div>
+
+                                    <!-- Review Title -->
+                                    <div>
+                                        <label class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.reviewTitle') ]]</label>
+                                        <p-input-text v-model="reviewForm.title" class="st-ext-w-full st-ext-text-sm"
                                             :placeholder="$t('sellers.vendorDetails.reviewTitlePlaceholder')"
-                                            class="st-ext-w-full st-ext-text-sm"
-                                             :class="{'st-ext-border-red-500': reviewFormErrors.title}"
-                                             required></p-input-text>
-                                        <small v-if="reviewFormErrors.title" class="st-ext-text-red-500 st-ext-text-sm">[[ reviewFormErrors.title ]]</small>
-                                        </div>
+                                            :class="{'st-ext-border-red-500': reviewFormErrors.title}"></p-input-text>
+                                        <small v-if="reviewFormErrors.title" class="st-ext-text-red-500">[[ reviewFormErrors.title ]]</small>
+                                    </div>
 
-                                        <!-- Star Rating -->
-                                        <div>
-                                        <label class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.rating') ]]</label>
-                                        <div class="st-ext-flex st-ext-gap-2">
-
-                                            <button
-                                            v-for="star in 5"
-                                            :key="star"
-                                            type="button"
-                                            @click="reviewForm.rating = star"
-                                            class="st-ext-text-xl st-ext-transition-colors hover:st-ext-scale-110"
-                                             :class="star <= reviewForm.rating ? 'st-ext-text-yellow-400' : 'st-ext-text-gray-300'">
-                                            <i :class="star <= reviewForm.rating ? 'pi pi-star-fill' : 'pi pi-star'"></i>
-                                            </button>
+                                    <!-- Name row -->
+                                    <div style="display: flex; gap: 1rem;">
+                                        <div style="flex: 1;">
+                                            <label class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.firstName') ]] *</label>
+                                            <p-input-text v-model="reviewForm.firstName" class="st-ext-w-full st-ext-text-sm"
+                                                :placeholder="$t('sellers.vendorDetails.enterFirstName')"
+                                                :class="{'st-ext-border-red-500': reviewFormErrors.firstName}"></p-input-text>
+                                            <small v-if="reviewFormErrors.firstName" class="st-ext-text-red-500">[[ reviewFormErrors.firstName ]]</small>
                                         </div>
-                                        <small v-if="reviewFormErrors.rating" class="st-ext-text-red-500 st-ext-text-sm">[[ reviewFormErrors.rating ]]</small>
+                                        <div style="flex: 1;">
+                                            <label class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.lastName') ]] *</label>
+                                            <p-input-text v-model="reviewForm.lastName" class="st-ext-w-full st-ext-text-sm"
+                                                :placeholder="$t('sellers.vendorDetails.enterLastName')"
+                                                :class="{'st-ext-border-red-500': reviewFormErrors.lastName}"></p-input-text>
+                                            <small v-if="reviewFormErrors.lastName" class="st-ext-text-red-500">[[ reviewFormErrors.lastName ]]</small>
                                         </div>
+                                    </div>
 
-                                        <!-- Review Description -->
-                                        <div>
-                                        <label for="reviewDescription" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.reviewDescription') ]]</label>
-                                        <p-textarea
-                                            id="reviewDescription"
-                                            v-model="reviewForm.description"
-                                            :placeholder="dynamicTranslations.reviewDescriptionPlaceholder"
-                                            rows="4"
-                                            class="st-ext-w-full st-ext-text-sm"
-                                             :class="{'st-ext-border-red-500': reviewFormErrors.description}"
-                                             required></p-textarea>
-                                        <small v-if="reviewFormErrors.description" class="st-ext-text-red-500 st-ext-text-sm">[[ reviewFormErrors.description ]]</small>
-                                        </div>
+                                    <!-- Email -->
+                                    <div>
+                                        <label class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700 st-ext-mb-1">[[ $t('sellers.vendorDetails.email') ]] *</label>
+                                        <p-input-text v-model="reviewForm.email" type="email" class="st-ext-w-full st-ext-text-sm" readonly
+                                            :placeholder="$t('sellers.vendorDetails.enterEmailAddress')"
+                                            :class="{'st-ext-border-red-500': reviewFormErrors.email}"></p-input-text>
+                                        <small v-if="reviewFormErrors.email" class="st-ext-text-red-500">[[ reviewFormErrors.email ]]</small>
+                                    </div>
 
-                                        <!-- Submit Button -->
-                                        <div class="st-ext-flex st-ext-justify-end">
-                                        <p-button
-                                            type="submit"
-                                            :label="$t('sellers.vendorDetails.submitReview')"
-                                            icon="pi pi-send"
-                                            :loading="reviewFormSubmitting"
-                                            class="st-ext-text-sm"></p-button>
-                                        </div>
-                                    </form>
-
-                                    <!-- Success/Error Messages -->
-                                    <div v-if="reviewFormSuccess" class="st-ext-mt-4 st-ext-p-4 st-ext-bg-green-50 st-ext-border st-ext-border-green-200 st-ext-rounded-lg">
+                                    <!-- Error message -->
+                                    <div v-if="reviewFormError" class="st-ext-p-3 st-ext-bg-red-50 st-ext-border st-ext-border-red-200 st-ext-rounded-lg">
                                         <div class="st-ext-flex st-ext-align-items-center st-ext-gap-2">
-                                        <i class="pi pi-check-circle st-ext-text-green-600"></i>
-                                        <p class="st-ext-text-green-800 st-ext-font-medium st-ext-text-sm">Review submitted successfully! Thank you for your feedback.</p>
+                                            <i class="pi pi-exclamation-triangle st-ext-text-red-600"></i>
+                                            <span class="st-ext-text-red-800 st-ext-text-sm">[[ reviewFormError ]]</span>
                                         </div>
                                     </div>
 
-                                    <div v-if="reviewFormError" class="st-ext-mt-4 st-ext-p-4 st-ext-bg-red-50 st-ext-border st-ext-border-red-200 st-ext-rounded-lg">
-                                        <div class="st-ext-flex st-ext-align-items-center st-ext-gap-2">
-                                        <i class="pi pi-exclamation-triangle st-ext-text-red-600"></i>
-                                        <p class="st-ext-text-red-800 st-ext-font-medium st-ext-text-sm">[[ reviewFormError ]]</p>
-                                        </div>
+                                    <!-- Buttons -->
+                                    <div class="st-ext-flex st-ext-justify-content-center st-ext-gap-3 st-ext-mt-2">
+                                        <p-button type="button" outlined severity="secondary" @click="handleReviewDialogClose">[[ $t('sellers.vendorDetails.cancel') ]]</p-button>
+                                        <p-button type="submit" icon="pi pi-send" :loading="reviewFormSubmitting" style="padding: 0.65rem 1.5rem;">[[ userHasReviewed ? $t('sellers.vendorDetails.updateReview') : $t('sellers.vendorDetails.submitReview') ]]</p-button>
                                     </div>
-                                    </div>
-                                </div>
-                                </div>
-
-                                <!-- Past Reviews Section -->
-                                <div class="st-ext-bg-white st-ext-rounded-lg st-ext-shadow-sm st-ext-border st-ext-border-gray-200 st-ext-p-4 st-ext-md:st-ext-p-6">
-                                 <h3 class="st-ext-font-bold st-ext-text-gray-900 st-ext-mb-6">[[ $t('sellers.vendorDetails.recentReviews') ]]</h3>
-
-                                 <!-- Loading State -->
-                                 <div v-if="reviewsLoading" class="st-ext-text-center st-ext-py-12">
-                                     <div class="st-ext-inline-block st-ext-animate-spin st-ext-rounded-full st-ext-h-8 st-ext-w-8 st-ext-border-b-2 st-ext-border-blue-600 st-ext-mb-4"></div>
-                                     <div class="st-ext-text-base st-ext-text-gray-600 st-ext-font-medium">[[ $t('sellers.vendorDetails.loadingReviews') ]]</div>
-                                 </div>
-
-                                <!-- Reviews List -->
-                                <div v-else-if="reviews && reviews.length > 0" class="st-ext-space-y-6">
-                                    <div
-                                    v-for="review in reviews"
-                                    :key="review.id"
-                                    class="st-ext-border-bottom-1 st-ext-border-gray-200 st-ext-rounded-lg st-ext-p-6 st-ext-bg-gray-50 st-ext-shadow-sm">
-                                    <div class="st-ext-flex st-ext-flex-column st-ext-justify-start st-ext-align-items-start st-ext-mb-3">
-                                        <h4 class="st-ext-text-lg st-ext-font-semibold st-ext-text-gray-900">[[ review.title ]]</h4>
-                                        <div class="st-ext-flex st-ext-gap-1">
-                                        <i
-                                            v-for="star in review.ratings"
-                                            :key="star"
-                                            class="pi pi-star-fill st-ext-text-yellow-400 st-ext-text-sm"></i>
-                                        <i
-                                            v-for="star in 5-review.ratings"
-                                            :key="star"
-                                            class="pi pi-star st-ext-text-yellow-400 st-ext-text-sm"></i>
-                                        </div>
-                                    </div>
-                                    <p class="st-ext-text-sm st-ext-text-gray-700 st-ext-mb-3 st-ext-leading-relaxed">
-                                        [[ review.description ]]
-                                    </p>
-                                    <div class="st-ext-flex st-ext-flex-column st-ext-justify-between st-ext-align-items-start">
-                                        <span class="st-ext-text-sm st-ext-font-medium st-ext-text-gray-600 st-ext-block">- [[ review.given_by ]]</span>
-                                        <br/>
-                                        <span class="st-ext-text-xs st-ext-text-gray-500">[[ new Date(review.created_at).toLocaleDateString() ]]</span>
-                                    </div>
-                                    </div>
-                                </div>
-
-                                <!-- No Reviews Message -->
-                                <div v-else class="st-ext-text-center st-ext-py-12">
-                                    <div class="st-ext-text-gray-400 st-ext-mb-4">
-                                    <i class="pi pi-star st-ext-text-4xl"></i>
-                                    </div>
-                                    <h3 class="st-ext-text-lg st-ext-font-medium st-ext-text-gray-500 st-ext-mb-2">[[ $t('sellers.vendorDetails.noReviewsYet') ]]</h3>
-                                    <p class="st-ext-text-base st-ext-text-gray-400">[[ dynamicTranslations.beFirstToReview ]]</p>
-                                </div>
-                                </div>
-
-
+                                </form>
+                            </p-dialog>
                         </p-tabpanel>
 
                             <p-tabpanel v-if="hasTab('contact')" :header="$t('sellers.vendorDetails.contact')">
@@ -1419,6 +1369,9 @@ function mountSellerProfile () {
             const reviewsLoading = ref(false)
             const reviewsAvg = ref(0)
             const reviewsCount = ref(0)
+            const reviewsPageSize = ref(5)
+            const reviewsTotal = ref(0)
+            const reviewsFirst = ref(0)
             
             // Contact form state
             const contactForm = ref({
@@ -1481,10 +1434,14 @@ function mountSellerProfile () {
             }
 
             // Review form state
+            const reviewDialogVisible = ref(false)
+            const ratingDistribution = ref([0, 0, 0, 0, 0])
+            const checkingEligibility = ref(false)
+            const userHasReviewed = ref(false)
             const reviewForm = ref({
-                firstName: '',
-                lastName: '',
-                email: '',
+                firstName: window.spCustomerFirstName || '',
+                lastName: window.spCustomerLastName || '',
+                email: window.spCustomerEmail || '',
                 title: '',
                 rating: 0,
                 description: ''
@@ -1622,30 +1579,63 @@ function mountSellerProfile () {
                 }
             }
 
-            const fetchReviews = async () => {
+            const onReviewPage = (event) => {
+                reviewsFirst.value = event.first
+                const page = Math.floor(event.first / reviewsPageSize.value) + 1
+                fetchReviews(page)
+            }
+
+            const fetchReviews = async (page = 1) => {
                 if (!vendorDetails.value?.id) return
-                
+
                 reviewsLoading.value = true
                 try {
-                    const url = `/a/dashboard/vendor-reviews/${encodeURIComponent(vendorDetails.value.slug)}?shop=${encodeURIComponent(shop)}`
+                    let url = `/a/dashboard/vendor-reviews/${encodeURIComponent(vendorDetails.value.slug)}?shop=${encodeURIComponent(shop)}&page=${page}&limit=${reviewsPageSize.value}`
+                    if (window.spCustomerEmail) {
+                        url += `&email=${encodeURIComponent(window.spCustomerEmail)}`
+                    }
                     const response = await fetch(url)
                     const data = await response.json()
-                    
-                    if (data.success) {
-                        reviews.value = data.data.reviews || []
-                        reviewsAvg.value = Number(data.data.reviews_avg) || 0
-                        reviewsCount.value = data.data.reviews_count || 0
+
+                    const reviewList = data.reviews?.data || data.data?.reviews?.data || data.data?.reviews || []
+                    const avgRating = data.reviews_avg ?? data.data?.reviews_avg
+                    const totalCount = data.reviews_count ?? data.data?.reviews_count
+                    const reviewsPageTotal = data.reviews?.total ?? data.data?.reviews?.total ?? totalCount
+
+                    if (reviewList !== null && avgRating !== undefined) {
+                        reviews.value = reviewList
+                        reviewsAvg.value = Number(avgRating) || 0
+                        reviewsCount.value = Number(totalCount) || 0
+                        reviewsTotal.value = Number(reviewsPageTotal) || 0
+                        // Set userHasReviewed from vendor-reviews response
+                        const hasReviewed = data.user_has_reviewed ?? data.data?.user_has_reviewed
+                        userHasReviewed.value = !!hasReviewed
+                        // Use rating_star_count from API if available, else compute from reviews
+                        if (data.rating_star_count || data.data?.rating_star_count) {
+                            const starCount = data.rating_star_count || data.data?.rating_star_count
+                            ratingDistribution.value = starCount.map(n => Number(n) || 0)
+                        } else {
+                            const dist = [0, 0, 0, 0, 0]
+                            reviewList.forEach(r => {
+                                const s = Math.round(Number(r.ratings))
+                                if (s >= 1 && s <= 5) dist[s - 1]++
+                            })
+                            ratingDistribution.value = dist
+                        }
                     } else {
-                        console.error('Failed to fetch reviews:', data.message)
                         reviews.value = []
                         reviewsAvg.value = 0
                         reviewsCount.value = 0
+                        reviewsTotal.value = 0
+                        ratingDistribution.value = [0, 0, 0, 0, 0]
                     }
                 } catch (error) {
                     console.error('Error fetching reviews:', error)
                     reviews.value = []
                     reviewsAvg.value = 0
                     reviewsCount.value = 0
+                    reviewsTotal.value = 0
+                    ratingDistribution.value = [0, 0, 0, 0, 0]
                 } finally {
                     reviewsLoading.value = false
                 }
@@ -1683,11 +1673,79 @@ function mountSellerProfile () {
                 return Object.keys(reviewFormErrors.value).length === 0
             }
 
+            const showReviewDialog = () => {
+                if (!window.spCustomerEmail) {
+                    toast.add({
+                        severity: 'warn',
+                        summary: t('sellers.vendorDetails.loginRequired'),
+                        detail: t('sellers.vendorDetails.loginRequiredDetail'),
+                        life: 2000
+                    })
+                    setTimeout(() => {
+                        window.location.href = '/account/login'
+                    }, 2000)
+                    return
+                }
+                checkVendorReviewEligibility()
+            }
+
+            const checkVendorReviewEligibility = async () => {
+                checkingEligibility.value = true
+                try {
+                    const response = await fetch('/a/dashboard/check-vendor-review-eligibility', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: window.spCustomerEmail,
+                            shop: Shopify.shop,
+                            company_id: vendorDetails.value?.id
+                        })
+                    })
+                    const data = await response.json()
+                    if (data.allowed) {
+                        if (data.has_review && data.review) {
+                            userHasReviewed.value = true
+                            reviewForm.value = {
+                                firstName: data.review.given_by?.split(' ')[0] || reviewForm.value.firstName,
+                                lastName: data.review.given_by?.split(' ').slice(1).join(' ') || reviewForm.value.lastName,
+                                email: data.review.email || reviewForm.value.email,
+                                title: data.review.title || '',
+                                rating: Number(data.review.ratings) || 0,
+                                description: data.review.description || ''
+                            }
+                        }
+                        reviewDialogVisible.value = true
+                    } else {
+                        toast.add({
+                            severity: 'error',
+                            summary: t('sellers.vendorDetails.notEligibleTitle'),
+                            detail: data.message || t('sellers.vendorDetails.notEligibleDetail'),
+                            life: 3000
+                        })
+                    }
+                } catch (error) {
+                    toast.add({
+                        severity: 'error',
+                        summary: t('sellers.vendorDetails.notEligibleTitle'),
+                        detail: t('sellers.vendorDetails.notEligibleDetail'),
+                        life: 3000
+                    })
+                } finally {
+                    checkingEligibility.value = false
+                }
+            }
+
+            const handleReviewDialogClose = () => {
+                reviewDialogVisible.value = false
+                reviewFormErrors.value = {}
+                reviewFormError.value = ''
+            }
+
             const submitReview = async () => {
                 if (!validateReviewForm()) {
                     return
                 }
-                
+
                 reviewFormSubmitting.value = true
                 reviewFormSuccess.value = false
                 reviewFormError.value = ''
@@ -1712,25 +1770,32 @@ function mountSellerProfile () {
                     })
                     
                     if (response.ok) {
-                        reviewFormSuccess.value = true
-                        // Reset form
+                        const responseData = await response.json()
+                        reviewDialogVisible.value = false
                         reviewForm.value = {
-                            firstName: '',
-                            lastName: '',
-                            email: '',
+                            firstName: window.spCustomerFirstName || '',
+                            lastName: window.spCustomerLastName || '',
+                            email: window.spCustomerEmail || '',
                             title: '',
                             rating: 0,
                             description: ''
                         }
-                        // Refresh reviews
+                        reviewFormErrors.value = {}
+                        reviewFormError.value = ''
+                        toast.add({
+                            severity: 'success',
+                            summary: t('sellers.vendorDetails.reviewSubmittedTitle'),
+                            detail: responseData.message || t('sellers.vendorDetails.reviewSubmitted'),
+                            life: 3000
+                        })
                         await fetchReviews()
                     } else {
                         const errorData = await response.json()
-                        reviewFormError.value = errorData.message || 'Failed to submit review. Please try again.'
+                        reviewFormError.value = errorData.message || t('sellers.vendorDetails.reviewError')
                     }
                 } catch (error) {
                     console.error('Error submitting review:', error)
-                    reviewFormError.value = 'Failed to submit review. Please try again.'
+                    reviewFormError.value = t('sellers.vendorDetails.reviewError')
                 } finally {
                     reviewFormSubmitting.value = false
                 }
@@ -1844,11 +1909,20 @@ function mountSellerProfile () {
                 reviewsLoading,
                 reviewsAvg,
                 reviewsCount,
+                reviewsPageSize,
+                reviewsTotal,
+                reviewsFirst,
+                onReviewPage,
+                ratingDistribution,
+                reviewDialogVisible,
+                checkingEligibility,
+                userHasReviewed,
                 reviewForm,
                 reviewFormErrors,
                 reviewFormSubmitting,
-                reviewFormSuccess,
                 reviewFormError,
+                showReviewDialog,
+                handleReviewDialogClose,
                 submitReview,
                 fetchReviews,
                 contactForm,
@@ -1980,6 +2054,8 @@ function mountSellerProfile () {
         app.component('p-tabview', PrimeVue.TabView);
         app.component('p-tabpanel', PrimeVue.TabPanel);
         app.component('p-textarea', PrimeVue.Textarea);
+        app.component('p-dialog', PrimeVue.Dialog);
+        app.component('p-rating', PrimeVue.Rating);
         app.config.compilerOptions.delimiters = ['[[', ']]'];
         app.use(router)
         app.mount('#seller-profile-app')

@@ -86,7 +86,6 @@
         "submitReview": "Submit Review",
         "reviewSubmitted": "Review submitted successfully! Thank you for your feedback.",
         "reviewError": "There was an error submitting your review. Please try again.",
-        "reviewBy": "by",
         "stars": "stars",
         "averageRating": "Average Rating",
         "totalReviews": "Total Reviews",
@@ -128,7 +127,22 @@
           "reviewDescriptionRequired": "Review description is required",
           "fullNameRequired": "Full name is required",
           "messageRequired": "Message is required"
-        }
+        },
+        "loginRequired": "Login Required",
+        "loginRequiredDetail": "Please log in to submit a review",
+        "notEligibleTitle": "Not Eligible",
+        "notEligibleDetail": "You are not eligible to review this vendor",
+        "overallRating": "Overall Rating",
+        "basedOnReviews": "Based on {count} Reviews",
+        "star": "star",
+        "writeExperienceText": "Write your personal experience and ratings",
+        "leaveAReview": "Leave a Review",
+        "editReview": "Edit Your Review",
+        "updateReview": "Update Review",
+        "reviewBy": "By",
+        "reviewSubmittedTitle": "Success",
+        "verifiedPurchaser": "Verified Purchaser",
+        "cancel": "Cancel"
       }
     },
     "product-review": {
@@ -282,7 +296,6 @@
         "submitReview": "Bewertung abgeben",
         "reviewSubmitted": "Bewertung erfolgreich übermittelt! Vielen Dank für Ihr Feedback.",
         "reviewError": "Beim Übermitteln Ihrer Bewertung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-        "reviewBy": "von",
         "stars": "Sterne",
         "averageRating": "Durchschnittliche Bewertung",
         "totalReviews": "Gesamtbewertungen",
@@ -324,7 +337,22 @@
           "reviewDescriptionRequired": "Bewertungsbeschreibung ist erforderlich",
           "fullNameRequired": "Vollständiger Name ist erforderlich",
           "messageRequired": "Nachricht ist erforderlich"
-        }
+        },
+        "loginRequired": "Anmeldung erforderlich",
+        "loginRequiredDetail": "Bitte melden Sie sich an, um eine Bewertung abzugeben",
+        "notEligibleTitle": "Nicht berechtigt",
+        "notEligibleDetail": "Sie sind nicht berechtigt, diesen Anbieter zu bewerten",
+        "overallRating": "Gesamtbewertung",
+        "basedOnReviews": "Basierend auf {count} Bewertungen",
+        "star": "Stern",
+        "writeExperienceText": "Schreiben Sie Ihre persönliche Erfahrung und Bewertungen",
+        "leaveAReview": "Bewertung hinterlassen",
+        "editReview": "Ihre Bewertung bearbeiten",
+        "updateReview": "Bewertung aktualisieren",
+        "reviewBy": "Von",
+        "reviewSubmittedTitle": "Erfolg",
+        "verifiedPurchaser": "Verifizierter Käufer",
+        "cancel": "Abbrechen"
       }
     },
     "product-review": {
@@ -479,7 +507,6 @@
         "submitReview": "Enviar reseña",
         "reviewSubmitted": "¡Reseña enviada exitosamente! Gracias por tu comentario.",
         "reviewError": "Hubo un error al enviar tu reseña. Por favor, inténtalo de nuevo.",
-        "reviewBy": "por",
         "stars": "estrellas",
         "averageRating": "Calificación promedio",
         "totalReviews": "Total de reseñas",
@@ -521,7 +548,22 @@
           "reviewDescriptionRequired": "La descripción de la reseña es requerida",
           "fullNameRequired": "El nombre completo es requerido",
           "messageRequired": "El mensaje es requerido"
-        }
+        },
+        "loginRequired": "Inicio de sesión requerido",
+        "loginRequiredDetail": "Por favor inicia sesión para enviar una reseña",
+        "notEligibleTitle": "No elegible",
+        "notEligibleDetail": "No eres elegible para reseñar este vendedor",
+        "overallRating": "Calificación general",
+        "basedOnReviews": "Basado en {count} reseñas",
+        "star": "estrella",
+        "writeExperienceText": "Escribe tu experiencia personal y calificaciones",
+        "leaveAReview": "Dejar una reseña",
+        "editReview": "Editar tu reseña",
+        "updateReview": "Actualizar reseña",
+        "reviewBy": "Por",
+        "reviewSubmittedTitle": "Éxito",
+        "verifiedPurchaser": "Comprador verificado",
+        "cancel": "Cancelar"
       }
     },
     "product-review": {
@@ -676,7 +718,6 @@
         "submitReview": "Beoordeling indienen",
         "reviewSubmitted": "Beoordeling succesvol ingediend! Bedankt voor je feedback.",
         "reviewError": "Er is een fout opgetreden bij het indienen van je beoordeling. Probeer het opnieuw.",
-        "reviewBy": "door",
         "stars": "sterren",
         "averageRating": "Gemiddelde beoordeling",
         "totalReviews": "Totaal aantal beoordelingen",
@@ -718,7 +759,22 @@
           "reviewDescriptionRequired": "Beschrijving van beoordeling is verplicht",
           "fullNameRequired": "Volledige naam is verplicht",
           "messageRequired": "Bericht is verplicht"
-        }
+        },
+        "loginRequired": "Inloggen vereist",
+        "loginRequiredDetail": "Log in om een beoordeling in te dienen",
+        "notEligibleTitle": "Niet in aanmerking",
+        "notEligibleDetail": "U komt niet in aanmerking om deze leverancier te beoordelen",
+        "overallRating": "Algemene beoordeling",
+        "basedOnReviews": "Gebaseerd op {count} beoordelingen",
+        "star": "ster",
+        "writeExperienceText": "Schrijf uw persoonlijke ervaring en beoordelingen",
+        "leaveAReview": "Laat een beoordeling achter",
+        "editReview": "Uw beoordeling bewerken",
+        "updateReview": "Beoordeling bijwerken",
+        "reviewBy": "Door",
+        "reviewSubmittedTitle": "Succes",
+        "verifiedPurchaser": "Geverifieerde koper",
+        "cancel": "Annuleren"
       }
     },
     "product-review": {
@@ -869,7 +925,6 @@
         "submitReview": "Enviar avaliação",
         "reviewSubmitted": "Avaliação enviada com sucesso! Obrigado pelo seu feedback.",
         "reviewError": "Ocorreu um erro ao enviar a sua avaliação. Tente novamente.",
-        "reviewBy": "por",
         "stars": "estrelas",
         "averageRating": "Classificação média",
         "totalReviews": "Total de avaliações",
@@ -911,7 +966,22 @@
           "reviewDescriptionRequired": "A descrição da avaliação é obrigatória",
           "fullNameRequired": "O nome completo é obrigatório",
           "messageRequired": "A mensagem é obrigatória"
-        }
+        },
+        "loginRequired": "Login necessário",
+        "loginRequiredDetail": "Por favor inicie sessão para submeter uma avaliação",
+        "notEligibleTitle": "Não elegível",
+        "notEligibleDetail": "Não é elegível para avaliar este fornecedor",
+        "overallRating": "Classificação geral",
+        "basedOnReviews": "Baseado em {count} avaliações",
+        "star": "estrela",
+        "writeExperienceText": "Escreva a sua experiência pessoal e classificações",
+        "leaveAReview": "Deixar uma avaliação",
+        "editReview": "Editar a sua avaliação",
+        "updateReview": "Atualizar avaliação",
+        "reviewBy": "Por",
+        "reviewSubmittedTitle": "Sucesso",
+        "verifiedPurchaser": "Comprador verificado",
+        "cancel": "Cancelar"
       }
     },
     "product-review": {

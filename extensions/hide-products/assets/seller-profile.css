@@ -198,4 +198,59 @@
 }
 #seller-profile-app .st-ext-custom-tabs .p-tabview-panels {
     min-height: 400px;
-}   
+}
+/* Prevent submit review button text from wrapping */
+#seller-profile-app .p-dialog .p-button,
+.p-dialog .p-button {
+    white-space: nowrap !important;
+    min-width: fit-content !important;
+}
+
+/* Rating stars color in review dialog */
+#seller-profile-app .p-rating .p-rating-icon,
+.p-dialog .p-rating .p-rating-icon {
+    color: var(--sp-accent-color) !important;
+}
+#seller-profile-app .p-rating .p-rating-icon.p-rating-icon-active,
+.p-dialog .p-rating .p-rating-icon.p-rating-icon-active {
+    color: var(--sp-accent-color) !important;
+}
+
+/* Review dialog header */
+.sp-review-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.sp-review-dialog-title {
+    font-size: 1.25em;
+}
+
+.sp-verified-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Review list items */
+#seller-profile-app .sp-review-item {
+    padding: 0.75rem 0;
+}
+
+#seller-profile-app .sp-review-title {
+    font-size: 1.1rem;
+}
+
+#seller-profile-app .sp-review-divider {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 0;
+}

@@ -242,3 +242,8 @@
 {% endschema %}
 
 <link rel="stylesheet" href="{{ 'seller-profile.css' | asset_url }}">
+<script>
+  window.spCustomerEmail = {{ customer.email | json }};
+  window.spCustomerFirstName = {{ customer.first_name | json }};
+  window.spCustomerLastName = {{ customer.last_name | json }};
+</script>
