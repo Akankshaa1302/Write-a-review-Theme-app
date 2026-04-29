@@ -57,6 +57,12 @@
   border-radius: 16px !important;
   overflow: hidden !important;
   box-shadow: var(--st-chat-shadow-lg) !important;
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  top: auto !important;
+  left: auto !important;
+  margin: 0 !important;
 }
 
 .st-chat-dialog .p-dialog-header {
@@ -382,6 +388,8 @@
     max-height: 100vh !important;
     margin: 0 !important;
     border-radius: 0 !important;
+    bottom: 0 !important;
+    right: 0 !important;
   }
 
   .st-chat-dialog .p-dialog-content {
@@ -396,8 +404,10 @@
 /* Tablet */
 @media (min-width: 769px) and (max-width: 1024px) {
   .st-chat-dialog {
-    width: 380px !important;
-    height: 550px !important;
+    width: 300px !important;
+    height: 500px !important;
+    bottom: 24px !important;
+    right: 24px !important;
   }
 }
 

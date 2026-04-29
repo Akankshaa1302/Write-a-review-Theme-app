@@ -55,7 +55,7 @@ function mountSellerProfile () {
                              navigator.language.split('-')[0]
         
         // Map Shopify locales to our supported locales
-        const supportedLocales = ['en', 'de', 'es', 'nl', 'pt']
+        const supportedLocales = ['en', 'de', 'es', 'nl', 'pt', 'no']
         const normalizedLocale = shopifyLocale.toLowerCase().split('-')[0]
         
         return supportedLocales.includes(normalizedLocale) ? normalizedLocale : 'en'
@@ -399,7 +399,7 @@ function mountSellerProfile () {
                                                     :class="star <= Math.round(getVendorAverageRating(vendor)) ? 'pi pi-star-fill' : 'pi pi-star'"
                                                 ></i>
                                             </div>
-                                            <span>([[ getVendorReviewsCount(vendor) ]] Reviews)</span>
+                                            <span>([[ vendor.reviews_count ]] Reviews)</span>
                                         </div>
                                     <router-link :to="{ name: 'vendor-details', params: { handle: vendor.slug || (vendor.title || '').toLowerCase().replace(/\s+/g, '-') } }" @click="saveVendorListState">
                                         <p-button :label="$t('sellers.details')" size="small" class="st-ext-w-full st-ext-mt-3 st-ext-border-noround"></p-button>
@@ -629,13 +629,18 @@ function mountSellerProfile () {
                 saveVendorListStateToStorage(vendorListState)
             }
 
+            watch(showCountryState, (val) => {
+                if (val) {
+                    fetchCountries()
+                }
+            })
+
             onMounted(async () => {
                 // document.getElementById('st-ext-seller-profile-container').style.display = "block"
-                await fetchCountries()
                 
                 // If we have saved state with country, fetch states for that country
                 if (filters.value.country) {
-                    await fetchStates(filters.value.country)
+                    fetchStates(filters.value.country)
                 }
                 
                 await fetchVendors()
@@ -981,7 +986,7 @@ function mountSellerProfile () {
                                 <div class="st-ext-space-y-4">
                                     <h3 class="st-ext-font-semibold">[[ $t('sellers.vendorDetails.eventsTitle') ]]</h3>
                                     <div v-if="vendorDetails?.events" v-html="vendorDetails.events" class="st-ext-prose st-ext-max-w-none st-ext-text-gray-700"></div>
-                                    <p v-else class="st-ext-text-gray-600">No events information available.</p>
+                                    <p v-else class="st-ext-text-gray-600">[[ $t('sellers.vendorDetails.noEventsInfo') ]]</p>
                                 </div>
                             </p-tabpanel>
 
@@ -1151,13 +1156,13 @@ function mountSellerProfile () {
                                         <!-- Contact Information (Left) -->
                                         <div class="st-ext-col-12 st-ext-md:st-ext-col-6">
                                             <div class="st-ext-bg-white st-ext-border st-ext-border-round-lg st-ext-p-3 st-ext-md:st-ext-p-4">
-                                                <h4 class="st-ext-text-lg st-ext-font-semibold st-ext-mb-4">Contact Information</h4>
+                                                <h4 class="st-ext-text-lg st-ext-font-semibold st-ext-mb-4">[[ $t('sellers.contactInfo') ]]</h4>
                                                 
                                                 <!-- Email -->
                                                 <div v-if="vendorDetails?.email" class="st-ext-flex st-ext-align-items-center st-ext-gap-3 st-ext-mb-3">
                                                     <i class="pi pi-envelope st-ext-text-gray-500"></i>
                                                     <div>
-                                                        <span class="st-ext-font-medium">Email:</span>
+                                                        <span class="st-ext-font-medium">[[ $t('sellers.vendorDetails.email') ]]:</span>
                                                         <a :href="'mailto:' + vendorDetails.email" class="st-ext-text-blue-600 st-ext-ml-2">
                                                             [[ vendorDetails.email ]]
                                                         </a>
@@ -1168,7 +1173,7 @@ function mountSellerProfile () {
                                                 <div v-if="vendorDetails?.phone_number" class="st-ext-flex st-ext-align-items-center st-ext-gap-3 st-ext-mb-3">
                                                     <i class="pi pi-phone st-ext-text-gray-500"></i>
                                                     <div>
-                                                        <span class="st-ext-font-medium">Phone:</span>
+                                                        <span class="st-ext-font-medium">[[ $t('sellers.vendorDetails.phone') ]]:</span>
                                                         <a :href="'tel:' + vendorDetails.phone_number" class="st-ext-text-blue-600 st-ext-ml-2">
                                                             [[ vendorDetails.phone_number ]]
                                                         </a>
@@ -1180,7 +1185,7 @@ function mountSellerProfile () {
                                                      class="st-ext-flex st-ext-align-items-start st-ext-gap-3 st-ext-mb-3">
                                                     <i class="pi pi-map-marker st-ext-text-gray-500 st-ext-mt-1"></i>
                                                     <div>
-                                                        <span class="st-ext-font-medium">Address:</span>
+                                                        <span class="st-ext-font-medium">[[ $t('sellers.vendorDetails.address') ]]:</span>
                                                         <span class="st-ext-ml-2 st-ext-text-gray-700">
                                                             [[ getLocationText() ]]
                                                         </span>
@@ -1189,7 +1194,7 @@ function mountSellerProfile () {
 
                                                 <!-- Social Media Links -->
                                                 <div class="st-ext-mt-4">
-                                                    <h4 class="st-ext-text-base st-ext-font-semibold st-ext-mb-3">Follow Us</h4>
+                                                    <h4 class="st-ext-text-base st-ext-font-semibold st-ext-mb-3">[[ $t('sellers.vendorDetails.followUs') ]]</h4>
                                                     <div class="st-ext-space-y-3">
                                                         <div v-if="vendorDetails?.facebook_link" class="st-ext-flex st-ext-align-items-center st-ext-gap-3">
                                                             <i class="pi pi-facebook st-ext-text-blue-600"></i>
@@ -1208,7 +1213,7 @@ function mountSellerProfile () {
                                                             <a :href="vendorDetails.tiktok_link" target="_blank" class="st-ext-text-gray-800 hover:st-ext-underline">TikTok</a>
                                                         </div>
                                                         <div v-if="!vendorDetails?.facebook_link && !vendorDetails?.instagram_link && !vendorDetails?.twitter_link && !vendorDetails?.tiktok_link" class="st-ext-text-gray-600">
-                                                            No social media links available.
+                                                            [[ $t('sellers.vendorDetails.noSocialLinks') ]]
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1218,7 +1223,7 @@ function mountSellerProfile () {
                                         <!-- Contact Form (Right) -->
                                         <div class="st-ext-col-12 st-ext-md:st-ext-col-6">
                                             <div class="st-ext-bg-white st-ext-border st-ext-border-round-lg st-ext-p-3 st-ext-md:st-ext-p-4">
-                                                <h3 class="st-ext-font-semibold st-ext-text-gray-900 st-ext-mb-4">Send us a Message</h3>
+                                                <h3 class="st-ext-font-semibold st-ext-text-gray-900 st-ext-mb-4">[[ $t('sellers.vendorDetails.sendUsAMessage') ]]</h3>
 
                                                 <form @submit.prevent="submitContactForm" class="st-ext-space-y-4">
                                                     <!-- Name and Email Row -->
@@ -1250,11 +1255,11 @@ function mountSellerProfile () {
                                                     </div>
                                                     <!-- Message -->
                                                     <div>
-                                                        <label for="contactMessage" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700">Message *</label>
+                                                        <label for="contactMessage" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700">[[ $t('sellers.vendorDetails.message') ]] *</label>
                                                         <p-textarea
                                                             id="contactMessage"
                                                             v-model="contactForm.message"
-                                                            placeholder="Tell us more about your inquiry..."
+                                                            :placeholder="$t('sellers.vendorDetails.messagePlaceholder')"
                                                             rows="5"
                                                             class="st-ext-w-full st-ext-text-sm"
                                                             :class="{'st-ext-border-red-500': contactFormErrors.message}"
@@ -1277,7 +1282,7 @@ function mountSellerProfile () {
                                                 <div v-if="contactFormSuccess" class="st-ext-mt-4 st-ext-p-4 st-ext-bg-green-50 st-ext-border st-ext-border-green-200 st-ext-rounded-lg">
                                                     <div class="st-ext-flex st-ext-align-items-center st-ext-gap-2">
                                                         <i class="pi pi-check-circle st-ext-text-green-600"></i>
-                                                        <small class="st-ext-text-green-800 st-ext-font-medium">Message sent successfully! We'll get back to you soon.</small>
+                                                        <small class="st-ext-text-green-800 st-ext-font-medium">[[ $t('sellers.vendorDetails.messageSentSuccess') ]]</small>
                                                     </div>
                                                 </div>
 
@@ -1307,7 +1312,7 @@ function mountSellerProfile () {
                                 <div class="st-ext-space-y-4">
                                     <h3 class="st-ext-font-semibold">[[ $t('sellers.vendorDetails.policyTitle') ]]</h3>
                                     <div v-if="vendorDetails?.policy" v-html="vendorDetails.policy" class="st-ext-prose st-ext-max-w-none st-ext-text-gray-700"></div>
-                                    <p v-else class="st-ext-text-gray-600">No policy information available.</p>
+                                    <p v-else class="st-ext-text-gray-600">[[ $t('sellers.vendorDetails.noPolicyInfo') ]]</p>
                                 </div>
                             </p-tabpanel>
                         </p-tabview>

@@ -12,7 +12,7 @@ async function MakeAnOfferCode(){
                              navigator.language.split('-')[0]
         
         // Map Shopify locales to our supported locales
-        const supportedLocales = ['en', 'de', 'es', "nl", "pt"]
+        const supportedLocales = ['en', 'de', 'es', "nl", "pt", "no"]
         const normalizedLocale = shopifyLocale.toLowerCase().split('-')[0]
         
         return supportedLocales.includes(normalizedLocale) ? normalizedLocale : 'en'
