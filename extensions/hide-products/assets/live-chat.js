@@ -134,7 +134,6 @@ function LiveChatThemeAppExtension() {
           chatChannel = pusher.value.subscribe(`private-support-chat.${chatId.value}`);
           
           chatChannel.bind('message.sent', function(data) {
-            console.log('New message received:', data);
             const exists = messages.value.find(msg => msg.id === data.id);
             if (!exists) {
               messages.value.push(data);
@@ -151,7 +150,6 @@ function LiveChatThemeAppExtension() {
           });
 
           chatChannel.bind('message.read', function(data) {
-            console.log('Message read:', data);
             messages.value.forEach(msg => {
               const alreadyRead = msg.read_by.some(
                 r => r.participant_id === data.reader_id && r.participant_type === data.reader_type
@@ -166,7 +164,6 @@ function LiveChatThemeAppExtension() {
             });
           });
           chatChannel.bind('user.typing', function(data) {
-            console.log('User typing:', data);
             // Only show typing indicator for seller (merchant/vendor), not for the customer themselves
             if (data.sender_type === 'customer') return;
             if (!typingUsers.value.includes('Seller')) {
@@ -177,7 +174,6 @@ function LiveChatThemeAppExtension() {
             }
           });
 
-          console.log('Pusher initialized successfully');
         } catch (error) {
           console.error('Error initializing Pusher:', error);
         }
@@ -185,7 +181,6 @@ function LiveChatThemeAppExtension() {
 
       const openChat = () => {
         if(customerDetails.value.id) {
-            console.log("log 1", customerDetails.value.id)
             isDialogVisible.value = true;
             nextTick(() => {
               scrollToBottom();
@@ -265,7 +260,7 @@ function LiveChatThemeAppExtension() {
           });
 
           const data = await response.json();
-          messages.value.push(data.data);
+
           newMessage.value = '';
 
           // Scroll to bottom
@@ -352,11 +347,9 @@ function LiveChatThemeAppExtension() {
         );
 
         const data = await response.json();
-        console.log("respinse get in fetch api", data);
         if (data?.data?.messages && data.data?.messages.length > 0) {
           messages.value = data?.data?.messages.reverse();
           chatId.value = data?.data?.id;
-          console.log("Messages fetched successfully", messages.value);
           chatExists.value = true;
         } else {
           messages.value = [];
@@ -393,16 +386,14 @@ function LiveChatThemeAppExtension() {
       })
 
       onBeforeMount(async () => {
-        console.log("Live chat is before mounting");
         // Initialize Pusher
-        pusher.value = new Pusher('ca6000ff157ec2104033', {
+        pusher.value = new Pusher('c0b95db0cf51f0509b90', {
           cluster: 'ap2',
           authEndpoint : `${baseApiUrl}/customer/chats/broadcasting/auth?shop=${shopifyDomain.value}&logged_in_customer_id=${customerDetails.value.id}`
         });
       })
       onMounted(async () => {
 
-        console.log("Live chat is mounted");
         await fetchchatMessages();
 
         if (chatId.value) {
