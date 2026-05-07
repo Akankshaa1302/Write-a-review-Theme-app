@@ -381,8 +381,11 @@ function mountSellerProfile () {
                                         </div>
                                         <div class="st-ext-flex-1 st-ext-min-w-0">
                                             <h3 class="st-ext-font-medium st-ext-text-gray-900 st-ext-m-0 st-ext-mb-1 st-ext-capitalize">[[ vendor.brand_name || vendor.title ]]</h3>
-                                            <div class="st-ext-text-xs st-ext-text-gray-500" v-if="showLocation">
-                                                [[ vendor.city || vendor.state || '' ]][[ vendor.country ? (vendor.city || vendor.state ? ', ' : '') + vendor.country_detail?.name : '' ]]
+                                            <div v-if="showLocation || (showVendorCountryAndFlag && vendor.country_detail?.name)" class="st-ext-flex st-ext-align-items-center st-ext-flex-wrap st-ext-gap-1 st-ext-text-xs st-ext-text-gray-500">
+                                                <span v-if="showLocation && (vendor.city || vendor.state)">[[ vendor.city || vendor.state ]]</span>
+                                                <span v-if="showLocation && (vendor.city || vendor.state) && ((showVendorCountryAndFlag && vendor.country_detail?.name) || (!showVendorCountryAndFlag && vendor.country && vendor.country_detail?.name))">,</span>
+                                                <img v-if="showVendorCountryAndFlag && vendor.country_flag" :src="vendor.country_flag" :alt="vendor.country_detail.name" style="width:20px; height:14px; object-fit:cover; border-radius:2px; vertical-align:middle;">
+                                                <span v-if="(showVendorCountryAndFlag && vendor.country_detail?.name) || (showLocation && !showVendorCountryAndFlag && vendor.country && vendor.country_detail?.name)">[[ vendor.country_detail.name ]]</span>
                                             </div>
                                             <div v-if="parentCompany?.display_vendor_category && vendor.attributes?.category?.name" class="st-ext-text-gray-500 st-ext-mb-1 st-ext-text-xs">[[ terminology.vendor ]] Category: [[ vendor.attributes?.category?.name ]]</div>
                                         </div>
@@ -450,6 +453,7 @@ function mountSellerProfile () {
             const productCategoryOptions = ref([])
 
             const parentCompany = ref(null)
+            const showVendorCountryAndFlag = ref(false)
             const pageTitle = computed(() => parentCompany.value?.name_of_the_vendor_listing_page)
             const showLocation = computed(() => !!parentCompany.value?.display_vendor_location)
             const showCountryState = computed(() => !!parentCompany.value?.vendor_profile_settings?.filter_country_and_state)
@@ -519,18 +523,32 @@ function mountSellerProfile () {
                 }
             }
 
+            const loadVendorCountryFlag = async (vendor) => {
+                const name = vendor?.country_detail?.name
+                if (!name) return
+                try {
+                    const res = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(name)}?fields=flags,name`)
+                    const result = await res.json()
+                    vendor.country_flag = Array.isArray(result) ? (result[0]?.flags?.png || '') : ''
+                } catch (e) {}
+            }
+
             const fetchVendors = async () => {
                 loading.value = true
                 try {
                     const res = await fetch(buildVendorsUrl())
                     const payload = await res.json()
-                    
+
                     if (payload.success) {
                         vendors.value = Array.isArray(payload.data?.vendors) ? payload.data.vendors : []
                         totalCount.value = Number(payload.data?.count || 0)
                         parentCompany.value = payload.data?.parent_company || null
                         vendorCategoryOptions.value = Array.isArray(payload.data?.vendor_categories) ? payload.data.vendor_categories : []
                         productCategoryOptions.value = Array.isArray(payload.data?.product_categories) ? payload.data.product_categories : []
+                        showVendorCountryAndFlag.value = !!payload.data?.show_vendor_country_on_vendors_list
+                        if (showVendorCountryAndFlag.value) {
+                            vendors.value.forEach(loadVendorCountryFlag)
+                        }
                     } else {
                         console.error('Failed to fetch vendors:', payload.message)
                         vendors.value = []
@@ -731,6 +749,7 @@ function mountSellerProfile () {
                 showCountryState,
                 showVendorCategory,
                 showProductCategory,
+                showVendorCountryAndFlag,
                 countryOptions,
                 stateOptions,
                 vendorCategoryOptions,
@@ -943,6 +962,11 @@ function mountSellerProfile () {
                                                     <h3 class="st-ext-text-gray-900 st-ext-mb-1 st-ext-mt-1 st-ext-text-capitalize">
                                                         [[ product.title ]]
                                                     </h3>
+                                                    <div v-if="showProductCountryAndFlag && productsCompanyCountry" class="st-ext-flex st-ext-align-items-center st-ext-gap-2 st-ext-text-sm st-ext-mt-1 st-ext-mb-1">
+                                                        <img v-if="productsCompanyFlag" :src="productsCompanyFlag" :alt="productsCompanyCountry" style="width:28px; height:18px; object-fit:cover; border-radius:2px; vertical-align:middle;">
+                                                        <span v-else>🌐</span>
+                                                        <span style="color:#1E293B;">[[ productsCompanyCountry ]]</span>
+                                                    </div>
                                                     <div class="st-ext-text-gray-600 st-ext-text-lg st-ext-flex-1 st-ext-mb-1 st-ext-mt-1">
                                                         <span v-if="product.variants && product.variants.length > 0">
                                                             [[ parentCompany?.currencyCountry?.currency_symbol ]][[ product.variants[0].price ]]
@@ -1367,6 +1391,9 @@ function mountSellerProfile () {
             const totalProducts = ref(0)
             const products = ref([])
             const productsLoading = ref(false)
+            const productsCompanyCountry = ref('')
+            const productsCompanyFlag = ref('')
+            const showProductCountryAndFlag = ref(false)
             let searchDebounceTimer = null
             
             // Reviews state
@@ -1570,6 +1597,20 @@ function mountSellerProfile () {
                     if (data.success) {
                         products.value = data.data.products || []
                         totalProducts.value = data.data.count || 0
+                        showProductCountryAndFlag.value = !!data.data.show_vendor_country_on_products
+                        const country = data.data.company?.country || ''
+                        if (showProductCountryAndFlag.value && country && country !== productsCompanyCountry.value) {
+                            productsCompanyCountry.value = country
+                            productsCompanyFlag.value = ''
+                            try {
+                                const flagRes = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(country)}?fields=flags,name`)
+                                const flagResult = await flagRes.json()
+                                productsCompanyFlag.value = Array.isArray(flagResult) ? (flagResult[0]?.flags?.png || '') : ''
+                            } catch (e) {}
+                        } else if (!showProductCountryAndFlag.value || !country) {
+                            productsCompanyCountry.value = country || ''
+                            productsCompanyFlag.value = ''
+                        }
                     } else {
                         console.error('Failed to fetch products:', data.message)
                         products.value = []
@@ -1909,6 +1950,9 @@ function mountSellerProfile () {
                 onProductPageChange,
                 products,
                 productsLoading,
+                productsCompanyCountry,
+                productsCompanyFlag,
+                showProductCountryAndFlag,
                 fetchProducts,
                 reviews,
                 reviewsLoading,
