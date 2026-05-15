@@ -56,8 +56,11 @@ function mountSellerProfile () {
         
         // Map Shopify locales to our supported locales
         const supportedLocales = ['en', 'de', 'es', 'nl', 'pt', 'no']
-        const normalizedLocale = shopifyLocale.toLowerCase().split('-')[0]
-        
+        // Shopify uses `nb` (Bokmål) for Norwegian; map it to `no`
+        const localeAliases = { nb: 'no'}
+        const baseLocale = shopifyLocale.toLowerCase().split('-')[0]
+        const normalizedLocale = localeAliases[baseLocale] ?? baseLocale
+
         return supportedLocales.includes(normalizedLocale) ? normalizedLocale : 'en'
     }
 
@@ -111,12 +114,57 @@ function mountSellerProfile () {
                 vendorTerm: 'Vendor',
                 vendorTermPlural: 'Vendors',
                 productTerm: 'Product',
-                productTermPlural: 'Products'
+                productTermPlural: 'Products',
+                app_proxy_prefix: '/a/dashboard'
             }
         } catch (error) {
             console.error('Failed to load block settings:', error)
-            return {}
+            return { app_proxy_prefix: '/a/dashboard' }
         }
+    }
+
+    /** Must match Shopify app proxy "Subpath prefix" (leading slash, no trailing slash). */
+    const normalizeAppProxyPrefix = (raw) => {
+        const fallback = '/a/dashboard'
+        if (typeof raw !== 'string' || !raw.trim()) return fallback
+        const base = raw.trim().replace(/\/+$/, '')
+        if (!base) return fallback
+        return base.startsWith('/') ? base : `/${base}`
+    }
+
+    const NOTIFY_DEVELOPER_URL = 'https://api-v2.shipturtle.com/api/v1/notify-developer'
+
+    const notifyDeveloperSellerProfileProxy404 = (url, method) => {
+        const shopDomain = window.Shopify?.shop
+        const timestamp = new Date().toISOString()
+        const networkType = navigator.connection?.effectiveType
+        const lines = [
+            '🚨 *Seller Profile — App proxy 404*',
+            `*Shop:* ${shopDomain}`,
+            `*URL:* ${typeof url === 'string' ? url : ''}`,
+            method ? `*Method:* ${method}` : '',
+            '*HTTP:* 404',
+            `*Time:* ${timestamp}`,
+            networkType ? `*Network:* ${networkType}` : ''
+        ].filter(Boolean)
+        fetch(NOTIFY_DEVELOPER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: lines.join('\n'),
+                via: 'slack',
+                channel: 'shopify-theme-app-dependency-alerts'
+            })
+        }).catch(() => {})
+    }
+
+    const fetchViaAppProxy = async (url, init) => {
+        const method = init?.method || 'GET'
+        const res = await fetch(url, init)
+        if (res.status === 404) {
+            notifyDeveloperSellerProfileProxy404(url, method)
+        }
+        return res
     }
 
     // Helper function to get terminology with fallback and casing variants
@@ -384,7 +432,7 @@ function mountSellerProfile () {
                                             <div v-if="showLocation || (showVendorCountryAndFlag && vendor.country_detail?.name)" class="st-ext-flex st-ext-align-items-center st-ext-flex-wrap st-ext-gap-1 st-ext-text-xs st-ext-text-gray-500">
                                                 <span v-if="showLocation && (vendor.city || vendor.state)">[[ vendor.city || vendor.state ]]</span>
                                                 <span v-if="showLocation && (vendor.city || vendor.state) && ((showVendorCountryAndFlag && vendor.country_detail?.name) || (!showVendorCountryAndFlag && vendor.country && vendor.country_detail?.name))">,</span>
-                                                <img v-if="showVendorCountryAndFlag && vendor.country_flag" :src="vendor.country_flag" :alt="vendor.country_detail.name" style="width:20px; height:14px; object-fit:cover; border-radius:2px; vertical-align:middle;">
+                                                <img v-if="showVendorCountryAndFlag && vendor.country_flag" :src="vendor.country_flag" :alt="vendor.country_detail.name" style="width:18px; height:12px; object-fit:cover; border-radius:2px; vertical-align:middle;">
                                                 <span v-if="(showVendorCountryAndFlag && vendor.country_detail?.name) || (showLocation && !showVendorCountryAndFlag && vendor.country && vendor.country_detail?.name)">[[ vendor.country_detail.name ]]</span>
                                             </div>
                                             <div v-if="parentCompany?.display_vendor_category && vendor.attributes?.category?.name" class="st-ext-text-gray-500 st-ext-mb-1 st-ext-text-xs">[[ terminology.vendor ]] Category: [[ vendor.attributes?.category?.name ]]</div>
@@ -487,7 +535,8 @@ function mountSellerProfile () {
 
             const buildVendorsUrl = () => {
                 const page = Math.floor(first.value / pageSize.value) + 1
-                const base = `/a/dashboard/vendors-list?shop=${Shopify.shop}&page=${page}&limit=${pageSize.value}`
+                const proxyBase = normalizeAppProxyPrefix(blockSettings.value.app_proxy_prefix)
+                const base = `${proxyBase}/vendors-list?shop=${Shopify.shop}&page=${page}&limit=${pageSize.value}`
                 const parts = []
                 if (filters.value.search) parts.push(`search_key=${encodeURIComponent(filters.value.search)}`)
                 if (filters.value.country) parts.push(`country=${encodeURIComponent(filters.value.country)}`)
@@ -536,7 +585,7 @@ function mountSellerProfile () {
             const fetchVendors = async () => {
                 loading.value = true
                 try {
-                    const res = await fetch(buildVendorsUrl())
+                    const res = await fetchViaAppProxy(buildVendorsUrl())
                     const payload = await res.json()
 
                     if (payload.success) {
@@ -1358,6 +1407,7 @@ function mountSellerProfile () {
 
             const route = VueRouter.useRoute()
             const blockSettings = loadBlockSettings()
+            const appProxyBase = normalizeAppProxyPrefix(blockSettings.app_proxy_prefix)
             const terminology = computed(() => props.terminology || getTerminology(blockSettings))
             
             // Dynamic translations with terminology 
@@ -1539,8 +1589,8 @@ function mountSellerProfile () {
             const fetchVendorDetails = async () => {
                 loading.value = true
                 try {
-                    const url = `/a/dashboard/vendor-details/${encodeURIComponent(handle.value)}?shop=${encodeURIComponent(shop)}`
-                    const response = await fetch(url)
+                    const url = `${appProxyBase}/vendor-details/${encodeURIComponent(handle.value)}?shop=${encodeURIComponent(shop)}`
+                    const response = await fetchViaAppProxy(url)
                     const data = await response.json()
                     
                     if (data.success) {
@@ -1590,8 +1640,8 @@ function mountSellerProfile () {
                     }
                     params.append('sort_by', productSort.value)
                     
-                    const url = `/a/dashboard/vendor-products/${encodeURIComponent(handle.value)}?${params.toString()}`
-                    const response = await fetch(url)
+                    const url = `${appProxyBase}/vendor-products/${encodeURIComponent(handle.value)}?${params.toString()}`
+                    const response = await fetchViaAppProxy(url)
                     const data = await response.json()
                     
                     if (data.success) {
@@ -1636,11 +1686,11 @@ function mountSellerProfile () {
 
                 reviewsLoading.value = true
                 try {
-                    let url = `/a/dashboard/vendor-reviews/${encodeURIComponent(vendorDetails.value.slug)}?shop=${encodeURIComponent(shop)}&page=${page}&limit=${reviewsPageSize.value}`
+                    let url = `${appProxyBase}/vendor-reviews/${encodeURIComponent(vendorDetails.value.slug)}?shop=${encodeURIComponent(shop)}&page=${page}&limit=${reviewsPageSize.value}`
                     if (window.spCustomerEmail) {
                         url += `&email=${encodeURIComponent(window.spCustomerEmail)}`
                     }
-                    const response = await fetch(url)
+                    const response = await fetchViaAppProxy(url)
                     const data = await response.json()
 
                     const reviewList = data.reviews?.data || data.data?.reviews?.data || data.data?.reviews || []
@@ -1738,7 +1788,7 @@ function mountSellerProfile () {
             const checkVendorReviewEligibility = async () => {
                 checkingEligibility.value = true
                 try {
-                    const response = await fetch('/a/dashboard/check-vendor-review-eligibility', {
+                    const response = await fetchViaAppProxy(`${appProxyBase}/check-vendor-review-eligibility`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
