@@ -59,6 +59,13 @@
       },
       
       "vendorDetails": {
+        "filter": {
+          "allCategories": "All Categories",
+          "done": "Done",
+          "noCategoriesAvailable": "No categories available",
+          "selectedSuffix": "selected",
+          "clearAll": "Clear All"
+        },
         "backToVendors": "Back to {vendors}",
         "searchProductsPlaceholder": "Search {products}...",
         "productAddedToCart": "{product} added to cart",
@@ -277,6 +284,13 @@
         }
       },
       "vendorDetails": {
+        "filter": {
+          "allCategories": "Alle Kategorien",
+          "done": "Fertig",
+          "noCategoriesAvailable": "Keine Kategorien verfügbar",
+          "selectedSuffix": "ausgewählt",
+          "clearAll": "Alles löschen"
+        },
         "backToVendors": "Zurück zu Anbietern",
         "searchProductsPlaceholder": "Produkte suchen...",
         "productAddedToCart": "Produkt wurde zum Warenkorb hinzugefügt",
@@ -497,6 +511,13 @@
         }
       },
       "vendorDetails": {
+        "filter": {
+          "allCategories": "Todas las categorías",
+          "done": "Listo",
+          "noCategoriesAvailable": "No hay categorías disponibles",
+          "selectedSuffix": "seleccionadas",
+          "clearAll": "Borrar todo"
+        },
         "backToVendors": "Volver a vendedores",
         "searchProductsPlaceholder": "Buscar productos...",
         "productAddedToCart": "Producto añadido al carrito",
@@ -717,6 +738,13 @@
         }
       },
       "vendorDetails": {
+        "filter": {
+          "allCategories": "Alle categorieën",
+          "done": "Klaar",
+          "noCategoriesAvailable": "Geen categorieën beschikbaar",
+          "selectedSuffix": "geselecteerd",
+          "clearAll": "Alles wissen"
+        },
         "backToVendors": "Terug naar verkopers",
         "searchProductsPlaceholder": "Zoek producten...",
         "productAddedToCart": "Product toegevoegd aan winkelwagen",
@@ -933,6 +961,13 @@
         }
       },
       "vendorDetails": {
+        "filter": {
+          "allCategories": "Todas as categorias",
+          "done": "Concluído",
+          "noCategoriesAvailable": "Nenhuma categoria disponível",
+          "selectedSuffix": "selecionadas",
+          "clearAll": "Limpar tudo"
+        },
         "backToVendors": "Voltar aos vendedores",
         "searchProductsPlaceholder": "Pesquisar produtos...",
         "productAddedToCart": "Produto adicionado ao carrinho",
@@ -1148,6 +1183,13 @@
         }
       },
       "vendorDetails": {
+        "filter": {
+          "allCategories": "Alle kategorier",
+          "done": "Ferdig",
+          "noCategoriesAvailable": "Ingen kategorier tilgjengelig",
+          "selectedSuffix": "valgt",
+          "clearAll": "Fjern alle"
+        },
         "backToVendors": "Tilbake til leverandører",
         "searchProductsPlaceholder": "Søk produkter...",
         "productAddedToCart": "Produkt lagt til i handlekurven",

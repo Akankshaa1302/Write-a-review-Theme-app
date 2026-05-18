@@ -254,3 +254,132 @@
     border-top: 1px solid #e5e7eb;
     margin: 0;
 }
+
+#seller-profile-app .sp-category-filter { position: relative; }
+#seller-profile-app .sp-category-dropdown-btn {
+    cursor: pointer;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 12px;
+    text-align: left;
+    min-width: 180px;
+    padding: 8px 14px;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: #1f2937;
+}
+#seller-profile-app .sp-category-dropdown-btn:hover { background: #e5e7eb; }
+#seller-profile-app .sp-category-caret { font-size: 0.75rem; color: #6b7280; }
+#seller-profile-app .sp-category-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 240px;
+    max-width: 320px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    z-index: 1;
+}
+#seller-profile-app .sp-category-options {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    max-height: 260px;
+    overflow-y: auto;
+}
+#seller-profile-app .sp-category-options li label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: #1f2937;
+    margin: 0;
+}
+#seller-profile-app .sp-category-options li label:hover { background: #f9fafb; }
+#seller-profile-app .sp-category-options input[type="checkbox"] { margin: 0; accent-color: #2563eb; }
+#seller-profile-app .sp-category-empty {
+    padding: 10px 14px;
+    color: #9ca3af;
+    font-style: italic;
+    font-size: 0.875rem;
+}
+#seller-profile-app .sp-category-dropdown-footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 8px 12px;
+    text-align: right;
+}
+#seller-profile-app .sp-category-done-btn {
+    background: #111827;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+#seller-profile-app .sp-category-done-btn:hover { background: #374151; }
+
+#seller-profile-app .sp-selected-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 16px;
+}
+#seller-profile-app .sp-category-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #eef2f7;
+    border: 1px solid #d3dbe5;
+    border-radius: 9999px;
+    padding: 4px 4px 4px 12px;
+    font-size: 0.8125rem;
+    color: #1f3a5f;
+    line-height: 1;
+}
+#seller-profile-app .sp-category-chip-text {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#seller-profile-app .sp-category-chip-remove {
+    background: transparent;
+    border: none;
+    color: #1f3a5f;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+}
+#seller-profile-app .sp-category-chip-remove:hover { background: #d3dbe5; }
+#seller-profile-app .sp-category-chip-remove i { font-size: 0.75rem; }
+#seller-profile-app .sp-clear-all-btn {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    text-decoration: underline;
+    padding: 4px 8px;
+    margin-left: 4px;
+}
+#seller-profile-app .sp-clear-all-btn:hover { color: #111827; }
+
+@media (max-width: 640px) {
+    #seller-profile-app .sp-category-dropdown-menu {
+        left: auto;
+        right: 0;
+        min-width: 200px;
+    }
+}

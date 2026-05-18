@@ -38,7 +38,7 @@ function mountSellerProfile () {
         appElement.__mounted = false;
     }
     
-    const { createApp, ref, computed, onMounted, watch } = Vue
+    const { createApp, ref, computed, onMounted, onUnmounted, watch } = Vue
     const { createRouter, createWebHashHistory } = VueRouter
     const { createI18n } = VueI18n
     const { useToast } = PrimeVue
@@ -948,27 +948,65 @@ function mountSellerProfile () {
                         <p-tabpanel v-if="hasTab('products')" :header="dynamicTranslations.productsTab">
                             <div class="st-ext-space-y-6">
                                 <!-- Search and Sort Bar -->
-                                <div class="st-ext-flex st-ext-justify-content-center st-ext-mb-6">
-                                    <div class="st-ext-flex st-ext-gap-4 st-ext-align-items-center" style="width: 500px;">
+                                <div class="st-ext-flex st-ext-justify-content-center st-ext-mb-2">
+                                    <div class="st-ext-flex st-ext-gap-4 st-ext-align-items-center st-ext-flex-wrap" style="width: 700px;">
                                         <!-- Search Input -->
-                                        <div class="st-ext-relative st-ext-w-9">
-                                            <p-input-text 
-                                                v-model="productSearch" 
-                                                :placeholder="dynamicTranslations.searchProductsPlaceholder" 
+                                        <div class="st-ext-relative st-ext-w-5">
+                                            <p-input-text
+                                                v-model="productSearch"
+                                                :placeholder="dynamicTranslations.searchProductsPlaceholder"
                                                 class="st-ext-w-full st-ext-pl-10 st-ext-bg-gray-100 st-ext-border-0 st-ext-border-round-xl st-ext-text-sm"></p-input-text>
                                         </div>
-                                        
+
+                                        <!-- Category Multi-Select -->
+                                        <div class="sp-category-filter" :class="{ 'sp-open': categoryDropdownOpen }">
+                                            <button type="button" class="sp-category-dropdown-btn" @click="toggleCategoryDropdown">
+                                                <span class="sp-category-label">
+                                                    <template v-if="selectedProductCategories.length === 0">[[ $t('sellers.vendorDetails.filter.allCategories') ]]</template>
+                                                    <template v-else>[[ selectedProductCategories.length ]] [[ $t('sellers.vendorDetails.filter.selectedSuffix') ]]</template>
+                                                </span>
+                                                <i class="pi pi-chevron-down sp-category-caret"></i>
+                                            </button>
+                                            <div class="sp-category-dropdown-menu" v-show="categoryDropdownOpen" @click.stop>
+                                                <ul class="sp-category-options">
+                                                    <li v-for="cat in productCategoryOptionsForTab" :key="cat.id">
+                                                        <label>
+                                                            <input type="checkbox" :checked="isProductCategorySelected(cat.id)" @change="toggleProductCategory(cat.id)">
+                                                            <span>[[ cat.title ]]</span>
+                                                        </label>
+                                                    </li>
+                                                    <li v-if="productCategoryOptionsForTab.length === 0" class="sp-category-empty">
+                                                        [[ $t('sellers.vendorDetails.filter.noCategoriesAvailable') ]]
+                                                    </li>
+                                                </ul>
+                                                <div class="sp-category-dropdown-footer">
+                                                    <button type="button" class="sp-category-done-btn" @click="closeCategoryDropdown">[[ $t('sellers.vendorDetails.filter.done') ]]</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <!-- Sort Dropdown -->
                                         <div class="st-ext-flex st-ext-align-items-center st-ext-gap-2 vendor-details-select">
-                                            <p-select 
-                                                v-model="productSort" 
-                                                :options="sortOptions" 
-                                                optionLabel="label" 
-                                                optionValue="value" 
-                                                :placeholder="dynamicTranslations.sortProductsPlaceholder" 
+                                            <p-select
+                                                v-model="productSort"
+                                                :options="sortOptions"
+                                                optionLabel="label"
+                                                optionValue="value"
+                                                :placeholder="dynamicTranslations.sortProductsPlaceholder"
                                                 class="st-ext-w-48 st-ext-bg-gray-100 st-ext-border-0 st-ext-text-sm"></p-select>
                                         </div>
                                     </div>
+                                </div>
+
+                                <!-- Selected Category Chips -->
+                                <div v-if="selectedProductCategories.length > 0" class="sp-selected-categories">
+                                    <span v-for="id in selectedProductCategories" :key="id" class="sp-category-chip">
+                                        <span class="sp-category-chip-text">[[ getProductCategoryNameById(id) ]]</span>
+                                        <button type="button" class="sp-category-chip-remove" @click="removeProductCategoryChip(id)" :aria-label="'Remove ' + getProductCategoryNameById(id)">
+                                            <i class="pi pi-times"></i>
+                                        </button>
+                                    </span>
+                                    <button type="button" class="sp-clear-all-btn" @click="clearAllProductCategories">[[ $t('sellers.vendorDetails.filter.clearAll') ]]</button>
                                 </div>
                                     <!-- Products Grid -->
                                     <div v-if="productsLoading" class="st-ext-grid st-ext-grid-nogutter">
@@ -999,7 +1037,7 @@ function mountSellerProfile () {
                                                         @click="handleAddToCart(product)"
                                                         :disabled="cartLoading[product.id]"
                                                         class="st-ext-bg-white st-ext-flex st-ext-items-center st-ext-justify-center st-ext-border-none st-ext-cursor-pointer"
-                                                        style="position: absolute; top: 16px; right: 16px; z-index: 10; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden;"
+                                                        style="position: absolute; top: 16px; right: 16px; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden;"
                                                         :title="'Add To Cart'">
                                                         <i v-if="!cartLoading[product.id]" class="pi pi-shopping-bag" style="font-size: 22px; color: #1f2937;"></i>
                                                         <i v-else class="pi pi-spin pi-spinner" style="font-size: 22px; color: #1f2937;"></i>
@@ -1445,6 +1483,13 @@ function mountSellerProfile () {
             const productsCompanyFlag = ref('')
             const showProductCountryAndFlag = ref(false)
             let searchDebounceTimer = null
+
+            // Product category filter state
+            const selectedProductCategories = ref([])
+            const productCategoryOptionsForTab = ref([])
+            const categoryDropdownOpen = ref(false)
+            const categoryFilterDirty = ref(false)
+            let productCategoriesHydrated = false
             
             // Reviews state
             const reviews = ref([])
@@ -1639,7 +1684,11 @@ function mountSellerProfile () {
                         params.append('search_product', productSearch.value.trim())
                     }
                     params.append('sort_by', productSort.value)
-                    
+
+                    if (Array.isArray(selectedProductCategories.value) && selectedProductCategories.value.length > 0) {
+                        params.append('product_category_id', selectedProductCategories.value.join(','))
+                    }
+
                     const url = `${appProxyBase}/vendor-products/${encodeURIComponent(handle.value)}?${params.toString()}`
                     const response = await fetchViaAppProxy(url)
                     const data = await response.json()
@@ -1648,6 +1697,10 @@ function mountSellerProfile () {
                         products.value = data.data.products || []
                         totalProducts.value = data.data.count || 0
                         showProductCountryAndFlag.value = !!data.data.show_vendor_country_on_products
+                        if (!productCategoriesHydrated && Array.isArray(data.data.product_categories)) {
+                            productCategoryOptionsForTab.value = data.data.product_categories
+                            productCategoriesHydrated = true
+                        }
                         const country = data.data.company?.country || ''
                         if (showProductCountryAndFlag.value && country && country !== productsCompanyCountry.value) {
                             productsCompanyCountry.value = country
@@ -1975,8 +2028,68 @@ function mountSellerProfile () {
                 fetchProducts()
             })
 
+            const isProductCategorySelected = (id) => selectedProductCategories.value.indexOf(id) !== -1
+
+            const toggleProductCategory = (id) => {
+                const idx = selectedProductCategories.value.indexOf(id)
+                if (idx === -1) {
+                    selectedProductCategories.value = selectedProductCategories.value.concat([id])
+                } else {
+                    selectedProductCategories.value = selectedProductCategories.value.filter(x => x !== id)
+                }
+                categoryFilterDirty.value = true
+            }
+
+            const getProductCategoryNameById = (id) => {
+                const opt = productCategoryOptionsForTab.value.find(c => c.id === id)
+                return opt ? opt.title : id
+            }
+
+            const refreshAfterCategoryChange = () => {
+                currentProductPage.value = 0
+                productsPaginationFirst.value = 0
+                fetchProducts()
+            }
+
+            const closeCategoryDropdown = () => {
+                if (!categoryDropdownOpen.value) return
+                categoryDropdownOpen.value = false
+                if (categoryFilterDirty.value) {
+                    categoryFilterDirty.value = false
+                    refreshAfterCategoryChange()
+                }
+            }
+
+            const toggleCategoryDropdown = (event) => {
+                if (event) event.stopPropagation()
+                if (categoryDropdownOpen.value) closeCategoryDropdown()
+                else categoryDropdownOpen.value = true
+            }
+
+            const removeProductCategoryChip = (id) => {
+                selectedProductCategories.value = selectedProductCategories.value.filter(x => x !== id)
+                refreshAfterCategoryChange()
+            }
+
+            const clearAllProductCategories = () => {
+                if (selectedProductCategories.value.length === 0) return
+                selectedProductCategories.value = []
+                categoryFilterDirty.value = false
+                refreshAfterCategoryChange()
+            }
+
+            const handleCategoryOutsideClick = (event) => {
+                const wrap = document.querySelector('.sp-category-filter')
+                if (wrap && !wrap.contains(event.target)) closeCategoryDropdown()
+            }
+
             onMounted(() => {
                 fetchVendorDetails()
+                document.addEventListener('click', handleCategoryOutsideClick)
+            })
+
+            onUnmounted(() => {
+                document.removeEventListener('click', handleCategoryOutsideClick)
             })
 
             return {
@@ -2034,7 +2147,18 @@ function mountSellerProfile () {
                 cartLoading,
                 terminology,
                 dynamicTranslations,
-                blockSettings
+                blockSettings,
+                // Product category filter
+                selectedProductCategories,
+                productCategoryOptionsForTab,
+                categoryDropdownOpen,
+                isProductCategorySelected,
+                toggleProductCategory,
+                getProductCategoryNameById,
+                toggleCategoryDropdown,
+                closeCategoryDropdown,
+                removeProductCategoryChip,
+                clearAllProductCategories
             }
         }
     }
