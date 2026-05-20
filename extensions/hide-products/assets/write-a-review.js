@@ -9,8 +9,53 @@ async function writeaReview() {
       const blockSettings = JSON.parse(app?.getAttribute('data-block-settings'))
 
       return blockSettings || {
-        fontSize: 'md'
+        fontSize: 'md',
+        app_proxy_prefix: '/a/dashboard'
       }
+    }
+
+    /** Must match Shopify app proxy "Subpath prefix" (leading slash, no trailing slash). */
+    const normalizeAppProxyPrefix = (raw) => {
+      const fallback = '/a/dashboard'
+      if (typeof raw !== 'string' || !raw.trim()) return fallback
+      const base = raw.trim().replace(/\/+$/, '')
+      if (!base) return fallback
+      return base.startsWith('/') ? base : `/${base}`
+    }
+
+    const NOTIFY_DEVELOPER_URL = 'https://api-v2.shipturtle.com/api/v1/notify-developer'
+
+    const notifyDeveloperWriteAReviewProxy404 = (url, method) => {
+      const shopDomain = window.Shopify?.shop
+      const timestamp = new Date().toISOString()
+      const networkType = navigator.connection?.effectiveType
+      const lines = [
+        '🚨 *Write a Review — App proxy 404*',
+        `*Shop:* ${shopDomain}`,
+        `*URL:* ${typeof url === 'string' ? url : ''}`,
+        method ? `*Method:* ${method}` : '',
+        '*HTTP:* 404',
+        `*Time:* ${timestamp}`,
+        networkType ? `*Network:* ${networkType}` : ''
+      ].filter(Boolean)
+      fetch(NOTIFY_DEVELOPER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: lines.join('\n'),
+          via: 'slack',
+          channel: 'shopify-theme-app-dependency-alerts'
+        })
+      }).catch(() => {})
+    }
+
+    const fetchViaAppProxy = async (url, init) => {
+      const method = init?.method || 'GET'
+      const res = await fetch(url, init)
+      if (res.status === 404) {
+        notifyDeveloperWriteAReviewProxy404(url, method)
+      }
+      return res
     }
     // Locale detection from Shopify theme
     const getShopifyLocale = () => {
@@ -208,7 +253,8 @@ async function writeaReview() {
       setup() {
         const { t } = VueI18n.useI18n()
         // Constants
-        const baseURL = '/a/dashboard'
+        const blockSettings = getBlockSettings()
+        const baseURL = normalizeAppProxyPrefix(blockSettings.app_proxy_prefix)
         const toast = useToast();
         
         // Dialog State
@@ -318,7 +364,7 @@ async function writeaReview() {
           const vId = ShopifyAnalytics?.meta?.product?.variants?.[0]?.id;
 
           try {
-            const response = await fetch(baseURL + "/post-product-reviews", {
+            const response = await fetchViaAppProxy(baseURL + "/post-product-reviews", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -388,7 +434,7 @@ async function writeaReview() {
         const confirmDeleteReview = async () => {
             submittingDeleteLoading.value = true;
             try {
-                const response = await fetch(baseURL + "/delete-product-review", {
+                const response = await fetchViaAppProxy(baseURL + "/delete-product-review", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -439,7 +485,7 @@ async function writeaReview() {
         const checkCustomerAbleToWriteReview = async () => {
           checkCustomerAbleToWrite.value = true
           try{
-            const response = await fetch(baseURL + "/check-review-eligibility", {
+            const response = await fetchViaAppProxy(baseURL + "/check-review-eligibility", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -487,7 +533,7 @@ async function writeaReview() {
              loadingReviews.value = true;
              try {
                  const pId = window.productId || ShopifyAnalytics?.meta?.product?.id;
-                 const response = await fetch(`${baseURL}/fetch-product-page-reviews?product_id=${pId}&page=${page}&limit=${pageSize.value}&email=${window.customerEmail}`);
+                 const response = await fetchViaAppProxy(`${baseURL}/fetch-product-page-reviews?product_id=${pId}&page=${page}&limit=${pageSize.value}&email=${window.customerEmail}`);
                  if (response.ok) {
                      const data = await response.json();
                      

@@ -1,6 +1,63 @@
 function LiveChatThemeAppExtension() {
   const { createApp, ref, computed, onMounted, onBeforeMount , onBeforeUnmount, watch, nextTick  } = Vue;
   const { useToast } = PrimeVue;
+
+  const getBlockSettings = () => {
+    try {
+      const el = document.getElementById('st-live-chat-app')
+      const raw = el?.getAttribute('data-block-settings')
+      if (!raw) return { app_proxy_prefix: '/a/dashboard' }
+      return JSON.parse(raw)
+    } catch (error) {
+      console.error('Failed to load live-chat block settings:', error)
+      return { app_proxy_prefix: '/a/dashboard' }
+    }
+  }
+
+  /** Must match Shopify app proxy "Subpath prefix" (leading slash, no trailing slash). */
+  const normalizeAppProxyPrefix = (raw) => {
+    const fallback = '/a/dashboard'
+    if (typeof raw !== 'string' || !raw.trim()) return fallback
+    const base = raw.trim().replace(/\/+$/, '')
+    if (!base) return fallback
+    return base.startsWith('/') ? base : `/${base}`
+  }
+
+  const NOTIFY_DEVELOPER_URL = 'https://api-v2.shipturtle.com/api/v1/notify-developer'
+
+  const notifyDeveloperLiveChatProxy404 = (url, method) => {
+    const shopDomain = window.Shopify?.shop
+    const timestamp = new Date().toISOString()
+    const networkType = navigator.connection?.effectiveType
+    const lines = [
+      '🚨 *Live Chat — App proxy 404*',
+      `*Shop:* ${shopDomain}`,
+      `*URL:* ${typeof url === 'string' ? url : ''}`,
+      method ? `*Method:* ${method}` : '',
+      '*HTTP:* 404',
+      `*Time:* ${timestamp}`,
+      networkType ? `*Network:* ${networkType}` : ''
+    ].filter(Boolean)
+    fetch(NOTIFY_DEVELOPER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: lines.join('\n'),
+        via: 'slack',
+        channel: 'shopify-theme-app-dependency-alerts'
+      })
+    }).catch(() => {})
+  }
+
+  const fetchViaAppProxy = async (url, init) => {
+    const method = init?.method || 'GET'
+    const res = await fetch(url, init)
+    if (res.status === 404) {
+      notifyDeveloperLiveChatProxy404(url, method)
+    }
+    return res
+  }
+
   const app = createApp({
     template: `
       <div class="st-live-chat-wrapper">
@@ -115,7 +172,8 @@ function LiveChatThemeAppExtension() {
       const isTyping = ref(false);
       const buttonBgColor = ref(window.stLiveChatConfig?.buttonColor || '#4F46E5');
       const messagesContainer = ref(null);
-      const baseApiUrl = '/a/dashboard';
+      const blockSettings = getBlockSettings();
+      const baseApiUrl = normalizeAppProxyPrefix(blockSettings.app_proxy_prefix);
       const shopifyDomain = ref(Shopify.shop);
       const productId = ref(ShopifyAnalytics.meta.product.id);
       const chatExists = ref(false);
@@ -218,7 +276,7 @@ function LiveChatThemeAppExtension() {
         isSending.value = true;
 
         try{
-          const response = await fetch(`${baseApiUrl}/customer/chats/initiate?shop=${shopifyDomain.value}&logged_in_customer_id=${customerDetails.value.id}`, {
+          const response = await fetchViaAppProxy(`${baseApiUrl}/customer/chats/initiate?shop=${shopifyDomain.value}&logged_in_customer_id=${customerDetails.value.id}`, {
           method: 'POST',
           body: JSON.stringify({
             initial_message: messageText,
@@ -252,7 +310,7 @@ function LiveChatThemeAppExtension() {
         const messageText = newMessage.value.trim();
         isSending.value = true;
         try{
-          const response = await fetch(`${baseApiUrl}/customer/chats/${chatId.value}/messages`, {
+          const response = await fetchViaAppProxy(`${baseApiUrl}/customer/chats/${chatId.value}/messages`, {
             method: 'POST',
             body: JSON.stringify({
               message: messageText
@@ -277,7 +335,7 @@ function LiveChatThemeAppExtension() {
       }
       const markChatAsRead = async (chatId) => {
         try{
-          const response = await fetch(`${baseApiUrl}/customer/chats/${chatId}/read?shop=${shopifyDomain.value}&logged_in_customer_id=${customerDetails.value.id}`,{
+          const response = await fetchViaAppProxy(`${baseApiUrl}/customer/chats/${chatId}/read?shop=${shopifyDomain.value}&logged_in_customer_id=${customerDetails.value.id}`,{
             method: 'POST'
           });
         }
@@ -342,7 +400,7 @@ function LiveChatThemeAppExtension() {
 
       const fetchchatMessages = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchViaAppProxy(
           `${baseApiUrl}/customer/chats/by-product?shop=${shopifyDomain.value}&logged_in_customer_id=${customerDetails.value.id}&product_channel_id=${productId.value}`
         );
 
@@ -364,7 +422,7 @@ function LiveChatThemeAppExtension() {
 };
      const sendTypingStatus = async (chatId) => {
       try{
-        const response = await fetch(`${baseApiUrl}/customer/chats/${chatId}/typing?shop=${shopifyDomain.value}&logged_in_customer_id=${customerDetails.value.id}`,{
+        const response = await fetchViaAppProxy(`${baseApiUrl}/customer/chats/${chatId}/typing?shop=${shopifyDomain.value}&logged_in_customer_id=${customerDetails.value.id}`,{
           method: 'POST'
         });
       }
