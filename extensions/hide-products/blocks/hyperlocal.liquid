@@ -31,7 +31,8 @@
       {
         "type": "text",
         "id": "hyperlocalMetaFieldKey",
-        "label": "Hyperlocal Meta Field Key"
+        "label": "Hyperlocal Meta Field Key (deprecated)",
+        "info": "No longer used. New installs use deterministic sharded keys (zips_0 … zips_31). Safe to leave blank."
       },
       {
         "type": "color",
@@ -61,17 +62,38 @@
   }
 {% endschema %}
 
-{% assign st_hk = block.settings.hyperlocalMetaFieldKey %}
-{% assign st_mf = false %}
-{% if product and st_hk != blank %}
-  {% assign st_mf = product.metafields.shipturtle[st_hk] %}
-{% endif %}
+{%- comment -%}
+  Sharded hyperlocal embed config.
+  Backend writes coverage to N parallel metafields `st_hyperlocal.zips_0` … `st_hyperlocal.zips_{N-1}`.
+  Keep `st_shard_count` in sync with `config('hyperlocal.shard_count')` server-side.
+  See docs/hyperlocal-proposed-solution.md (§4).
+{%- endcomment -%}
+
+{%- comment -%} Keep st_shard_count in sync with config('hyperlocal.shard_count'). {%- endcomment -%}
+{%- assign st_shard_count = 8 -%}
+{%- assign st_key_prefix = 'zips_' -%}
+{%- assign st_shard_max = st_shard_count | minus: 1 -%}
+
+{%- capture st_product_metafields_json -%}
+  {%- if product -%}
+    {
+    {%- for i in (0..st_shard_max) -%}
+      {%- assign key = st_key_prefix | append: i -%}
+      {%- assign mf = product.metafields.st_hyperlocal[key] -%}
+      {{ key | json }}: {% if mf %}{{ mf.value | json }}{% else %}[]{% endif %}{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+    }
+  {%- endif -%}
+{%- endcapture -%}
 
 <script type="application/json" id="st-hyperlocal-embed-config">
 {
-  "hyperlocalMetaFieldKey": {{ st_hk | json }},
-  "productZipCodes": {% if st_mf %}{{ st_mf.value | json }}{% else %}null{% endif %},
+  "shardCount": {{ st_shard_count }},
+  "metafieldKeyPrefix": {{ st_key_prefix | json }},
   "isProductTemplate": {% if template.name == 'product' %}true{% else %}false{% endif %},
+  {%- if product -%}
+  "productMetafields": {{ st_product_metafields_json }},
+  {%- endif -%}
   "zipCodeBtn": {{ block.settings.zip_code_btn | json }},
   "popupHeader": {{ block.settings.popup_header | json }},
   "placeholderText": {{ block.settings.placeholder_text | json }},

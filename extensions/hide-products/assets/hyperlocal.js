@@ -1,6 +1,6 @@
 const ZIP_STORAGE_KEY = 'visitor_zip';
 const FILTER_PARAM_KEY_STORAGE = 'zip_param_key';
-const SHIPTURTLE_FILTER_PREFIX = 'filter.p.m.shipturtle';
+const ST_HYPERLOCAL_FILTER_PREFIX = 'filter.p.m.st_hyperlocal';
 const PRODUCT_MSG_ATTR = 'data-st-hyperlocal-product-msg';
 const KOSHER_HOST = 'koshermarket.eu';
 
@@ -12,6 +12,66 @@ const MSG = {
 };
 
 const ST_HYPERLOCAL_EMBED_CONFIG_ID = 'st-hyperlocal-embed-config';
+
+// ---------------------------------------------------------------------------
+// Shard math — must produce byte-identical output to the PHP side
+//   (App\Services\HyperlocalShardService::shard()).
+//
+// Coverage zipcodes are split across N Shopify metafields (`st_hyperlocal.zips_0`
+// … `st_hyperlocal.zips_{N-1}`) determined by `crc32(normalize(zip)) % N`. The
+// buyer-side URL filter targets only the shard the typed zip belongs to.
+//
+// CRC-32 implementation (IEEE-802.3 / polynomial 0xEDB88320) — matches PHP's
+// native crc32(). See docs/poc/hyperlocal-shard.js for the reference.
+// ---------------------------------------------------------------------------
+
+const ST_DEFAULT_SHARD_COUNT = 8;  // fallback; real value comes from embed config (shardCount)
+const ST_DEFAULT_KEY_PREFIX  = 'zips_';
+
+const ST_CRC_TABLE = (() => {
+  const t = new Array(256);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let k = 0; k < 8; k++) {
+      c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    }
+    t[i] = c;
+  }
+  return t;
+})();
+
+function stCrc32(str) {
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc = ST_CRC_TABLE[(crc ^ str.charCodeAt(i)) & 0xFF] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+function stNormalizeZip(zip) {
+  return String(zip == null ? '' : zip).trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function stGetShardCount() {
+  const n = Number(window.__stShardCount);
+  return Number.isFinite(n) && n > 0 ? n : ST_DEFAULT_SHARD_COUNT;
+}
+
+function stGetKeyPrefix() {
+  const p = window.__stKeyPrefix;
+  return typeof p === 'string' && p ? p : ST_DEFAULT_KEY_PREFIX;
+}
+
+function stComputeShard(zip) {
+  const normalized = stNormalizeZip(zip);
+  if (!normalized) return 0;
+  return stCrc32(normalized) % stGetShardCount();
+}
+
+/** URL filter key for a given zip, e.g. "filter.p.m.st_hyperlocal.zips_7". */
+function stShardedFilterKey(zip) {
+  return `${ST_HYPERLOCAL_FILTER_PREFIX}.${stGetKeyPrefix()}${stComputeShard(zip)}`;
+}
 
 let __stHyperlocalEmbedConfigApplied = false;
 
@@ -32,20 +92,17 @@ function initStHyperlocalEmbedFromJson() {
     return false;
   }
 
-  const key = String(cfg.hyperlocalMetaFieldKey || '').trim();
-  if (key) {
-    try {
-      localStorage.setItem('hyperlocalMetaFieldKey', key);
-    } catch {
-      /* non-fatal */
-    }
+  // Sharded model: backend writes N parallel metafields and exposes the
+  // shard count + key prefix in the embed config. The legacy single-key
+  // setting is deprecated; ignore it on new installs.
+  const shardCount = Number(cfg.shardCount);
+  if (Number.isFinite(shardCount) && shardCount > 0) {
+    window.__stShardCount = shardCount;
   }
-  if (!window.hyperlocalMetaFieldKey) {
-    window.hyperlocalMetaFieldKey = key;
-  }
-  if (key) {
-    window.filterParamValue = `filter.p.m.shipturtle.${key}`;
-  }
+  const keyPrefix = typeof cfg.metafieldKeyPrefix === 'string' && cfg.metafieldKeyPrefix
+    ? cfg.metafieldKeyPrefix
+    : ST_DEFAULT_KEY_PREFIX;
+  window.__stKeyPrefix = keyPrefix;
 
   window.__stHyperlocalUiSettings = {
     zipCodeBtn: cfg.zipCodeBtn,
@@ -61,14 +118,27 @@ function initStHyperlocalEmbedFromJson() {
   };
 
   if (cfg.isProductTemplate) {
-    const raw = cfg.productZipCodes;
+    // productMetafields arrives as a map { "zips_0": [...], "zips_1": [...], ... }.
+    // Union into one flat list for the product-page gate (membership check
+    // doesn't need shard awareness).
     let zipCodes = null;
-    if (raw != null) {
-      if (Array.isArray(raw)) {
-        zipCodes = [...raw];
-      } else if (typeof raw === 'string' && raw.trim()) {
-        zipCodes = raw.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+    const pm = cfg.productMetafields;
+    if (pm && typeof pm === 'object') {
+      console.log(pm);
+      const union = [];
+      for (const k of Object.keys(pm)) {
+        console.log(k);
+        const arr = pm[k];
+        if (Array.isArray(arr)) {
+          for (const z of arr) union.push(stNormalizeZip(z));
+        }
       }
+      console.log("Union of sharded zip metafields:", union);
+      zipCodes = union.filter(Boolean);
+    } else if (Array.isArray(cfg.productZipCodes)) {
+      // Legacy single-key fallback. Will go away after migration (D8).
+      console.log("else block", cfg.productZipCodes);
+      zipCodes = cfg.productZipCodes.map(stNormalizeZip).filter(Boolean);
     }
     window.productMetafields = { zipCodes };
   }
@@ -95,21 +165,32 @@ function initStHyperlocalEmbedFromJson() {
 })();
 
 // ---------------------------------------------------------------------------
-// Filter param key (aligned with shipturtle-hyperlocal-head-boot.js)
+// Filter param key
+//
+// Under the sharded model the key is derived from the buyer's typed zip:
+//   shard = crc32(normalize(zip)) % N
+//   key   = "filter.p.m.st_hyperlocal.zips_<shard>"
+//
+// Callers that already have a zip in scope should prefer getFilterParamKeyForZip().
 // ---------------------------------------------------------------------------
 
+function getFilterParamKeyForZip(zip) {
+  if (!zip) return null;
+  return stShardedFilterKey(zip);
+}
+
 function getFilterParamKey() {
-  if (window.filterParamValue) return window.filterParamValue;
+  // Default: derive from whatever zip is currently stored. Route through
+  // ZipStorage.get() so any stale unnormalized value gets re-normalized.
+  const zip = ZipStorage.get();
+  if (zip) return stShardedFilterKey(zip);
 
-  const stored = localStorage.getItem(FILTER_PARAM_KEY_STORAGE);
-  if (stored) return stored;
-
+  // No stored zip yet but the URL already carries an st_hyperlocal filter
+  // (e.g. user landed on a deep-linked collection page). Mirror whatever
+  // key is on the URL so we keep history hooks and canonicalization aligned.
   const params = new URLSearchParams(window.location.search);
   for (const [key] of params) {
-    if (key.startsWith(SHIPTURTLE_FILTER_PREFIX)) {
-      localStorage.setItem(FILTER_PARAM_KEY_STORAGE, key);
-      return key;
-    }
+    if (key.startsWith(ST_HYPERLOCAL_FILTER_PREFIX)) return key;
   }
   return null;
 }
@@ -119,6 +200,9 @@ function getFilterParamKey() {
 // ---------------------------------------------------------------------------
 
 const ZipStorage = {
+  // Normalize on write so the stored value matches the canonical form the
+  // backend wrote to Shopify metafields (no spaces/punctuation). Read just
+  // returns what's there — write is the only source.
   get() {
     try {
       return (localStorage.getItem(ZIP_STORAGE_KEY) || '').trim();
@@ -128,7 +212,7 @@ const ZipStorage = {
   },
   set(zip) {
     try {
-      const z = (zip || '').trim();
+      const z = stNormalizeZip(zip || '');
       if (z) localStorage.setItem(ZIP_STORAGE_KEY, z);
     } catch {
       /* non-fatal */
@@ -154,11 +238,11 @@ function isCollectionOrSearchPathname(pathname) {
   return false;
 }
 
-/** Drop stray filter.p.m.shipturtle.* so only canonical paramKey remains. */
+/** Drop stray filter.p.m.st_hyperlocal.* so only canonical paramKey remains. */
 function canonicalizeShipturtleParams(params, paramKey) {
   const toRemove = [];
   params.forEach((value, key) => {
-    if (key.startsWith(SHIPTURTLE_FILTER_PREFIX) && key !== paramKey) {
+    if (key.startsWith(ST_HYPERLOCAL_FILTER_PREFIX) && key !== paramKey) {
       toRemove.push(key);
     }
   });
@@ -435,12 +519,17 @@ function navigateAfterZipSubmit(zip) {
   }
 
   if (isCollectionOrSearchPage()) {
-    const paramKey = getFilterParamKey() || window.filterParamValue;
+    // Compute the new shard directly from the just-typed zip rather than
+    // re-reading localStorage. Avoids a race if the storage write is delayed.
+    const paramKey = getFilterParamKeyForZip(zip);
     if (!paramKey) {
       window.location.reload();
       return;
     }
     const url = new URL(window.location.href);
+    // Drop any stale st_hyperlocal.zips_* from a previous shard before setting
+    // the new one (e.g., buyer switched from a zip in shard 5 to shard 12).
+    canonicalizeShipturtleParams(url.searchParams, paramKey);
     url.searchParams.set(paramKey, zip);
     window.location.replace(url.toString());
     return;
@@ -617,7 +706,9 @@ function bindZipPopupOnce() {
 
   zipForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const zip = zipInput?.value?.trim() || '';
+    // Normalize at the input boundary; everything downstream (storage, URL
+    // filter, gate) then operates on the canonical form.
+    const zip = stNormalizeZip(zipInput?.value || '');
     if (!zip) return;
 
     ZipStorage.set(zip);

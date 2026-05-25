@@ -23,7 +23,7 @@
  * Param key resolution — same order as hyperlocal.js getFilterParamKey():
  *   1) window.filterParamValue (if another head script set it)
  *   2) localStorage zip_param_key
- *   3) any filter.p.m.shipturtle.* on the current URL (also saved to zip_param_key)
+ *   3) any filter.p.m.st_hyperlocal.* on the current URL (also saved to zip_param_key)
  *   4) localStorage hyperlocalMetaFieldKey (from app embed Liquid)
  *   5) SHIPTURTLE_META_KEY_SUFFIX if not the placeholder
  *
@@ -32,15 +32,45 @@
 (function () {
   'use strict';
 
-  /**
-   * Optional. Same as "Hyperlocal Meta Field Key" in the app embed (e.g. sp_xxxx).
-   * Leave REPLACE_WITH_YOUR_SP_KEY if (1)-(4) are enough on your store.
-   */
-  var SHIPTURTLE_META_KEY_SUFFIX = 'REPLACE_WITH_YOUR_SP_KEY';
+  // ── Sharded model config — must match the Liquid embed and PHP config. ──
+  // Backend writes coverage to N parallel `shipturtle.zips_0` … `zips_{N-1}`
+  // metafields. This file's job is to compute the correct shard key from the
+  // stored zip and pre-apply it to the URL before body renders.
+  var SHARD_COUNT = 8;   // keep in sync with config('hyperlocal.shard_count') + Liquid
+  var KEY_PREFIX  = 'zips_';
+
+  // CRC-32 / IEEE-802.3 (polynomial 0xEDB88320) — byte-identical to PHP's crc32().
+  var CRC_TABLE = (function () {
+    var t = new Array(256);
+    for (var i = 0; i < 256; i++) {
+      var c = i;
+      for (var k = 0; k < 8; k++) {
+        c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      }
+      t[i] = c;
+    }
+    return t;
+  })();
+
+  function crc32(s) {
+    var crc = 0xFFFFFFFF;
+    for (var i = 0; i < s.length; i++) {
+      crc = CRC_TABLE[(crc ^ s.charCodeAt(i)) & 0xFF] ^ (crc >>> 8);
+    }
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+  }
+
+  function normalizeZip(z) {
+    return String(z == null ? '' : z).trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+  }
+
+  function computeShard(z) {
+    var n = normalizeZip(z);
+    return n ? (crc32(n) % SHARD_COUNT) : 0;
+  }
 
   var LS_ZIP_KEY = 'visitor_zip';
   var LS_PARAM_KEY_STORAGE = 'zip_param_key';
-  var LS_HYPERLOCAL_META_KEY = 'hyperlocalMetaFieldKey';
 
   function isCollectionOrSearchPath() {
     var p = location.pathname || '';
@@ -65,51 +95,35 @@
 
   function persistParamKey(key) {
     try {
-      if (key && key.indexOf('filter.p.m.shipturtle') === 0) {
+      if (key && key.indexOf('filter.p.m.st_hyperlocal') === 0) {
         localStorage.setItem(LS_PARAM_KEY_STORAGE, key);
       }
     } catch (e) {}
   }
 
   /**
-   * Mirrors hyperlocal.js getFilterParamKey() so pasted head code stays in sync.
+   * Mirrors hyperlocal.js getFilterParamKey(): the key is the buyer's stored
+   * zip → its shard → `filter.p.m.st_hyperlocal.zips_<shard>`. Falls back to any
+   * shipturtle filter already on the URL (e.g. deep-linked landings).
    */
   function resolveFilterParamKey() {
-    try {
-      if (typeof window !== 'undefined' && window.filterParamValue) {
-        return window.filterParamValue;
-      }
-    } catch (e) {}
-
-    try {
-      var stored = localStorage.getItem(LS_PARAM_KEY_STORAGE);
-      if (stored) return stored;
-    } catch (e) {}
+    var zip = readZip();
+    if (zip) {
+      return 'filter.p.m.st_hyperlocal.' + KEY_PREFIX + computeShard(zip);
+    }
 
     try {
       var url = new URL(location.href);
       var found = null;
       url.searchParams.forEach(function (value, key) {
         if (found) return;
-        if (key.indexOf('filter.p.m.shipturtle') === 0) found = key;
+        if (key.indexOf('filter.p.m.st_hyperlocal') === 0) found = key;
       });
       if (found) {
         persistParamKey(found);
         return found;
       }
     } catch (e) {}
-
-    try {
-      var metaKey = (localStorage.getItem(LS_HYPERLOCAL_META_KEY) || '').trim();
-      if (metaKey) return 'filter.p.m.shipturtle.' + metaKey;
-    } catch (e) {}
-
-    if (
-      SHIPTURTLE_META_KEY_SUFFIX &&
-      SHIPTURTLE_META_KEY_SUFFIX !== 'REPLACE_WITH_YOUR_SP_KEY'
-    ) {
-      return 'filter.p.m.shipturtle.' + SHIPTURTLE_META_KEY_SUFFIX;
-    }
 
     return null;
   }
@@ -118,7 +132,7 @@
   function canonicalizeShipturtleParams(params, paramKey) {
     var toRemove = [];
     params.forEach(function (value, key) {
-      if (key.indexOf('filter.p.m.shipturtle') === 0 && key !== paramKey) {
+      if (key.indexOf('filter.p.m.st_hyperlocal') === 0 && key !== paramKey) {
         toRemove.push(key);
       }
     });
