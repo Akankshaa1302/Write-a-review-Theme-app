@@ -1,0 +1,117 @@
+<style>
+  .st-cart-page-container * {
+    font-size: {{ block.settings.splitcart_cartpage_font_size }}px;
+    font-family: {{ block.settings.splitcart_font_family.family }};
+  }
+  .st-checkout-btn {
+    background-color: {{ block.settings.splitcart_buttonbackcolour }};
+    color: {{ block.settings.splitcart_buttontxtcolor }}
+  }
+  .st-all-checkoutbtn-css {
+    background-color: {{ block.settings.splitcart_buttonbackcolour }}
+  }
+  .st_vendorname_css {
+    font-size: {{ block.settings.splitcart_font_size }}px
+  }
+  .st_cart_summery_css {
+    font-size: {{ block.settings.splitcart_cart_summeryfont_size }}px
+  }
+</style>
+<style id="st-custom-css"></style>
+<script src="{{ 'jquery.min.js' | asset_url }}" defer type="text/javascript
+"></script>
+<script src="{{ 'splitCart-min.js' | asset_url }}" defer type="text/javascript"></script>
+
+{% schema %}
+  {
+    "name": "Shipturtle Split Cart",
+    "target": "section",
+    "stylesheet": "splitCart.css",
+    "enabled_on": {
+      "templates": ["cart"]
+    },
+    "settings": [
+      {
+        "type": "header",
+        "content": "Cart",
+        "info": "display settings"
+      },
+      {
+        "type": "color",
+        "id": "splitcart_buttontxtcolor",
+        "label": "Button Text Color",
+        "default": "#000"
+      },
+      {
+        "type": "color",
+        "id": "splitcart_buttonbackcolour",
+        "label": "Button background color",
+        "default": "#fff"
+      },
+      {
+        "type": "font_picker",
+        "id": "splitcart_font_family",
+        "label": "Font",
+        "default": "work_sans_n6"
+      }, {
+        "type": "number",
+        "id": "splitcart_cartpage_font_size",
+        "label": "Page Font Size",
+        "default": 16
+      }, {
+        "type": "number",
+        "id": "splitcart_font_size",
+        "label": "Font size(px) of Vendor title",
+        "default": 16
+      }, {
+        "type": "number",
+        "id": "splitcart_cart_summeryfont_size",
+        "label": "Font size(px) of Cart & Order summery title",
+        "default": 20
+      }, {
+        "type": "checkbox",
+        "id": "hide_order_summary_card",
+        "label": "Hide Order Summary Card",
+        "default": false
+      }, {
+        "type": "checkbox",
+        "id": "hide_vendor_wise_checkout_btns",
+        "label": "Hide Vendor Wise Checkout Buttons",
+        "default": false
+      }, {
+        "type": "text",
+        "id": "splitcart_form_id",
+        "label": "Cart Form ID"
+      }
+    ]
+  }
+{% endschema %}
+
+<input
+  type="checkbox"
+  style="display: none"
+  name="shipturtle_splitcart_settings"
+  id="hide-order-summary-card"
+  value="{{ block.settings.hide_order_summary_card }}" />
+<input
+  type="checkbox"
+  style="display: none"
+  name="shipturtle_splitcart_settings"
+  id="hide-vendor-wise-checkout-btns"
+  value="{{ block.settings.hide_vendor_wise_checkout_btns }}" />
+<input
+  type="text"
+  style="display: none"
+  name="shipturtle_splitcart_form_id"
+  id="splitcart_form_id"
+  value="{{ block.settings.splitcart_form_id }}" />
+
+
+
+
+<div id="st-cart-wrapper"></div>
+
+
+<script>
+  window.currency_symbol = '{{ cart.currency.symbol }}';
+</script>
