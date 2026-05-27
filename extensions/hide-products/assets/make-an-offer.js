@@ -171,7 +171,7 @@ async function MakeAnOfferCode(){
                     if (!validateInventoryLimit()) {
                         return;
                     }                   
-                    const response = await fetch('https://api.shipturtle.com/api/v2/orders/create-shopify-draft-order', {
+                    const response = await fetch('https://api-v2.shipturtle.com/api/v2/orders/create-shopify-draft-order', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -217,7 +217,7 @@ async function MakeAnOfferCode(){
             }
             const checkInventoryAndOffer = async () => {
                 if (!email.value) return;
-                const response = await fetch('https://api.shipturtle.com/api/v2/variants/check-inventory-and-offers?variant_id=' + variantId.value + '&email=' + email.value + '&shop_domain=' + Shopify.shop, {
+                const response = await fetch('https://api-v2.shipturtle.com/api/v2/variants/check-inventory-and-offers?variant_id=' + variantId.value + '&email=' + email.value + '&shop_domain=' + Shopify.shop, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'

@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data() {
 
                 return {
-                    baseUrl: 'https://api.shipturtle.com/api/v2',
+                    baseUrl: 'https://api-v2.shipturtle.com/api/v2',
                     products: [],
                     isLoading: false,
                     loadingMore: false,

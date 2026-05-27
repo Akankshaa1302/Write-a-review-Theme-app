@@ -69,7 +69,7 @@ function BookingRentalAndAppointment() {
             const fetchingAvailableSlots = ref(false);
             const productId = ref(ShopifyAnalytics.meta.product.id);
             const variantId = ref(ShopifyAnalytics.meta.product.variants[0].id);
-            const baseURL = ref('https://api.shipturtle.com/api');
+            const baseURL = ref('https://api-v2.shipturtle.com/api');
             const addingToCart = ref(false);
 
             // Booking type fields

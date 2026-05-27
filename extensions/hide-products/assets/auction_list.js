@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const selectedTab = ref('running');
         const betaBaseURL = ref('https://api.beta.shipturtle.app/api/v2');
-        const productionBaseURL = ref('https://api.shipturtle.com/api/v2');
+        const productionBaseURL = ref('https://api-v2.shipturtle.com/api/v2');
         const auctionList = document.getElementById('auctionList');
         const loader = document.getElementById('auction-loading-spinner');
         const apiBaseURL = ref();

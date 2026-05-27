@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   const modifiedURL = url.replace('https://d2i9a0muccv7uq.cloudfront.net', 'https://static.shipturtle.com')
                   links.push(modifiedURL)                  
                 })
-                const zipFile = await fetch('https://api.shipturtle.com/api/v2/get-zip-files',
+                const zipFile = await fetch('https://api-v2.shipturtle.com/api/v2/get-zip-files',
                   {
                     method: 'POST',
                     headers: {

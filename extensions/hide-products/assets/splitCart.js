@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $STJQueryInstance( document ).ready(function( $ ) {
         var current_pagetype = meta.page.pageType;
         if (current_pagetype == "cart") {
-            var ship_turtle_baseUrl = "https://api.shipturtle.com";
+            var ship_turtle_baseUrl = "https://api-v2.shipturtle.com";
             var splitcart_font_family = $('#shipturtle_splitcart_css').data('splitcart_font_family');
             const searchParams = new URLSearchParams(window.location.search);
             var is_preview = searchParams.get('is_preview');

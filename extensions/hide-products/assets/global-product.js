@@ -25,7 +25,7 @@ function GlobalProductCode() {
       const fetchvendorlist = async () => {
         isLoading.value = true;
         try {
-          const response = await fetch(`https://api.shipturtle.com/api/v2/vendor-opted-products`,{
+          const response = await fetch(`https://api-v2.shipturtle.com/api/v2/vendor-opted-products`,{
             method: 'POST',
             headers: {
                   'Content-Type': 'application/json'

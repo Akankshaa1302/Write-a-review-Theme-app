@@ -63,7 +63,7 @@ function MakeanbarterOfferCode() {
             formData.append("file", file);
             
             try {
-              const res = await fetch("https://api.shipturtle.com/api/v2/save-temp-files", {
+              const res = await fetch("https://api-v2.shipturtle.com/api/v2/save-temp-files", {
                 method: "POST",
                 body: formData
               });
