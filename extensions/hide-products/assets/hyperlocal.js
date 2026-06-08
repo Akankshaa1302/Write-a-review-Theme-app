@@ -785,6 +785,35 @@ function createProductMessageEl(text) {
   return div;
 }
 
+function createProductGateMessageEl(zip) {
+  const wrap = document.createElement('div');
+  wrap.setAttribute(PRODUCT_MSG_ATTR, '');
+
+  const card = document.createElement('div');
+  card.className = 'st-hl-gate-card';
+  card.innerHTML =
+    '<svg class="st-hl-gate-icon" width="56" height="56" viewBox="0 0 24 24" ' +
+      'fill="none" stroke="currentColor" stroke-width="1.5" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0' +
+      'C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>' +
+      '<circle cx="12" cy="10" r="3"/>' +
+    '</svg>' +
+    '<h2 class="st-hl-gate-title">Not available in your area</h2>' +
+    '<p class="st-hl-gate-body">' +
+      'This product isn’t delivered to ZIP <strong class="st-hl-gate-zip"></strong>. ' +
+      'Try a different ZIP code, or browse products available near you.' +
+    '</p>' +
+    '<div class="st-hl-gate-actions">' +
+      '<a class="st-hl-gate-btn st-hl-gate-btn-secondary" href="/collections/all">' +
+        'Browse available products</a>' +
+    '</div>';
+
+  card.querySelector('.st-hl-gate-zip').textContent = zip || '';
+  wrap.appendChild(card);
+  return wrap;
+}
+
 function applyKosherProductUnavailableChrome(productInfo, customTabs) {
   const pageWidth = productInfo.querySelector('div.page-width');
   if (pageWidth) pageWidth.style.display = 'none';
@@ -894,8 +923,19 @@ function runProductPageGate() {
     }
 
     if (!document.querySelector(`[${PRODUCT_MSG_ATTR}]`)) {
-      main.innerHTML = '';
-      main.appendChild(createProductMessageEl(message));
+      const cloak = document.createElement('style');
+      cloak.id = 'st-hyperlocal-not-available-cloak';
+      cloak.textContent =
+        `main > *:not([${PRODUCT_MSG_ATTR}]){display:none!important}` +
+        'body > product-modal,body > product-recommendations,body > quick-view-modal,' +
+        'body > [id^="shopify-section-template--"],body > [id^="shopify-section-product"]' +
+        '{display:none!important}' +
+        `[${PRODUCT_MSG_ATTR}]{display:flex!important;align-items:center;justify-content:center;` +
+        'min-height:60vh;padding:4rem 1.5rem;margin:0!important;text-align:center}' +
+        '.st-hl-gate-card{display:flex;flex-direction:column;align-items:center;gap:1rem;max-width:480px}';
+      document.head.appendChild(cloak);
+
+      main.appendChild(createProductGateMessageEl(ZipStorage.get()));
     }
     window.__stHyperlocalProductGateApplied = true;
     window.__stHyperlocalProductGatePending = false;
