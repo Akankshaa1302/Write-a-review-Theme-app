@@ -1,0 +1,316 @@
+<facets-filter-drawer
+  class="facets-filte-drawer drawer"
+  id="facets-filte-drawer"
+  role="dialog"
+>
+  <drawer-layer class="overlay" data-close-drawer>
+    <drawer-mouse-cursor class="drawer-mouse-cursor">
+      <svg class="icon" stroke="currentColor" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 30L30 10M10 10L30 30" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </drawer-mouse-cursor>
+  </drawer-layer>
+  <div class="drawer-inner-card">
+    <div class="drawer-container">
+      <drawer-header-motion class="drawer-head">
+        <div>
+          <a href="#" class="drawer-close button-right" aria-label="Close" data-close-drawer>
+            <svg
+              class="drawer-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path d="M18 6L6 18" stroke="currentColor" stroke-width="1.5"></path>
+              <path d="M6 6L18 18" stroke="currentColor" stroke-width="1.5"></path>
+            </svg>
+          </a>
+          <div class="facets-title-box drawer-heading">
+            <svg
+              class="icon"
+              width="23"
+              height="19"
+              viewBox="0 0 23 19"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M2.95312 5.69922H20.0531" stroke="rgb(var(--color-text))" stroke-width="1.1875" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2.95312 13.3008H20.0531" stroke="rgb(var(--color-text))" stroke-width="1.1875" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8.64687 8.54961C10.2209 8.54961 11.4969 7.27362 11.4969 5.69961C11.4969 4.1256 10.2209 2.84961 8.64687 2.84961C7.07286 2.84961 5.79688 4.1256 5.79688 5.69961C5.79688 7.27362 7.07286 8.54961 8.64687 8.54961Z" fill="rgb(var(--color-background))" stroke="rgb(var(--color-text))" stroke-width="1.1875"/>
+              <path d="M14.35 16.1492C15.924 16.1492 17.2 14.8732 17.2 13.2992C17.2 11.7252 15.924 10.4492 14.35 10.4492C12.776 10.4492 11.5 11.7252 11.5 13.2992C11.5 14.8732 12.776 16.1492 14.35 16.1492Z" fill="rgb(var(--color-background))" stroke="rgb(var(--color-text))" stroke-width="1.1875"/>
+            </svg>
+            <span class="h6">{{ 'sections.collection_template.filter_by_label' | t }}</span>
+          </div>
+        </div>
+      </drawer-header-motion>
+      <div class="drawer-body">
+        <div class="drawer-content-contain">
+          <facet-sidebar class="facet-sidebar-container">
+            <form id="SidebarfacetForm" class="sidebar__form">
+              {%- if results.terms -%}
+                <input type="hidden" name="q" value="{{ results.terms | escape }}">
+                <input name="options[prefix]" type="hidden" value="last">
+              {%- endif -%}
+              {% if results.current_vendor or results.current_type %}
+                <input type="hidden" name="q" value="{{ results.current_vendor }}{{ results.current_type }}">
+              {% endif %}
+              <div class="facets-details-wrapper">
+                {%- for filter in results.filters -%}
+                  {%- unless filter.param_name contains 'st_hyperlocal.zips_' -%}
+                  {% capture random %}{{ 'now' | date: "%09N" }}{% endcapture %}
+                  {% liquid
+                    assign color_options = settings.color_name | downcase
+                    assign filter_label = filter.label | downcase
+                    assign filter_limit = 6
+                    if color_options contains filter_label
+                      assign filter_limit = 100
+                    endif
+
+                    assign is_color = false
+                    if color_options contains filter_label
+                      assign is_color = true
+                    endif
+
+                    assign swatch_status = false
+                    if filter.presentation == 'swatch' or filter.presentation == 'image'
+                      assign swatch_status = true
+                    endif
+                  %}
+
+                  <details
+                    class="facets-accordion {% if  is_color %}facets-color-item{% endif %} js-filter"
+                    {% if section.settings.open_filtering %}
+                      open=""
+                    {% endif %}
+                    data-index="{{ forloop.index }}"
+                  >
+                    <summary class="facets-summary" role="button" aria-expanded="true">
+                      <h6 class="facets-details-title">{{ filter_label | escape | capitalize }}</h6>
+                      <span class="facets-arrow">
+                        <svg
+                          class="facets-filter-icon"
+                          width="12"
+                          height="7"
+                          viewBox="0 0 12 7"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M10 1.5L6 5.5L2 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="square"></path>
+                        </svg>
+                      </span>
+                    </summary>
+                    <div class="facets-accordion-content">
+                      <div class="facets-accordion-label">
+                        {%- case filter.type -%}
+                          {% when 'boolean', 'list' %}
+                            <ul class="{% if is_color  or swatch_status%}filter-swatchs-list{% else%}facets-filters-options{% endif %} list-style-none">
+                              {%- for value in filter.values limit: filter_limit -%}
+                                <li class="{% if is_color  or swatch_status%}filter-swatchs-item {%else %}facets-filters-options-item {%endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}">
+                                  <input
+                                    class="checkbox"
+                                    type="checkbox"
+                                    name="{{ value.param_name }}"
+                                    value="{{ value.value }}"
+                                    title="{{ value.label | escape }}"
+                                    id="Filter-{{ filter.label | handle }}-{{ forloop.index }}-{{ random }}"
+                                    {% if value.active %}
+                                      checked
+                                    {% endif %}
+                                    {% if value.count == 0 and value.active == false %}
+                                      disabled
+                                    {% endif %}
+                                  >
+                                  <label
+                                    class="{%if is_color or swatch_status%}filter-variant-item{% else %}facets-filters-options-label{% endif %}"
+                                    for="Filter-{{ filter.label | handle }}-{{ forloop.index }}-{{ random }}"
+                                    title="{{ value.label | escape }}"
+                                  >
+                                    {% if swatch_status %}
+                                      {% render 'swatch-filter', value: value %}
+                                    {% else %}
+                                      {% if is_color == false %}
+                                        {{- value.label | escape -}}
+                                      {% endif %}
+                                      <span
+                                        class="text-size-small"
+                                        {% if is_color %}
+                                          data-color-name="{{ value.label | escape | downcase }}"
+                                          style="background-color:{{ value.label | escape }}"
+                                        {% endif %}
+                                      >
+                                        {% if is_color == false %}
+                                          ({{ value.count }})
+                                        {%- else -%}
+                                          <span class="hidden">({{ value.count }})</span>
+                                        {%- endif %}
+                                      </span>
+                                    {% endif %}
+                                  </label>
+                                </li>
+                              {% endfor %}
+                            </ul>
+
+                            {%- if filter.values.size > filter_limit -%}
+                              <ul class="{% if is_color or swatch_status%}filter-swatchs-list{% else%}facets-filters-options{% endif %} list-style-none more-items hidden">
+                                {%- for value in filter.values offset: filter_limit -%}
+                                  <li class="{% if is_color  or swatch_status%}filter-swatchs-item {%else %}facets-filters-options-item {%endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}">
+                                    <input
+                                      class="checkbox"
+                                      type="checkbox"
+                                      name="{{ value.param_name }}"
+                                      value="{{ value.value }}"
+                                      title="{{ value.label | escape }}"
+                                      id="Filter-{{ filter.label | handle }}-{{ forloop.index }}"
+                                      {% if value.active %}
+                                        checked
+                                      {% endif %}
+                                      {% if value.count == 0 and value.active == false %}
+                                        disabled
+                                      {% endif %}
+                                    >
+                                    <label
+                                      class="{%if is_color or swatch_status%}filter-variant-item{% else %}facets-filters-options-label{% endif %}"
+                                      for="Filter-{{ filter.label | handle }}-{{ forloop.index }}"
+                                      title="{{ value.label | escape }}"
+                                    >
+                                      {% if swatch_status %}
+                                        {% render 'swatch-filter', value: value %}
+                                      {% else %}
+                                        {% if is_color == false %}
+                                          {{- value.label | escape -}}
+                                        {% endif %}
+                                        <span
+                                          class="text-size-small"
+                                          {% if is_color %}
+                                            data-color-name="{{ value.label | escape | downcase }}"
+                                            style="background-color:{{ value.label | escape }}"
+                                          {% endif %}
+                                        >
+                                          {% if is_color == false %} ({{ value.count }}){% endif %}
+                                        </span>
+                                      {% endif %}
+                                    </label>
+                                  </li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+
+                          {% when 'price_range' %}
+                            {% liquid
+                              assign currencies_using_comma_decimals = 'ANG,ARS,BRL,BYN,BYR,CLF,CLP,COP,CRC,CZK,DKK,EUR,HRK,HUF,IDR,ISK,MZN,NOK,PLN,RON,RUB,SEK,TRY,UYU,VES,VND' | split: ','
+                              assign uses_comma_decimals = false
+                              if currencies_using_comma_decimals contains cart.currency.iso_code
+                                assign uses_comma_decimals = true
+                              endif
+                              if uses_comma_decimals
+                                assign max_value = filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.' | floor
+                                assign min_value = filter.range_min | money_without_currency | replace: '.', '' | replace: ',', '.' | floor
+                              else
+                                assign max_value = filter.range_max | money_without_currency
+                                assign min_value = filter.range_min | money_without_currency
+                              endif
+
+                              if filter.max_value.value
+                                assign max_value = filter.max_value.value | money_without_currency
+                              endif
+                              if filter.min_value.value
+                                assign min_value = filter.min_value.value | money_without_currency
+                              endif
+                            %}
+                            <price-range class="facets-price">
+                              <div class="facets-price-ranges" id="Facet-product-grid">
+                                <div
+                                  class="facets-range no-js-hidden range-slider"
+                                  {%- if uses_comma_decimals -%}
+                                    data-min-value="{{ min_value | replace: '.', '' | replace: ',', '.' | floor }}"
+                                    data-max-value="{{ max_value | replace: '.', '' | replace: ',', '.' | floor }}"
+                                    data-min="{{ filter.range_min | money_without_currency | replace: '.', '' | replace: ',', '.' | floor }}"
+                                    data-max="{{ filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.' | floor }}"
+                                  {%- else -%}
+                                    data-min-value="{{ min_value | replace: ',', '' | floor }}"
+                                    data-max-value="{{ max_value | replace: ',', '' | floor }}"
+                                    data-min="{{ filter.range_min | money_without_currency | replace: ',', '' | floor }}"
+                                    data-max="{{ filter.range_max | money_without_currency | replace: ',', '' | floor }}"
+                                  {%- endif -%}
+                                  data-target="price"
+                                ></div>
+                                <div class="facets-price-wrapper">
+                                  <div class="facets-price-item min-value">
+                                    <span>{{- 'products.facets.from' | t -}}</span>
+                                    <label for="Filter-{{ filter.label | escape }}-GTE">
+                                      <span class="field-currency">{{ cart.currency.symbol }}</span>
+                                      <input
+                                        class="form-control-input field__input_min"
+                                        name="{{ filter.min_value.param_name }}"
+                                        id="Filter-{{ filter.label | escape }}-GTE"
+                                        {%- if filter.min_value.value -%}
+                                          {%- if uses_comma_decimals -%}
+                                            value="{{ filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                                          {%- else -%}
+                                            value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                                          {%- endif %}
+                                        {%- endif -%}
+                                        type="number"
+                                        placeholder="0"
+                                        min="0"
+                                        {%- if uses_comma_decimals -%}
+                                          max="{{ filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+
+                                        {%- else -%}
+                                          max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                                        {% endif %}
+                                      >
+                                    </label>
+                                  </div>
+
+                                  <div class="facets-price-item max-value ">
+                                    <span>
+                                      {{- 'products.facets.to' | t -}}
+                                    </span>
+                                    <label for="Filter-{{ filter.label | escape }}-LTE">
+                                      <span class="field-currency">{{ cart.currency.symbol }}</span>
+                                      <input
+                                        class="form-control-input field__input_max"
+                                        name="{{ filter.max_value.param_name }}"
+                                        id="Filter-{{ filter.label | escape }}-LTE"
+                                        {%- if filter.max_value.value -%}
+                                          {%- if uses_comma_decimals -%}
+                                            value="{{ filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                                          {%- else -%}
+                                            value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                                          {%- endif %}
+                                        {%- endif -%}
+                                        type="number"
+                                        min="0"
+                                        {%- if uses_comma_decimals -%}
+                                          placeholder="{{ filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+
+                                          max="{{ filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                                        {%- else -%}
+                                          placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+
+                                          max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                                        {% endif %}
+                                      >
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            </price-range>
+                        {% endcase %}
+                      </div>
+                    </div>
+                  </details>
+                  {%- endunless -%}
+                {% endfor %}
+              </div>
+              <button type="submit" class="button ">{{ 'sections.collection_template.filter_button' | t }}</button>
+            </form>
+          </facet-sidebar>
+        </div>
+      </div>
+    </div>
+  </div>
+</facets-filter-drawer>

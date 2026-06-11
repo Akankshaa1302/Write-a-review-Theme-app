@@ -139,7 +139,7 @@ value="{{ customer.email }}" />
         <div class="chat-with-seller-header">
             <p class="chat-with-seller-header-title">{% if block.settings.stChatHeaderText == 'Chat With Seller' %}{{ 'customer-chat.chat-with-seller' | t }}{% else %}{{ block.settings.stChatHeaderText }}{% endif %}</p>
             <p class="st-chat-with-seller-close" id="st-chat-with-seller-close">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" >
                     <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                 </svg>
             </p>
@@ -171,6 +171,7 @@ value="{{ customer.email }}" />
 </div>
 <script>
      function CustomerChat(){
+    const isCustomerLoggedIn = {% if customer %}true{% else %}false{% endif %};
     const url = Shopify.shop === 'bazaatest.myshopify.com' ? "https://api-v2.shipturtle.com/api/v2/chats/store" : "https://api-v2.shipturtle.com/api/v1/vendor/contact"
     let chatWithSellerBtn = document.getElementById('st-customer-chat-cta')
     let chatWithSellerContainer = document.getElementById('chat-with-seller-container')
@@ -257,6 +258,10 @@ value="{{ customer.email }}" />
     }
 
     const showForm = () => {
+        if (!isCustomerLoggedIn) {
+            window.location.href = "/account/login"
+            return
+        }
         chatWithSellerContainer.classList.remove('hide')
         chatWithSellerContainer.classList.add('show')
         chatWithSellerBtn.classList.add('hide')
