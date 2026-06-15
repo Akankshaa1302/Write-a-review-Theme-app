@@ -1,0 +1,26 @@
+<script src="{{ 'vuejs-min.js' | asset_url }}" defer></script>
+<script src="{{ 'vendor-profile-link.js' | asset_url }}" defer></script>
+
+<div id="vendor-profile-link"></div>
+
+<script>
+  window.productVendor = {{ product.vendor | json }};
+  window.vendorPageBaseUrl = {{ block.settings.vendor_page_base_url | json }};
+</script>
+
+{% schema %}
+{
+  "name": "Vendor Profile Link",
+  "target": "section",
+  "templates": ["product"],
+  "settings": [
+    {
+      "type": "text",
+      "id": "vendor_page_base_url",
+      "label": "Vendor page URL prefix",
+      "default": "/pages/shop-by-vendor#/",
+      "info": "Enter only the part of the URL that comes after your store domain. For example, if your full page URL is https://your-store.myshopify.com/pages/shop-by-vendor#/, enter /pages/shop-by-vendor#/. If it is https://your-store.myshopify.com/pages/seller-profile, enter /pages/seller-profile/."
+    }
+  ]
+}
+{% endschema %}
