@@ -53,11 +53,10 @@
         "vendorCategory": "{vendor}: {category}",
         "productCategory": "{product}: {category}",
         "labels": {
-          "vendorCategory": "{vendor} Category", 
-          "productCategory": "{product} Category" 
+          "vendorCategory": "{vendor} Category",
+          "productCategory": "{product} Category"
         }
       },
-      
       "vendorDetails": {
         "filter": {
           "allCategories": "All Categories",
@@ -135,7 +134,7 @@
         "sortOptions": {
           "bestSelling": "Best Selling",
           "nameAscending": "Name A-Z",
-          "nameDescending": "Name Z-A", 
+          "nameDescending": "Name Z-A",
           "priceAscending": "Price Low-High",
           "priceDescending": "Price High-Low",
           "newestFirst": "Newest First",
@@ -181,7 +180,6 @@
       "review-by": "By",
       "leave-a-review": "Leave a Review",
       "verified-purchaser": "Verified Purchaser",
-      
       "write-review-label": "Write a review *",
       "write-review-placeholder": "What should other customers know?",
       "title-review-label": "Title your review *",
@@ -190,14 +188,11 @@
       "public-name-placeholder": "Enter your name",
       "email-label": "Email *",
       "email-placeholder": "email@example.com",
-      
       "cancel": "Cancel",
       "submit-review": "Submit Review",
-      
       "toast-error": "Error",
       "toast-success": "Success",
       "toast-login-required": "Login Required",
-      
       "toast-all-fields-required": "All fields marked with * are required",
       "toast-error-submitting": "Error while submitting review",
       "toast-review-submitted": "Review submitted successfully",
@@ -223,6 +218,16 @@
       "generic_error_detail": "An error occurred while processing your request.",
       "login_required_summary": "Login Required",
       "login_required_detail": "Please login to make an offer"
+    },
+    "customer-chat": {
+      "chatWithSeller": "Chat With Seller",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Submit",
+      "fillFields": "Please fillout all required fields.",
+      "messageSent": "Your message has been sent.",
+      "submitFailed": "Couldn't submit your request."
     }
   },
   "de": {
@@ -407,7 +412,6 @@
       "review-by": "Von",
       "leave-a-review": "Bewertung abgeben",
       "verified-purchaser": "Verifizierter Käufer",
-      
       "write-review-label": "Bewertung schreiben *",
       "write-review-placeholder": "Was sollten andere Kunden wissen?",
       "title-review-label": "Titel Ihrer Bewertung *",
@@ -416,14 +420,11 @@
       "public-name-placeholder": "Geben Sie Ihren Namen ein",
       "email-label": "E-Mail *",
       "email-placeholder": "email@beispiel.de",
-      
       "cancel": "Abbrechen",
       "submit-review": "Bewertung absenden",
-      
       "toast-error": "Fehler",
       "toast-success": "Erfolg",
       "toast-login-required": "Anmeldung erforderlich",
-      
       "toast-all-fields-required": "Alle mit * markierten Felder sind erforderlich",
       "toast-error-submitting": "Fehler beim Absenden der Bewertung",
       "toast-review-submitted": "Bewertung erfolgreich übermittelt",
@@ -449,8 +450,17 @@
       "generic_error_detail": "Beim Verarbeiten Ihrer Anfrage ist ein Fehler aufgetreten.",
       "login_required_summary": "Anmeldung erforderlich",
       "login_required_detail": "Bitte melden Sie sich an, um ein Angebot zu machen"
+    },
+    "customer-chat": {
+      "chatWithSeller": "Mit Verkäufer chatten",
+      "name": "Name",
+      "email": "E-Mail",
+      "message": "Nachricht",
+      "submit": "Senden",
+      "fillFields": "Bitte füllen Sie alle Pflichtfelder aus.",
+      "messageSent": "Ihre Nachricht wurde gesendet.",
+      "submitFailed": "Ihre Anfrage konnte nicht übermittelt werden."
     }
-
   },
   "es": {
     "sellers": {
@@ -634,7 +644,6 @@
       "review-by": "Por",
       "leave-a-review": "Dejar una reseña",
       "verified-purchaser": "Comprador verificado",
-      
       "write-review-label": "Escribir una reseña *",
       "write-review-placeholder": "¿Qué deberían saber otros clientes?",
       "title-review-label": "Título de tu reseña *",
@@ -643,14 +652,11 @@
       "public-name-placeholder": "Ingresa tu nombre",
       "email-label": "Email *",
       "email-placeholder": "email@ejemplo.com",
-      
       "cancel": "Cancelar",
       "submit-review": "Enviar reseña",
-      
       "toast-error": "Error",
       "toast-success": "Éxito",
       "toast-login-required": "Inicio de sesión requerido",
-      
       "toast-all-fields-required": "Todos los campos marcados con * son requeridos",
       "toast-error-submitting": "Error al enviar la reseña",
       "toast-review-submitted": "Reseña enviada exitosamente",
@@ -664,20 +670,29 @@
       "confirm-delete-message": "¿Estás seguro de que deseas eliminar esta reseña?"
     },
     "make_an_offer": {
-        "limit_reached_summary": "Límite alcanzado",
-        "inventory_limit_detail": "La cantidad no puede superar el inventario disponible. {count} artículos disponibles.",
-        "pending_offer_limit_detail": "Ya tienes una oferta pendiente para este producto.",
-        "validation_error_summary": "Error de validación",
-        "fill_required_fields_detail": "Por favor, completa todos los campos obligatorios",
-        "success_summary": "Éxito",
-        "offer_submitted_success_detail": "¡Oferta enviada con éxito!",
-        "error_summary": "Error",
-        "submit_offer_error_detail": "Error al enviar la oferta",
-        "generic_error_detail": "Ocurrió un error al procesar tu solicitud.",
-        "login_required_summary": "Inicio de sesión requerido",
-        "login_required_detail": "Por favor, inicia sesión para hacer una oferta"
+      "limit_reached_summary": "Límite alcanzado",
+      "inventory_limit_detail": "La cantidad no puede superar el inventario disponible. {count} artículos disponibles.",
+      "pending_offer_limit_detail": "Ya tienes una oferta pendiente para este producto.",
+      "validation_error_summary": "Error de validación",
+      "fill_required_fields_detail": "Por favor, completa todos los campos obligatorios",
+      "success_summary": "Éxito",
+      "offer_submitted_success_detail": "¡Oferta enviada con éxito!",
+      "error_summary": "Error",
+      "submit_offer_error_detail": "Error al enviar la oferta",
+      "generic_error_detail": "Ocurrió un error al procesar tu solicitud.",
+      "login_required_summary": "Inicio de sesión requerido",
+      "login_required_detail": "Por favor, inicia sesión para hacer una oferta"
+    },
+    "customer-chat": {
+      "chatWithSeller": "Chatear con el vendedor",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "message": "Mensaje",
+      "submit": "Enviar",
+      "fillFields": "Por favor, completa todos los campos obligatorios.",
+      "messageSent": "Tu mensaje ha sido enviado.",
+      "submitFailed": "No se pudo enviar tu solicitud."
     }
-
   },
   "nl": {
     "sellers": {
@@ -899,8 +914,17 @@
       "generic_error_detail": "Er is een fout opgetreden bij het verwerken van je verzoek.",
       "login_required_summary": "Inloggen vereist",
       "login_required_detail": "Log in om een bod te doen"
+    },
+    "customer-chat": {
+      "chatWithSeller": "Chat met de verkoper",
+      "name": "Naam",
+      "email": "E-mail",
+      "message": "Bericht",
+      "submit": "Verzenden",
+      "fillFields": "Vul alle verplichte velden in.",
+      "messageSent": "Uw bericht is verzonden.",
+      "submitFailed": "Uw verzoek kon niet worden ingediend."
     }
-
   },
   "pt": {
     "sellers": {
@@ -1122,6 +1146,16 @@
       "generic_error_detail": "Ocorreu um erro ao processar sua solicitação.",
       "login_required_summary": "Login necessário",
       "login_required_detail": "Faça login para fazer uma oferta"
+    },
+    "customer-chat": {
+      "chatWithSeller": "Conversar com o Vendedor",
+      "name": "Nome",
+      "email": "Email",
+      "message": "Mensagem",
+      "submit": "Enviar",
+      "fillFields": "Por favor, preencha todos os campos obrigatórios.",
+      "messageSent": "A sua mensagem foi enviada.",
+      "submitFailed": "Não foi possível submeter o seu pedido."
     }
   },
   "no": {
@@ -1344,6 +1378,16 @@
       "generic_error_detail": "Det oppstod en feil under behandling av forespørselen din.",
       "login_required_summary": "Innlogging påkrevd",
       "login_required_detail": "Vennligst logg inn for å gi et tilbud"
+    },
+    "customer-chat": {
+      "chatWithSeller": "Chat With Seller",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Submit",
+      "fillFields": "Please fillout all required fields.",
+      "messageSent": "Your message has been sent.",
+      "submitFailed": "Couldn't submit your request."
     }
   }
 }

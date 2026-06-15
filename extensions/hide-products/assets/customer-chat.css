@@ -192,3 +192,37 @@
         width: 300px;
     }
 }
+
+.chat-with-seller-container {
+    background: var(--st-chat-popup-bg) !important;
+}
+.st-customer-chat-cta-section {
+    background: var(--st-chat-cta-bg) !important;
+    color: var(--st-chat-cta-color) !important;
+    min-height: var(--st-chat-cta-min-height) !important;
+    font-size: var(--st-chat-cta-font-size);
+}
+.chat-with-seller {
+    color: var(--st-chat-popup-color) !important;
+}
+.chat-with-seller,
+.chat-with-seller input,
+.chat-with-seller textarea,
+.chat-with-seller label,
+.chat-with-seller button,
+.chat-with-seller p {
+    font-size: var(--st-chat-font-size) !important;
+}
+.chat-submit-btn-custom-styling {
+    color: var(--st-chat-submit-color) !important;
+    background: var(--st-chat-submit-bg) !important;
+    font-size: var(--st-chat-submit-font-size) !important;
+    font-family: inherit;
+    border: 1px solid lighgrey;
+}
+.chat-with-seller-btn {
+    cursor: pointer;
+}
+#submit-customer-query:disabled {
+    background-color: lightgrey;
+}
