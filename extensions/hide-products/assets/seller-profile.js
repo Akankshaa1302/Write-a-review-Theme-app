@@ -55,7 +55,7 @@ function mountSellerProfile () {
                              navigator.language.split('-')[0]
         
         // Map Shopify locales to our supported locales
-        const supportedLocales = ['en', 'de', 'es', 'nl', 'pt', 'no']
+        const supportedLocales = ['en', 'de', 'es', 'nl', 'pt', 'no', 'ro']
         // Shopify uses `nb` (Bokmål) for Norwegian; map it to `no`
         const localeAliases = { nb: 'no'}
         const baseLocale = shopifyLocale.toLowerCase().split('-')[0]
@@ -252,7 +252,7 @@ function mountSellerProfile () {
         template: `
             <div class="st-ext-container st-ext-max-w-7xl st-ext-mx-auto st-ext-px-3 st-ext-md:st-ext-px-4 st-ext-lg:st-ext-px-6 st-ext-py-4 st-ext-md:st-ext-py-6">
                 <!-- Banner Section -->
-                <p-skeleton v-if="loading" width="100%" style="height: var(--sp-vendor-listing-banner-height);" class="st-ext-mb-4"></p-skeleton>
+                <p-skeleton v-if="loading && isInitialLoad" width="100%" style="height: var(--sp-vendor-listing-banner-height);" class="st-ext-mb-4"></p-skeleton>
                  <div v-else-if="parentCompany?.promo_banner && !parentCompany?.hide_promo_banner" class="st-ext-relative st-ext-bg-gray-200 st-ext-border-round-2xl st-ext-overflow-hidden" style="height: var(--sp-vendor-listing-banner-height); max-height: var(--sp-vendor-listing-banner-height);">
                         <p-image
                             :src="parentCompany?.promo_banner"
@@ -262,7 +262,7 @@ function mountSellerProfile () {
                         ></p-image>
                 </div>
                 <div class="st-ext-text-center st-ext-mb-6 st-ext-mt-4">
-                    <p-skeleton v-if="loading" width="20rem" height="2rem" class="st-ext-mx-auto"></p-skeleton>
+                    <p-skeleton v-if="loading && isInitialLoad" width="20rem" height="2rem" class="st-ext-mx-auto"></p-skeleton>
                     <h2 v-else class="st-ext-font-semibold">[[ pageTitle ]]</h2>
                 </div>
 
@@ -271,7 +271,7 @@ function mountSellerProfile () {
                     <div  v-if="isMobile" class="st-ext-col-12 st-ext-block st-ext-sm:st-ext-hidden st-ext-mb-4" >
                         <div class="st-ext-flex st-ext-gap-2">
                             <div class="st-ext-flex-1">
-                                <p-input-text v-model="filters.search" :placeholder="dynamicTranslations.searchPlaceholder" class="st-ext-w-full st-ext-h-fullst-ext-text-sm"></p-input-text>
+                                <p-input-text v-model="filters.search" :placeholder="dynamicTranslations.searchPlaceholder" @keyup.enter="applyFilters" class="st-ext-w-full st-ext-h-fullst-ext-text-sm"></p-input-text>
                             </div>
                             <p-button
                                 v-if="!showFilters"
@@ -315,7 +315,7 @@ function mountSellerProfile () {
 
                     <!-- Filters Sidebar -->
                     <div class="st-ext-col-12 st-ext-sm:st-ext-col-2" :class="{ 'st-ext-hidden': !showFilters && isMobile }">
-                        <div v-if="loading" class="st-ext-flex st-ext-flex-column st-ext-gap-4">
+                        <div v-if="loading && isInitialLoad" class="st-ext-flex st-ext-flex-column st-ext-gap-4">
                             <!-- Search skeleton -->
                             <div>
                                 <p-skeleton width="4rem" height="1rem" class="st-ext-mb-2"></p-skeleton>
@@ -339,7 +339,7 @@ function mountSellerProfile () {
                             <div class="st-ext-hidden st-ext-sm:block">
                                 <label class="st-ext-block st-ext-text-medium st-ext-font-medium st-ext-mb-2">[[ searchVendorText ]]</label>
                                 <div class="st-ext-w-full">
-                                    <p-input-text v-model="filters.search" :placeholder="dynamicTranslations.searchPlaceholder" class="st-ext-w-full st-ext-h-full st-ext-text-sm"></p-input-text>
+                                    <p-input-text v-model="filters.search" :placeholder="dynamicTranslations.searchPlaceholder" @keyup.enter="applyFilters" class="st-ext-w-full st-ext-h-full st-ext-text-sm"></p-input-text>
                                 </div>
                             </div>
 
@@ -472,6 +472,7 @@ function mountSellerProfile () {
             const vendors = ref([])
             const totalCount = ref(0)
             const loading = ref(true)
+            const isInitialLoad = ref(true)
             const blockSettings = ref(loadBlockSettings())
 
             // Get terminology from props or settings
@@ -609,6 +610,7 @@ function mountSellerProfile () {
                     totalCount.value = 0
                 } finally {
                     loading.value = false
+                    isInitialLoad.value = false
                 }
             }
 
@@ -793,6 +795,7 @@ function mountSellerProfile () {
                 parentCompany,
                 totalCount,
                 loading,
+                isInitialLoad,
                 pageTitle,
                 showLocation,
                 showCountryState,
@@ -862,7 +865,7 @@ function mountSellerProfile () {
                 <div v-if="loading" class="st-ext-w-full">
                     <!-- Hero Section Skeleton -->
                     <div class="st-ext-relative st-ext-mb-6">
-                        <p-skeleton width="100%" height="20rem" class="st-ext-mb-4"></p-skeleton>
+                        <p-skeleton width="100%" style="height: var(--sp-vendor-details-banner-height);" class="st-ext-mb-4 st-skeleton-banner-image-container"></p-skeleton>
                         <div class="st-ext-flex st-ext-gap-4 st-ext-align-items-center">
                             <p-skeleton :size="isMobile ? '6rem' : '12rem'"></p-skeleton>
                             <div class="st-ext-flex-1">
@@ -884,10 +887,10 @@ function mountSellerProfile () {
                     <!-- Hero Section -->
                     <div class="st-ext-relative st-ext-mb-2">
                         <!-- Banner Image -->
-                        <div v-if="!blockSettings.hideVendorDetailsBanner && vendorDetails.banner && vendorDetails.banner_link" class="st-ext-relative st-ext-bg-gray-200 st-ext-border-round-2xl st-ext-overflow-hidden st-ext-mb-1"
+                        <div v-if="!blockSettings.hideVendorDetailsBanner && vendorDetails.banner && vendorDetails.banner_link" class="st-ext-relative st-ext-bg-gray-200 st-ext-border-round-2xl st-ext-overflow-hidden st-ext-mb-1 st-banner-image-container"
                         style="height: var(--sp-vendor-details-banner-height); max-height: var(--sp-vendor-details-banner-height);">
                             <p-image
-                                :src="vendorDetails.banner_link" 
+                                :src="vendorDetails.banner_link"
                                 alt="Vendor Banner"
                                 image-class="st-ext-w-full st-ext-h-full st-ext-object-cover st-ext-border-round-2xl"
                                 style="height: 100%; width: 100%; display: block;"
@@ -952,12 +955,11 @@ function mountSellerProfile () {
                                     <div class="st-ext-flex st-ext-gap-4 st-ext-align-items-center st-ext-flex-wrap" style="width: 700px;">
                                         <!-- Search Input -->
                                         <div class="st-ext-relative st-ext-w-5">
-                                            <p-input-text
-                                                v-model="productSearch"
-                                                :placeholder="dynamicTranslations.searchProductsPlaceholder"
+                                            <p-input-text 
+                                                v-model="productSearch" 
+                                                :placeholder="dynamicTranslations.searchProductsPlaceholder" 
                                                 class="st-ext-w-full st-ext-pl-10 st-ext-bg-gray-100 st-ext-border-0 st-ext-border-round-xl st-ext-text-sm"></p-input-text>
                                         </div>
-
                                         <!-- Category Multi-Select -->
                                         <div class="sp-category-filter" :class="{ 'sp-open': categoryDropdownOpen }">
                                             <button type="button" class="sp-category-dropdown-btn" @click="toggleCategoryDropdown">
@@ -984,15 +986,14 @@ function mountSellerProfile () {
                                                 </div>
                                             </div>
                                         </div>
-
                                         <!-- Sort Dropdown -->
                                         <div class="st-ext-flex st-ext-align-items-center st-ext-gap-2 vendor-details-select">
-                                            <p-select
-                                                v-model="productSort"
-                                                :options="sortOptions"
-                                                optionLabel="label"
-                                                optionValue="value"
-                                                :placeholder="dynamicTranslations.sortProductsPlaceholder"
+                                            <p-select 
+                                                v-model="productSort" 
+                                                :options="sortOptions" 
+                                                optionLabel="label" 
+                                                optionValue="value" 
+                                                :placeholder="dynamicTranslations.sortProductsPlaceholder" 
                                                 class="st-ext-w-48 st-ext-bg-gray-100 st-ext-border-0 st-ext-text-sm"></p-select>
                                         </div>
                                     </div>

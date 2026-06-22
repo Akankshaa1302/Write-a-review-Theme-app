@@ -83,7 +83,6 @@
     min-height: calc(4rem + 1px * 2);
     max-width: 44rem;
     margin: auto;
-    font-size: 1.2rem;
 }
 .st-customer-chat-cta-section p {
     margin: 0px;

@@ -2,6 +2,14 @@
 
 <div id="vendor-profile-link"></div>
 
+{% if block.settings.customCss != blank %}
+  <style>
+    /* ===== CUSTOM CSS START ===== */
+    {{ block.settings.customCss }}
+    /* ===== CUSTOM CSS END ===== */
+  </style>
+{% endif %}
+
 <script>
   window.productVendor = {{ product.vendor | json }};
   window.vendorPageBaseUrl = {{ block.settings.vendor_page_base_url | json }};
@@ -19,6 +27,12 @@
       "label": "Vendor page URL prefix",
       "default": "/pages/shop-by-vendor#/",
       "info": "Enter only the part of the URL that comes after your store domain. For example, if your full page URL is https://your-store.myshopify.com/pages/shop-by-vendor#/, enter /pages/shop-by-vendor#/. If it is https://your-store.myshopify.com/pages/seller-profile, enter /pages/seller-profile/."
+    },
+    {
+      "type": "liquid",
+      "id": "customCss",
+      "label": "Custom CSS",
+      "info": "Add your own CSS styles. Always scope your styles to #vendor-profile-link to avoid affecting other elements. Example: #vendor-profile-link a { color: red; font-weight: bold; }"
     }
   ]
 }
