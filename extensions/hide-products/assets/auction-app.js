@@ -19,7 +19,7 @@ function AuctionThemeAppExtension() {
       const targetDate = ref();
       
       // API URL
-      const apiBaseURL = 'https://api-v2.shipturtle.com/api/v2';
+      const apiBaseURL = '/a/dashboard';
       
       // DOM elements
       let makeAnOfferButton;

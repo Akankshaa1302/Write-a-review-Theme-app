@@ -1,6 +1,8 @@
 function GlobalProductCode() {
   const { createApp, ref, onMounted, watch } = Vue;
 
+  const API_BASE_URL = '/a/dashboard';
+
       const container = document.getElementById("global-product-table");
       if (container) {
         if (window.isglobalproduct === false) {
@@ -25,7 +27,7 @@ function GlobalProductCode() {
       const fetchvendorlist = async () => {
         isLoading.value = true;
         try {
-          const response = await fetch(`https://api-v2.shipturtle.com/api/v2/vendor-opted-products`,{
+          const response = await fetch(`${API_BASE_URL}/vendor-opted-products`,{
             method: 'POST',
             headers: {
                   'Content-Type': 'application/json'

@@ -69,7 +69,7 @@ function BookingRentalAndAppointment() {
             const fetchingAvailableSlots = ref(false);
             const productId = ref(ShopifyAnalytics.meta.product.id);
             const variantId = ref(ShopifyAnalytics.meta.product.variants[0].id);
-            const baseURL = ref('https://api-v2.shipturtle.com/api');
+            const baseURL = ref('/a/dashboard');
             const addingToCart = ref(false);
 
             // Booking type fields
@@ -194,7 +194,7 @@ function BookingRentalAndAppointment() {
             async function checkAvailability(payload) {
             try {
                 try {
-                    const { data } = await axios.post(`${baseURL.value}/v2/check-availability`, payload);
+                    const { data } = await axios.post(`${baseURL.value}/check-availability`, payload);
                     return data;
                 } catch (error) {
                     console.error('Error fetching cart:', error);
@@ -312,7 +312,7 @@ function BookingRentalAndAppointment() {
                 const formData = new FormData();
                 formData.append('id', productId.value);
                 try {
-                    const res = await axios.post(`${baseURL.value}/v2/fetch-available-dates`, formData);
+                    const res = await axios.post(`${baseURL.value}/fetch-available-dates`, formData);
                     bookedDates.value = res.data.booked_dates;
                 } catch (error) {
                     console.error('The error : ', error);
@@ -361,7 +361,7 @@ function BookingRentalAndAppointment() {
 
             async function fetchAvailableAndBookedTimeSlots(formData) {
                 try {
-                    const { data } = await axios.post(`${baseURL.value}/v2/fetch-single-date-slots`, formData);
+                    const { data } = await axios.post(`${baseURL.value}/fetch-single-date-slots`, formData);
                     return data;
                 } catch (error) {
                     console.error('The error : ', error);
@@ -386,7 +386,7 @@ function BookingRentalAndAppointment() {
                     const quantitySelectorElement = document.getElementById(blockSettings.value.quantitySelectorId);
                     const buyButtonsElement = document.getElementById(blockSettings.value.buyButtonsId);
 
-                    const { data } = await axios.get(`${baseURL.value}/v2/get-product-booking-type/${productId.value}`);
+                    const { data } = await axios.get(`${baseURL.value}/get-product-booking-type/${productId.value}`);
                     isBookingType.value = data.is_booking_type;
                     ruleId.value = data.rule_id;
 
@@ -397,7 +397,7 @@ function BookingRentalAndAppointment() {
                         loadingSpinner.style.display="block"
                         
                         const { data: ruleData } = await axios.get(
-                            `${baseURL.value}/v2/products-rental-booking-rules/${ruleId.value}`
+                            `${baseURL.value}/products-rental-booking-rules/${ruleId.value}`
                         );
         
                         bookingRule.value = ruleData;

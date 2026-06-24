@@ -2,7 +2,9 @@ async function MakeAnOfferCode(){
     const { createApp, ref, onBeforeMount, computed, onUnmounted } = Vue;
     const { createI18n } = VueI18n
     const { useToast } = PrimeVue;
-    
+
+    const API_BASE_URL = '/a/dashboard';
+
     // Locale detection from Shopify theme
     const getShopifyLocale = () => {
         // Try to get locale from Shopify Liquid or fall back to browser language
@@ -171,7 +173,7 @@ async function MakeAnOfferCode(){
                     if (!validateInventoryLimit()) {
                         return;
                     }                   
-                    const response = await fetch('https://api-v2.shipturtle.com/api/v2/orders/create-shopify-draft-order', {
+                    const response = await fetch(`${API_BASE_URL}/orders/create-shopify-draft-order`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -217,7 +219,7 @@ async function MakeAnOfferCode(){
             }
             const checkInventoryAndOffer = async () => {
                 if (!email.value) return;
-                const response = await fetch('https://api-v2.shipturtle.com/api/v2/variants/check-inventory-and-offers?variant_id=' + variantId.value + '&email=' + email.value + '&shop_domain=' + Shopify.shop, {
+                const response = await fetch(`${API_BASE_URL}/variants/check-inventory-and-offers?variant_id=${variantId.value}&email=${email.value}&shop_domain=${Shopify.shop}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'

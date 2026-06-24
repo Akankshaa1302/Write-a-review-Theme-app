@@ -1,19 +1,15 @@
-// Locale detection from Shopify theme (matches seller-profile.js / write-a-review.js)
 function getShopifyLocale() {
     const shopifyLocale = document.documentElement.lang ||
                           document.querySelector('html')?.getAttribute('lang') ||
                           window.Shopify?.locale ||
                           navigator.language.split('-')[0]
-    const supportedLocales = ['en', 'de', 'es', 'nl', 'pt', 'no']
-    // Shopify uses `nb` (Bokmål) for Norwegian; map it to `no`
+    const supportedLocales = ['en', 'de', 'es', 'nl', 'pt', 'no', 'ro']
     const localeAliases = { nb: 'no' }
     const baseLocale = shopifyLocale.toLowerCase().split('-')[0]
     const normalizedLocale = localeAliases[baseLocale] ?? baseLocale
     return supportedLocales.includes(normalizedLocale) ? normalizedLocale : 'en'
 }
 
-// Load the customer-chat strings from the shared lang.json asset.
-// English from lang.json is the fallback (mirrors seller-profile's fallbackLocale: 'en') — no hardcoded copies here.
 async function loadCustomerChatMessages(app) {
     const locale = getShopifyLocale()
     try {
@@ -54,7 +50,6 @@ function applyChatStyles(settings) {
     root.setProperty('--st-chat-submit-font-size', settings.stChatSubmitBtnFontSize + 'px')
 }
 
-// Render the chat markup into the mount element
 function renderChat(app, settings, t, customerEmail) {
     const ctaText = settings.stChatWithSellerBtnTxt === 'Chat With Seller' ? t.chatWithSeller : settings.stChatWithSellerBtnTxt
     const headerText = settings.stChatHeaderText === 'Chat With Seller' ? t.chatWithSeller : settings.stChatHeaderText
@@ -101,6 +96,9 @@ function renderChat(app, settings, t, customerEmail) {
 }
 
 async function CustomerChat() {
+    // App proxy base URL (must match Shopify app proxy subpath prefix)
+    const API_BASE_URL = '/a/dashboard';
+
     const app = document.getElementById('st-customer-chat-app');
     if (!app) return;
 
@@ -116,7 +114,7 @@ async function CustomerChat() {
     applyChatStyles(settings);
     renderChat(app, settings, t, customerEmail);
 
-    const url = Shopify.shop === 'bazaatest.myshopify.com' ? "https://api-v2.shipturtle.com/api/v2/chats/store" : "https://api-v2.shipturtle.com/api/v1/vendor/contact"
+    const url = `${API_BASE_URL}/vendor/contact`
     let chatWithSellerBtn = document.getElementById('st-customer-chat-cta')
     let chatWithSellerContainer = document.getElementById('chat-with-seller-container')
     let closePopupBtn = document.getElementById('st-chat-with-seller-close')
@@ -163,21 +161,12 @@ async function CustomerChat() {
         }
 
         var formData = new FormData()
-        if (Shopify.shop === 'bazaatest.myshopify.com') {
-            formData.set('message', userRequest.value)
-            formData.set('shopify_domain', Shopify.shop)
-            formData.set('name', userName.value);
-            formData.set('product_id',  productId)
-            formData.set('customer_email', customerEmailInput.value)
-            formData.set('sender', 'customer')
-        } else {
-            formData.append('shopify_domain', Shopify.shop);
-            formData.append('channel_id',  productId);
-            formData.append('name', userName.value);
-            formData.append('message', userRequest.value);
-            formData.append('email', customerEmailInput.value)
-            formData.append('variant_id', variantId);
-        }
+        formData.append('shopify_domain', Shopify.shop);
+        formData.append('channel_id',  productId);
+        formData.append('name', userName.value);
+        formData.append('message', userRequest.value);
+        formData.append('email', customerEmailInput.value)
+        formData.append('variant_id', variantId);
 
         submitButton.disabled = true;
 

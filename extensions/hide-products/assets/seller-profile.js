@@ -43,8 +43,7 @@ function mountSellerProfile () {
     const { createI18n } = VueI18n
     const { useToast } = PrimeVue
 
-    // API Base URL
-    const API_BASE_URL = 'https://api-v2.shipturtle.com'
+    const API_BASE_URL = '/a/dashboard'
 
     // Locale detection from Shopify theme
     const getShopifyLocale = () => {
@@ -549,7 +548,7 @@ function mountSellerProfile () {
 
             const fetchCountries = async () => {
                 try {
-                    const res = await fetch(`${API_BASE_URL}/api/v1/country`)
+                    const res = await fetch(`${API_BASE_URL}/country`)
                     const data = await res.json()
                     countryOptions.value = Array.isArray(data) ? data : []
                 } catch (e) {
@@ -560,7 +559,7 @@ function mountSellerProfile () {
             const fetchStates = async (countryCode) => {
                 if (!countryCode) { stateOptions.value = []; return }
                 try {
-                    const url = `${API_BASE_URL}/api/v1/states/${encodeURIComponent(countryCode)}/${encodeURIComponent('{"title": ""}')}`
+                    const url = `${API_BASE_URL}/states/${encodeURIComponent(countryCode)}/${encodeURIComponent('{"title": ""}')}`
                     const res = await fetch(url)
                     const { data } = await res.json()
                     // API returns array of objects with country_code and title keys
@@ -763,7 +762,7 @@ function mountSellerProfile () {
             }
 
             const isDefaultLogoLink = (logoLink) => {
-                return logoLink === `${API_BASE_URL}/assets/no-logo.jpeg` || logoLink === 'https://api-v2.shipturtle.com/assets/no-logo.png';
+                return logoLink === 'https://api-v2.shipturtle.com/assets/no-logo.jpeg' || logoLink === 'https://api-v2.shipturtle.com/assets/no-logo.png';
             }
 
             const truncateHtml = (html, maxLen = 100) => {
@@ -1911,7 +1910,7 @@ function mountSellerProfile () {
                         description: reviewForm.value.description.trim()
                     }
                     
-                    const response = await fetch(`${API_BASE_URL}/api/v2/post-vendor-reviews`, {
+                    const response = await fetch(`${API_BASE_URL}/post-vendor-reviews`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1982,7 +1981,7 @@ function mountSellerProfile () {
                         message: contactForm.value.message.trim()
                     }
                     
-                    const response = await fetch(`${API_BASE_URL}/api/v1/vendor/contact`, {
+                    const response = await fetch(`${API_BASE_URL}/vendor/contact`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
