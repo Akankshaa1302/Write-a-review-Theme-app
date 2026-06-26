@@ -109,6 +109,23 @@ function BookingRentalAndAppointment() {
             // For error handling
             const errorMessage = ref(null);
 
+            const notifyBookingApiError = (error) => {
+                try {
+                    const url = error?.config?.url || '';
+                    window.ST_Resources?.notifyDeveloper?.({
+                        feature: 'Booking',
+                        title: `Booking — API failure: ${url}`,
+                        fields: {
+                            'URL': url,
+                            'Method': (error?.config?.method || '').toUpperCase(),
+                            'HTTP': error?.response?.status || 'network/timeout'
+                        }
+                    });
+                } catch (e) {
+                    console.error('Booking notify error:', e);
+                }
+            };
+
             // Block settings
             const blockSettings = computed(() => {
                 try {
@@ -198,6 +215,7 @@ function BookingRentalAndAppointment() {
                     return data;
                 } catch (error) {
                     console.error('Error fetching cart:', error);
+                    notifyBookingApiError(error);
                 }
 
             } catch (error) {
@@ -316,6 +334,7 @@ function BookingRentalAndAppointment() {
                     bookedDates.value = res.data.booked_dates;
                 } catch (error) {
                     console.error('The error : ', error);
+                    notifyBookingApiError(error);
                 } finally {
                     fetchingAvailableSlots.value = false;
                 }
@@ -365,6 +384,7 @@ function BookingRentalAndAppointment() {
                     return data;
                 } catch (error) {
                     console.error('The error : ', error);
+                    notifyBookingApiError(error);
                 }
             }
 
@@ -386,20 +406,32 @@ function BookingRentalAndAppointment() {
                     const quantitySelectorElement = document.getElementById(blockSettings.value.quantitySelectorId);
                     const buyButtonsElement = document.getElementById(blockSettings.value.buyButtonsId);
 
-                    const { data } = await axios.get(`${baseURL.value}/get-product-booking-type/${productId.value}`);
+                    let data;
+                    try {
+                        ({ data } = await axios.get(`${baseURL.value}/get-product-booking-type/${productId.value}`));
+                    } catch (error) {
+                        notifyBookingApiError(error);
+                        throw error;
+                    }
                     isBookingType.value = data.is_booking_type;
                     ruleId.value = data.rule_id;
 
                     if (isBookingType.value) {
                         if (quantitySelectorElement) quantitySelectorElement.style.display = "none";
                         if (buyButtonsElement) buyButtonsElement.style.display = "none";
-                        
+
                         loadingSpinner.style.display="block"
-                        
-                        const { data: ruleData } = await axios.get(
-                            `${baseURL.value}/products-rental-booking-rules/${ruleId.value}`
-                        );
-        
+
+                        let ruleData;
+                        try {
+                            ({ data: ruleData } = await axios.get(
+                                `${baseURL.value}/products-rental-booking-rules/${ruleId.value}`
+                            ));
+                        } catch (error) {
+                            notifyBookingApiError(error);
+                            throw error;
+                        }
+
                         bookingRule.value = ruleData;
 
                         if (bookingRule.value.booking_type === 'rental') {
@@ -830,7 +862,16 @@ function BookingRentalAndAppointment() {
     app.component('p-textarea', PrimeVue.Textarea);
     app.component('p-card', PrimeVue.Card);
 
-    app.mount('#st-booking-and-rental');
+    try {
+        app.mount('#st-booking-and-rental');
+    } catch (error) {
+        console.error('Booking failed to mount:', error);
+        window.ST_Resources?.notifyDeveloper?.({
+            feature: 'Booking',
+            title: 'Booking — Mount failed',
+            fields: { 'Error': error?.message || String(error) }
+        });
+    }
 }
 (function() {
         'use strict';

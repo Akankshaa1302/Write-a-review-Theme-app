@@ -93,28 +93,53 @@ window.ST_Resources = {
             })
             .catch(err => {
                 console.error('Dependency load error:', err);
-                
+
                 const failedScript = err.src || err.message || 'Unknown script';
-                const shopDomain = window.Shopify?.shop;
-                const timestamp = new Date().toISOString();
-                const networkType = navigator.connection?.effectiveType || undefined;
 
-                const payload = {
-                message: `🚨 *Shopify Theme App Dependency Failed*\n*Feature:* ${featureName}\n*Shopify Domain:* ${shopDomain}\n*Failed Script:* <${failedScript}>\n*Timestamp:* ${timestamp}\n*Network Type:* ${networkType}`,
-                via: 'slack',
-                channel: 'shopify-theme-app-dependency-alerts'
-                };
-
-                const apiUrl = 'https://api-v2.shipturtle.com/api/v1/notify-developer';
-                
-                fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
-                }).catch(e => console.error('Error sending slack notification:', e));
+                this.notifyDeveloper({
+                    feature: featureName,
+                    title: 'Shopify Theme App Dependency Failed',
+                    fields: { 'Failed Script': `<${failedScript}>` }
+                });
             });
+    },
+
+    /**
+     *
+     * @param {Object}  opts
+     * @param {string}  opts.feature  
+     * @param {string}  opts.title   
+     * @param {Object} [opts.fields]
+     */
+    notifyDeveloper: function({ feature, title, fields = {} } = {}) {
+        try {
+            const baseFields = {
+                'Feature': feature,
+                'Shop': window.Shopify?.shop,
+                ...fields,
+                'Time': new Date().toISOString(),
+                'Network': navigator.connection?.effectiveType
+            };
+
+            const lines = [
+                `🚨 *${title || 'Theme App Alert'}*`,
+                ...Object.entries(baseFields)
+                    .filter(([, v]) => v !== undefined && v !== null && v !== '')
+                    .map(([k, v]) => `*${k}:* ${v}`)
+            ];
+
+            fetch('https://api-v2.shipturtle.com/api/v1/notify-developer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: lines.join('\n'),
+                    via: 'slack',
+                    channel: 'shopify-theme-app-dependency-alerts'
+                })
+            }).catch(e => console.error('Error sending slack notification:', e));
+        } catch (e) {
+            console.error('notifyDeveloper failed:', e);
+        }
     },
 
 };

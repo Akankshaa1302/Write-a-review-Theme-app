@@ -54,6 +54,26 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (document.getElementById('hide-vendor-wise-checkout-btns').value === 'true') {
                                 $('.st-vendor-wise-checkout-btn').hide()
                             }
+                    },
+                    // render-blocking, so a failure here means the cart did not mount.
+                    error: function (jqxhr, textStatus) {
+                        $('.st_loader-container').hide();
+                        $('#main-cart-footer').show();
+                        if (window.ST_Resources && window.ST_Resources.notifyDeveloper) {
+                            // `this` is the jQuery ajax settings object, so the request
+                            // URL/method are read from it rather than hardcoded.
+                            var url = (this && this.url) || '';
+                            window.ST_Resources.notifyDeveloper({
+                                feature: 'Split Cart',
+                                title: `Split Cart — API failure: ${url}`,
+                                fields: {
+                                    'URL': url,
+                                    'Method': (this && this.type) || '',
+                                    'HTTP': (jqxhr && jqxhr.status) || 'network/timeout',
+                                    'Status': textStatus
+                                }
+                            });
+                        }
                     }
                 });
             });
