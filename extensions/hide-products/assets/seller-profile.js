@@ -576,9 +576,9 @@ function mountSellerProfile () {
                 const name = vendor?.country_detail?.name
                 if (!name) return
                 try {
-                    const res = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(name)}?fields=flags,name`)
+                    const res = await fetch(`${API_BASE_URL}/country-flag?country=${encodeURIComponent(name)}`)
                     const result = await res.json()
-                    vendor.country_flag = Array.isArray(result) ? (result[0]?.flags?.png || '') : ''
+                    vendor.country_flag = result?.flag_url || ''
                 } catch (e) {}
             }
 
@@ -1706,9 +1706,9 @@ function mountSellerProfile () {
                             productsCompanyCountry.value = country
                             productsCompanyFlag.value = ''
                             try {
-                                const flagRes = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(country)}?fields=flags,name`)
+                                const flagRes = await fetch(`${API_BASE_URL}/country-flag?country=${encodeURIComponent(country)}`)
                                 const flagResult = await flagRes.json()
-                                productsCompanyFlag.value = Array.isArray(flagResult) ? (flagResult[0]?.flags?.png || '') : ''
+                                productsCompanyFlag.value = flagResult?.flag_url || ''
                             } catch (e) {}
                         } else if (!showProductCountryAndFlag.value || !country) {
                             productsCompanyCountry.value = country || ''
