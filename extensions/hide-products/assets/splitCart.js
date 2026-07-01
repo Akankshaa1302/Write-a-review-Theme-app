@@ -1,4 +1,23 @@
 var $STJQueryInstance = null
+
+window.stCheckoutBlockers = { shipping: false, credit: false };
+
+window.stSyncCheckoutButtons = function() {
+    var blockers = window.stCheckoutBlockers || { shipping: false, credit: false };
+    var blocked = blockers.shipping || blockers.credit;
+    document.querySelectorAll('.st-vendor-wise-checkout-btn, #checkout.st-cart__checkout-button').forEach(function(btn) {
+        btn.disabled = blocked;
+        btn.classList.toggle('st-checkout-disabled', blocked);
+    });
+};
+
+window.stGetSplitCartOrderTotal = function() {
+    var symbol = window.currency_symbol || '';
+    var el = document.querySelector('.st-total-due-all-products');
+    if (!el) return 0;
+    return parseFloat(String(el.textContent).replace(symbol, '').replace(/[^\d.-]/g, '')) || 0;
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     if (!$STJQueryInstance) {
         $STJQueryInstance = jQuery.noConflict();
@@ -6,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $STJQueryInstance( document ).ready(function( $ ) {
         var current_pagetype = meta.page.pageType;
         if (current_pagetype == "cart") {
-            var ship_turtle_baseUrl = "https://api-v2.shipturtle.com";
+            var ship_turtle_baseUrl = "https://api.beta.shipturtle.app";
             var splitcart_font_family = $('#shipturtle_splitcart_css').data('splitcart_font_family');
             const searchParams = new URLSearchParams(window.location.search);
             var is_preview = searchParams.get('is_preview');
@@ -44,16 +63,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     data: {'product_data': product_data,'currency_symbol': window.currency_symbol, 'shop_domain': Shopify.shop,
                     'is_preview': is_preview || false},
                     success: function (response) {
+                            customCSSTargetEl.html(response.css);
                             targetDiv.append(response.html);
-                            removeloader()
-                            customCSSTargetEl.html(response.css)
-                            if (document.getElementById('hide-order-summary-card').value === 'true') {
-                                $('#order-summary-details-container').hide()
-                                $('#vendor-wise-cart-item-container').addClass('col-sm-12')
-                            }
-                            if (document.getElementById('hide-vendor-wise-checkout-btns').value === 'true') {
-                                $('.st-vendor-wise-checkout-btn').hide()
-                            }
+                            requestAnimationFrame(function() {
+                                requestAnimationFrame(function() {
+                                    removeloader();
+                                    if (typeof window.initStCartShippingModule === 'function') {
+                                        window.__stCartShippingModuleInitialized = false;
+                                        window.initStCartShippingModule();
+                                    }
+                                    if (typeof window.initStCartCreditModule === 'function') {
+                                        window.__stCartCreditModuleInitialized = false;
+                                        window.initStCartCreditModule();
+                                    }
+                                    if (document.getElementById('hide-order-summary-card').value === 'true') {
+                                        $('#order-summary-details-container').hide();
+                                        $('#vendor-wise-cart-item-container').addClass('col-sm-12');
+                                    }
+                                    if (document.getElementById('hide-vendor-wise-checkout-btns').value === 'true') {
+                                        $('.st-vendor-wise-checkout-btn').hide();
+                                    }
+                                });
+                            });
                     },
                     // render-blocking, so a failure here means the cart did not mount.
                     error: function (jqxhr, textStatus) {
@@ -123,10 +154,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function removeloader() {
-            $('.st_loader-container').hide()
-            $('.st-cart-page-container').show()
+            $('.st_loader-container').addClass('st-loader-hidden');
+            $('.st-cart-page-container').show().addClass('st-cart-ready');
             stCalculateTotalPrices();
-        }    
+            if (stIsB2bCreditCheckEnabled()) {
+                document.dispatchEvent(new CustomEvent('st-cart:credit-refetch'));
+            }
+        }
     });
     
 });
@@ -163,6 +197,31 @@ window.addEventListener('pageshow', function(event) {
 
 let timeoutId = null;
 var sessionStorageQuantity;
+
+function stIsLineItemShippingEnabled() {
+    return document.getElementById('st-line-item-shipping-enabled')?.value === 'true';
+}
+
+function stIsB2bCreditCheckEnabled() {
+    return document.getElementById('st-b2b-credit-check-enabled')?.value === 'true';
+}
+
+function stHasSavedShippingDestination() {
+    var addresses = window.stCustomerShippingAddresses || [];
+    if (addresses.length === 0) return false;
+    var select = document.getElementById('st-shipping-address-select');
+    if (select && select.value) {
+        var addr = addresses.find(function(a) { return String(a.id) === String(select.value); });
+        return !!(addr && addr.country);
+    }
+    var defaultId = window.stCustomerDefaultAddressId;
+    if (defaultId != null) {
+        var defaultAddr = addresses.find(function(a) { return String(a.id) === String(defaultId); });
+        return !!(defaultAddr && defaultAddr.country);
+    }
+    return !!(addresses[0] && addresses[0].country);
+}
+
 function stCalculateTotalPrices() {
         var totalProductsCount = 0;
         var totalAmountDue = 0;
@@ -172,11 +231,19 @@ function stCalculateTotalPrices() {
             let vendorWiseProductsCount = 0
             let vendorname = $STJQueryInstance(this).data('vendorname');
             $STJQueryInstance(this).find('.st_split_cart').each(function() {
-                var productprice = $STJQueryInstance(this).find('.st_prd_price').text();
-                var price = productprice.replace(window.currency_symbol, "");
+                var productpriceText = $STJQueryInstance(this).find('.st_prd_price')?.text();
+                var price = productpriceText?.replace(window.currency_symbol, "") || 0;
                 totalVendorWisePrice += parseFloat(price);
                 vendorWiseProductsCount += 1
                 totalProductsCount += 1
+
+                if (stIsLineItemShippingEnabled()) {
+                    var shippingText = $STJQueryInstance(this).find('.st-line-item-shipping-amount')?.text();
+                    if (shippingText && shippingText !== '—' && shippingText !== '...') {
+                        var shippingAmount = parseFloat(String(shippingText).replace(window.currency_symbol, '').replace(/[^\d.-]/g, '')) || 0;
+                        totalVendorWisePrice += shippingAmount;
+                    }
+                }
             });
             
             totalAmountDue += totalVendorWisePrice;
@@ -238,6 +305,12 @@ function stIncrDecrQuantity(operation, variant_id, currency_symbol, key, vendorN
             vendorSessionStorageValue[indexToUpdate].quantity = finalquantity
             sessionStorage.setItem('shipturtle_' + vendorName, JSON.stringify(vendorSessionStorageValue))
             timeoutId = null
+            if (stIsLineItemShippingEnabled() && stHasSavedShippingDestination()) {
+                document.dispatchEvent(new CustomEvent('st-cart:shipping-refetch'));
+            }
+            if (stIsB2bCreditCheckEnabled()) {
+                document.dispatchEvent(new CustomEvent('st-cart:credit-refetch'));
+            }
         },
         complete: function (xhr, status) {
             $STJQueryInstance('#st_prd_price_'+variant_id).show()
