@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     // render-blocking, so a failure here means the cart did not mount.
                     error: function (jqxhr, textStatus) {
-                        $('.st_loader-container').hide();
+                        $('.st_loader-container').addClass('st-loader-hidden');
                         $('#main-cart-footer').show();
                         if (window.ST_Resources && window.ST_Resources.notifyDeveloper) {
                             // `this` is the jQuery ajax settings object, so the request

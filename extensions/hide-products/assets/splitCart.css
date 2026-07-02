@@ -180,6 +180,11 @@
 
 .st-cart-page-container {
     margin-top: 3rem;
+    visibility: hidden;
+}
+
+.st-cart-page-container.st-cart-ready {
+    visibility: visible;
 }
 
 .st-cart-page-container *, .st-cart-page-container ::after, .st-cart-page-container ::before {
@@ -10892,38 +10897,42 @@
 
 
 
-.st_loader-container {
-    min-height: 500px;
-    display: flex;
-    justify-content: center;
-    margin-top: 4rem;
+#st-cart-wrapper .st_loader-container:not(.st-loader-hidden) {
+    min-height: 500px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 4rem !important;
 }
-.st_loader {
-    display: inline-block;
-    position: relative;
-    width: 35px;
-    height: 35px;
+#st-cart-wrapper .st_loader-container.st-loader-hidden {
+    display: none !important;
 }
-.st_loader div {
-    box-sizing: border-box;
-    display: block;
-    position: absolute;
-    width: 35px;
-    height: 35px;
-    margin: 8px;
-    border: 3px solid #5C5F60;
-    border-radius: 50%;
-    animation: st_loader 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    border-color: #5C5F60 transparent transparent transparent;
+#st-cart-wrapper .st_loader {
+    display: inline-block !important;
+    position: relative !important;
+    width: 35px !important;
+    height: 35px !important;
 }
-.st_loader div:nth-child(1) {
-    animation-delay: -0.45s;
+#st-cart-wrapper .st_loader div {
+    box-sizing: border-box !important;
+    display: block !important;
+    position: absolute !important;
+    width: 35px !important;
+    height: 35px !important;
+    margin: 8px !important;
+    border: 3px solid #5C5F60 !important;
+    border-radius: 50% !important;
+    animation: st_loader 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite !important;
+    border-color: #5C5F60 transparent transparent transparent !important;
 }
-.st_loader div:nth-child(2) {
-    animation-delay: -0.3s;
+#st-cart-wrapper .st_loader div:nth-child(1) {
+    animation-delay: -0.45s !important;
 }
-.st_loader div:nth-child(3) {
-    animation-delay: -0.15s;
+#st-cart-wrapper .st_loader div:nth-child(2) {
+    animation-delay: -0.3s !important;
+}
+#st-cart-wrapper .st_loader div:nth-child(3) {
+    animation-delay: -0.15s !important;
 }
 @keyframes st_loader {
     0% {
@@ -11093,4 +11102,201 @@
 
 .ajax-cart__cart-form.js-cart-form .st-quantity-input-field {
     margin-bottom: 0px;
+}
+
+/* Split cart line-item shipping */
+.st-shipping-address-card {
+    margin-bottom: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.st-shipping-address-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+}
+
+.st-shipping-address-input {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.st-shipping-address-ready {
+    display: block;
+}
+
+.st-shipping-address-select-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.st-shipping-address-select-field {
+    position: relative;
+    width: 100%;
+}
+
+.st-shipping-address-select-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    width: 1.125rem;
+    height: 1.125rem;
+    transform: translateY(-50%);
+    color: #6b7280;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.st-shipping-address-select-chevron {
+    position: absolute;
+    right: 0.875rem;
+    top: 50%;
+    width: 1rem;
+    height: 1rem;
+    transform: translateY(-50%);
+    color: #6b7280;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.st-shipping-address-select {
+    width: 100%;
+    max-width: 100%;
+    min-height: 3rem;
+    padding: 0.75rem 2.75rem 0.75rem 2.75rem;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.45;
+    color: #111827;
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    text-overflow: ellipsis;
+}
+
+.st-shipping-address-select:hover {
+    border-color: #9ca3af;
+    background-color: #fff;
+}
+
+.st-shipping-address-select:focus {
+    outline: none;
+    border-color: #111827;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.12);
+}
+
+.st-shipping-address-select:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.st-shipping-address-select option {
+    font-weight: 400;
+    color: #111827;
+    background-color: #fff;
+    padding: 0.5rem;
+}
+
+.st-shipping-address-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.st-shipping-address-missing {
+    display: block;
+    padding: 0.875rem 1rem;
+    background-color: #f9fafb;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+}
+
+.st-manage-addresses-link,
+.st-add-address-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    line-height: 1.3;
+}
+
+.st-manage-addresses-link:hover,
+.st-add-address-link:hover {
+    color: #374151;
+    opacity: 1;
+}
+
+.st-shipping-address-summary {
+    font-weight: 500;
+}
+
+.st-change-shipping-address-btn {
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+}
+
+.st-calculate-shipping-btn {
+    margin-top: 0.25rem;
+}
+
+.st-calculate-shipping-btn:disabled,
+.st-checkout-btn.st-checkout-disabled,
+.st-checkout-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.st-line-item-shipping {
+    font-size: 0.875rem;
+    color: #495057;
+    margin-top: 0.25rem;
+}
+
+.st-line-item-shipping-label {
+    margin-right: 0.25rem;
+}
+
+.st-shipping-error-banner {
+    color: #b91c1c;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    margin-top: 0.875rem;
+    margin-bottom: 0;
+    padding: 0.75rem 0.875rem;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+}
+
+.st-shipping-required-hint {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0;
 }

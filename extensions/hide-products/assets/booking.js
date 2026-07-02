@@ -406,15 +406,14 @@ function BookingRentalAndAppointment() {
                     const quantitySelectorElement = document.getElementById(blockSettings.value.quantitySelectorId);
                     const buyButtonsElement = document.getElementById(blockSettings.value.buyButtonsId);
 
-                    let data;
                     try {
-                        ({ data } = await axios.get(`${baseURL.value}/get-product-booking-type/${productId.value}`));
+                        const { data } = await axios.get(`${baseURL.value}/get-product-booking-type/${productId.value}`);
+                        isBookingType.value = data.is_booking_type;
+                        ruleId.value = data.rule_id;
                     } catch (error) {
                         notifyBookingApiError(error);
                         throw error;
                     }
-                    isBookingType.value = data.is_booking_type;
-                    ruleId.value = data.rule_id;
 
                     if (isBookingType.value) {
                         if (quantitySelectorElement) quantitySelectorElement.style.display = "none";
@@ -422,17 +421,15 @@ function BookingRentalAndAppointment() {
 
                         loadingSpinner.style.display="block"
 
-                        let ruleData;
                         try {
-                            ({ data: ruleData } = await axios.get(
+                            const { data } = await axios.get(
                                 `${baseURL.value}/products-rental-booking-rules/${ruleId.value}`
-                            ));
+                            );
+                            bookingRule.value = data;
                         } catch (error) {
                             notifyBookingApiError(error);
                             throw error;
                         }
-
-                        bookingRule.value = ruleData;
 
                         if (bookingRule.value.booking_type === 'rental') {
                             await fetchAvailableDates();
