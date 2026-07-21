@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $STJQueryInstance( document ).ready(function( $ ) {
         var current_pagetype = meta.page.pageType;
         if (current_pagetype == "cart") {
-            var ship_turtle_baseUrl = "https://api.beta.shipturtle.app";
+            var ship_turtle_baseUrl = "https://api-v2.shipturtle.com";
             var splitcart_font_family = $('#shipturtle_splitcart_css').data('splitcart_font_family');
             const searchParams = new URLSearchParams(window.location.search);
             var is_preview = searchParams.get('is_preview');
@@ -87,13 +87,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             });
                     },
                     // render-blocking, so a failure here means the cart did not mount.
-                    error: function (jqxhr, textStatus) {
+                    error: function (jqxhr, textStatus, errorThrown) {
                         $('.st_loader-container').addClass('st-loader-hidden');
                         $('#main-cart-footer').show();
                         if (window.ST_Resources && window.ST_Resources.notifyDeveloper) {
                             // `this` is the jQuery ajax settings object, so the request
                             // URL/method are read from it rather than hardcoded.
                             var url = (this && this.url) || '';
+
+                           console.log('Error *** : ', jqxhr, jqxhr.responseJSON, jqxhr.responseJSON.message, jqxhr.responseJSON.error, textStatus, errorThrown)
+                            var message =
+                                (jqxhr && jqxhr.responseJSON && (jqxhr.responseJSON.error || jqxhr.responseJSON.message)) ||
+                                errorThrown || 'Unknown error';
+
                             window.ST_Resources.notifyDeveloper({
                                 feature: 'Split Cart',
                                 title: `Split Cart — API failure: ${url}`,
@@ -101,7 +107,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     'URL': url,
                                     'Method': (this && this.type) || '',
                                     'HTTP': (jqxhr && jqxhr.status) || 'network/timeout',
-                                    'Status': textStatus
+                                    'Status': textStatus,
+                                    'Error Message': message
                                 }
                             });
                         }

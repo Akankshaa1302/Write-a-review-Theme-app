@@ -69,7 +69,7 @@ function BookingRentalAndAppointment() {
             const fetchingAvailableSlots = ref(false);
             const productId = ref(ShopifyAnalytics.meta.product.id);
             const variantId = ref(ShopifyAnalytics.meta.product.variants[0].id);
-            const baseURL = ref('/a/dashboard');
+            const baseURL = ref('https://api-v2.shipturtle.com');
             const addingToCart = ref(false);
 
             // Booking type fields
@@ -112,13 +112,20 @@ function BookingRentalAndAppointment() {
             const notifyBookingApiError = (error) => {
                 try {
                     const url = error?.config?.url || '';
+
+                    console.log(error);
+                    console.log("akanksha",error?.response?.data);
+
+                    const message = error?.response?.data?.message || error?.response?.data || error || 'Unknown error';
+
                     window.ST_Resources?.notifyDeveloper?.({
                         feature: 'Booking',
                         title: `Booking — API failure: ${url}`,
                         fields: {
                             'URL': url,
                             'Method': (error?.config?.method || '').toUpperCase(),
-                            'HTTP': error?.response?.status || 'network/timeout'
+                            'HTTP': error?.response?.status || 'network/timeout',
+                            'Error Message': message
                         }
                     });
                 } catch (e) {
@@ -866,7 +873,7 @@ function BookingRentalAndAppointment() {
         window.ST_Resources?.notifyDeveloper?.({
             feature: 'Booking',
             title: 'Booking — Mount failed',
-            fields: { 'Error': error?.message || String(error) }
+            fields: { 'Error Message': error?.message || String(error) }
         });
     }
 }

@@ -207,6 +207,8 @@ function mountSellerProfile () {
             search: '',
             country: null,
             state: null,
+            city: [],
+            pincode: null,
             vendorCategory: null,
             productCategory: null
         }
@@ -301,6 +303,14 @@ function mountSellerProfile () {
                                 [[ $t('sellers.filter.state', { state: filters.state }) ]]
                                 <i class="pi pi-times st-ext-cursor-pointer st-ext-text-xs" @click="removeFilter('state')"></i>
                             </span>
+                            <span v-if="filters.city && filters.city.length" class="st-ext-inline-flex st-ext-align-items-center st-ext-gap-1 st-ext-px-3 st-ext-py-1 st-ext-bg-teal-100 st-ext-text-teal-800 st-ext-text-sm st-ext-rounded-full">
+                                [[ $t('sellers.filter.city', { city: filters.city.join(', ') }) ]]
+                                <i class="pi pi-times st-ext-cursor-pointer st-ext-text-xs" @click="removeFilter('city')"></i>
+                            </span>
+                            <span v-if="filters.pincode" class="st-ext-inline-flex st-ext-align-items-center st-ext-gap-1 st-ext-px-3 st-ext-py-1 st-ext-bg-cyan-100 st-ext-text-cyan-800 st-ext-text-sm st-ext-rounded-full">
+                                [[ $t('sellers.filter.pincode', { pincode: filters.pincode }) ]]
+                                <i class="pi pi-times st-ext-cursor-pointer st-ext-text-xs" @click="removeFilter('pincode')"></i>
+                            </span>
                             <span v-if="filters.vendorCategory" class="st-ext-inline-flex st-ext-align-items-center st-ext-gap-1 st-ext-px-3 st-ext-py-1 st-ext-bg-purple-100 st-ext-text-purple-800 st-ext-text-sm st-ext-rounded-full">
                                 [[ dynamicTranslations.vendorCategoryFilter(getVendorCategoryName(filters.vendorCategory)) ]]
                                 <i class="pi pi-times st-ext-cursor-pointer st-ext-text-xs" @click="removeFilter('vendorCategory')"></i>
@@ -350,6 +360,16 @@ function mountSellerProfile () {
                             <div v-if="showCountryState">
                                 <label class="st-ext-block  st-ext-font-medium st-ext-mb-2">[[ $t('sellers.state') ]]</label>
                                 <p-select :options="stateOptions" optionLabel="name" optionValue="name" :placeholder="$t('sellers.selectState')" class="st-ext-w-full st-ext-text-sm vendor-dropdown" v-model="filters.state" :disabled="!filters.country" :showClear="true"></p-select>
+                            </div>
+
+                            <div v-if="showCity">
+                                <label class="st-ext-block st-ext-font-medium st-ext-mb-2">[[ $t('sellers.city') ]]</label>
+                                <p-multiselect :options="cityOptions" :placeholder="$t('sellers.all')" class="st-ext-w-full st-ext-text-sm vendor-dropdown" v-model="filters.city" display="chip" :filter="false" :showToggleAll="false" :showClear="Array.isArray(filters.city) && filters.city.length > 0"></p-multiselect>
+                            </div>
+
+                            <div v-if="showPincode">
+                                <label class="st-ext-block st-ext-font-medium st-ext-mb-2">[[ $t('sellers.pincode') ]]</label>
+                                                                <p-input-text v-model="filters.pincode" :placeholder="$t('sellers.pincode')" @keyup.enter="applyFilters" class="st-ext-w-full st-ext-h-full st-ext-text-sm"></p-input-text>
                             </div>
 
                             <div v-if="showVendorCategory">
@@ -497,6 +517,7 @@ function mountSellerProfile () {
 
             const countryOptions = ref([])
             const stateOptions = ref([])
+            const cityOptions = ref([])
             const vendorCategoryOptions = ref([])
             const productCategoryOptions = ref([])
 
@@ -505,6 +526,8 @@ function mountSellerProfile () {
             const pageTitle = computed(() => parentCompany.value?.name_of_the_vendor_listing_page)
             const showLocation = computed(() => !!parentCompany.value?.display_vendor_location)
             const showCountryState = computed(() => !!parentCompany.value?.vendor_profile_settings?.filter_country_and_state)
+            const showCity = computed(() => !!parentCompany.value?.vendor_profile_settings?.filter_city)
+            const showPincode = computed(() => !!parentCompany.value?.vendor_profile_settings?.filter_pincode)
             const showVendorCategory = computed(() => !!parentCompany.value?.vendor_profile_settings?.filter_vendor_category)
             const showProductCategory = computed(() => !!parentCompany.value?.vendor_profile_settings?.filter_product_category)
 
@@ -515,6 +538,8 @@ function mountSellerProfile () {
                 search: vendorListState.filters.search,
                 country: vendorListState.filters.country,
                 state: vendorListState.filters.state,
+                city: Array.isArray(vendorListState.filters.city) ? vendorListState.filters.city : [],
+                pincode: vendorListState.filters.pincode ?? null,
                 vendorCategory: vendorListState.filters.vendorCategory,
                 productCategory: vendorListState.filters.productCategory
             })
@@ -526,6 +551,8 @@ function mountSellerProfile () {
                 return !!(filters.value.search || 
                          filters.value.country || 
                          filters.value.state || 
+                         (Array.isArray(filters.value.city) && filters.value.city.length) ||
+                         filters.value.pincode ||
                          filters.value.vendorCategory || 
                          filters.value.productCategory)
             })
@@ -541,6 +568,10 @@ function mountSellerProfile () {
                 if (filters.value.search) parts.push(`search_key=${encodeURIComponent(filters.value.search)}`)
                 if (filters.value.country) parts.push(`country=${encodeURIComponent(filters.value.country)}`)
                 if (filters.value.state) parts.push(`state=${encodeURIComponent(filters.value.state)}`)
+                if (Array.isArray(filters.value.city) && filters.value.city.length) {
+                    parts.push(`city=${encodeURIComponent(filters.value.city.join(','))}`)
+                }
+                if (filters.value.pincode) parts.push(`pincode=${encodeURIComponent(filters.value.pincode)}`)
                 if (filters.value.vendorCategory) parts.push(`vendor_category_id=${encodeURIComponent(filters.value.vendorCategory)}`)
                 if (filters.value.productCategory) parts.push(`product_type=${encodeURIComponent(filters.value.productCategory)}`)
                 return base + (parts.length ? `&${parts.join('&')}` : '')
@@ -594,6 +625,7 @@ function mountSellerProfile () {
                         parentCompany.value = payload.data?.parent_company || null
                         vendorCategoryOptions.value = Array.isArray(payload.data?.vendor_categories) ? payload.data.vendor_categories : []
                         productCategoryOptions.value = Array.isArray(payload.data?.product_categories) ? payload.data.product_categories : []
+                        cityOptions.value = Array.isArray(payload.data?.cities) ? payload.data.cities : []
                         showVendorCountryAndFlag.value = !!payload.data?.show_vendor_country_on_vendors_list
                         if (showVendorCountryAndFlag.value) {
                             vendors.value.forEach(loadVendorCountryFlag)
@@ -637,11 +669,11 @@ function mountSellerProfile () {
             }
 
             const clearFilters = () => {
-                filters.value = { search: '', country: null, state: null, vendorCategory: null, productCategory: null }
+                filters.value = { search: '', country: null, state: null, city: [], pincode: null, vendorCategory: null, productCategory: null }
                 stateOptions.value = []
                 first.value = 0
                 vendorListState.first = 0
-                vendorListState.filters = { search: '', country: null, state: null, vendorCategory: null, productCategory: null }
+                vendorListState.filters = { search: '', country: null, state: null, city: [], pincode: null, vendorCategory: null, productCategory: null }
                 saveVendorListStateToStorage(vendorListState)
                 fetchVendors()
                 if (isMobile.value) {
@@ -658,6 +690,10 @@ function mountSellerProfile () {
                     stateOptions.value = []
                 } else if (filterType === 'state') {
                     filters.value.state = null
+                } else if (filterType === 'city') {
+                    filters.value.city = []
+                } else if (filterType === 'pincode') {
+                    filters.value.pincode = null
                 } else if (filterType === 'vendorCategory') {
                     filters.value.vendorCategory = null
                 } else if (filterType === 'productCategory') {
@@ -798,11 +834,14 @@ function mountSellerProfile () {
                 pageTitle,
                 showLocation,
                 showCountryState,
+                showCity,
+                showPincode,
                 showVendorCategory,
                 showProductCategory,
                 showVendorCountryAndFlag,
                 countryOptions,
                 stateOptions,
+                cityOptions,
                 vendorCategoryOptions,
                 productCategoryOptions,
                 filters,
@@ -2274,6 +2313,7 @@ function mountSellerProfile () {
         app.component('p-toast', PrimeVue.Toast);
         app.component('p-image', PrimeVue.Image);
         app.component('p-select', PrimeVue.Select);
+        app.component('p-multiselect', PrimeVue.MultiSelect);
         app.component('p-tabview', PrimeVue.TabView);
         app.component('p-tabpanel', PrimeVue.TabPanel);
         app.component('p-textarea', PrimeVue.Textarea);
