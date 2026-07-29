@@ -57,7 +57,7 @@
           "productCategory": "{product} Category"
         },
         "city": "City: {city}",
-        "pincode": "PIN Code: {pincode}"
+        "zipcode": "Zip Code: {pincode}"
       },
       "vendorDetails": {
         "filter": {
@@ -170,7 +170,7 @@
         "cancel": "Cancel"
       },
       "city": "City",
-      "pincode": "PIN Code"
+      "zipcode": "Zip Code"
     },
     "product-review": {
       "overall-rating": "Overall Rating",
@@ -296,7 +296,7 @@
           "productCategory": "Produkt-Kategorie"
         },
         "city": "Stadt: {city}",
-        "pincode": "PLZ: {pincode}"
+        "zipcode": "PLZ: {pincode}"
       },
       "vendorDetails": {
         "filter": {
@@ -410,7 +410,7 @@
         "cancel": "Abbrechen"
       },
       "city": "Stadt",
-      "pincode": "PLZ"
+      "zipcode": "PLZ"
     },
     "product-review": {
       "overall-rating": "Gesamtbewertung",
@@ -424,6 +424,7 @@
       "review-by": "Von",
       "leave-a-review": "Bewertung abgeben",
       "verified-purchaser": "Verifizierter Käufer",
+      
       "write-review-label": "Bewertung schreiben *",
       "write-review-placeholder": "Was sollten andere Kunden wissen?",
       "title-review-label": "Titel Ihrer Bewertung *",
@@ -432,11 +433,14 @@
       "public-name-placeholder": "Geben Sie Ihren Namen ein",
       "email-label": "E-Mail *",
       "email-placeholder": "email@beispiel.de",
+      
       "cancel": "Abbrechen",
       "submit-review": "Bewertung absenden",
+      
       "toast-error": "Fehler",
       "toast-success": "Erfolg",
       "toast-login-required": "Anmeldung erforderlich",
+      
       "toast-all-fields-required": "Alle mit * markierten Felder sind erforderlich",
       "toast-error-submitting": "Fehler beim Absenden der Bewertung",
       "toast-review-submitted": "Bewertung erfolgreich übermittelt",
@@ -532,7 +536,7 @@
           "productCategory": "Categoría de producto"
         },
         "city": "Ciudad: {city}",
-        "pincode": "Código postal: {pincode}"
+        "zipcode": "Código postal: {pincode}"
       },
       "vendorDetails": {
         "filter": {
@@ -646,7 +650,7 @@
         "cancel": "Cancelar"
       },
       "city": "Ciudad",
-      "pincode": "Código postal"
+      "zipcode": "Código postal"
     },
     "product-review": {
       "overall-rating": "Calificación general",
@@ -772,7 +776,7 @@
           "productCategory": "Productcategorie"
         },
         "city": "Stad: {city}",
-        "pincode": "Postcode: {pincode}"
+        "zipcode": "Postcode: {pincode}"
       },
       "vendorDetails": {
         "filter": {
@@ -886,7 +890,7 @@
         "cancel": "Annuleren"
       },
       "city": "Stad",
-      "pincode": "Postcode"
+      "zipcode": "Postcode"
     },
     "product-review": {
       "overall-rating": "Algemene beoordeling",
@@ -1008,7 +1012,7 @@
           "productCategory": "Categoria do produto"
         },
         "city": "Cidade: {city}",
-        "pincode": "Código postal: {pincode}"
+        "zipcode": "Código postal: {pincode}"
       },
       "vendorDetails": {
         "filter": {
@@ -1122,7 +1126,7 @@
         "cancel": "Cancelar"
       },
       "city": "Cidade",
-      "pincode": "Código postal"
+      "zipcode": "Código postal"
     },
     "product-review": {
       "overall-rating": "Classificação geral",
@@ -1244,7 +1248,7 @@
           "productCategory": "Produktkategori"
         },
         "city": "By: {city}",
-        "pincode": "Postnummer: {pincode}"
+        "zipcode": "Postnummer: {pincode}"
       },
       "vendorDetails": {
         "filter": {
@@ -1358,7 +1362,7 @@
         "cancel": "Avbryt"
       },
       "city": "By",
-      "pincode": "Postnummer"
+      "zipcode": "Postnummer"
     },
     "product-review": {
       "overall-rating": "Samlet vurdering",
@@ -1480,7 +1484,7 @@
           "productCategory": "Categorie produs"
         },
         "city": "Oraș: {city}",
-        "pincode": "Cod poștal: {pincode}"
+        "zipcode": "Cod poștal: {pincode}"
       },
       "vendorDetails": {
         "filter": {
@@ -1594,7 +1598,7 @@
         "cancel": "Anulează"
       },
       "city": "Oraș",
-      "pincode": "Cod poștal"
+      "zipcode": "Cod poștal"
     },
     "product-review": {
       "overall-rating": "Evaluare generală",

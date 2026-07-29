@@ -308,7 +308,7 @@ function mountSellerProfile () {
                                 <i class="pi pi-times st-ext-cursor-pointer st-ext-text-xs" @click="removeFilter('city')"></i>
                             </span>
                             <span v-if="filters.pincode" class="st-ext-inline-flex st-ext-align-items-center st-ext-gap-1 st-ext-px-3 st-ext-py-1 st-ext-bg-cyan-100 st-ext-text-cyan-800 st-ext-text-sm st-ext-rounded-full">
-                                [[ $t('sellers.filter.pincode', { pincode: filters.pincode }) ]]
+                                [[ $t('sellers.filter.zipcode', { pincode: filters.pincode }) ]]
                                 <i class="pi pi-times st-ext-cursor-pointer st-ext-text-xs" @click="removeFilter('pincode')"></i>
                             </span>
                             <span v-if="filters.vendorCategory" class="st-ext-inline-flex st-ext-align-items-center st-ext-gap-1 st-ext-px-3 st-ext-py-1 st-ext-bg-purple-100 st-ext-text-purple-800 st-ext-text-sm st-ext-rounded-full">
@@ -368,8 +368,8 @@ function mountSellerProfile () {
                             </div>
 
                             <div v-if="showPincode">
-                                <label class="st-ext-block st-ext-font-medium st-ext-mb-2">[[ $t('sellers.pincode') ]]</label>
-                                                                <p-input-text v-model="filters.pincode" :placeholder="$t('sellers.pincode')" @keyup.enter="applyFilters" class="st-ext-w-full st-ext-h-full st-ext-text-sm"></p-input-text>
+                                <label class="st-ext-block st-ext-font-medium st-ext-mb-2">[[ $t('sellers.zipcode') ]]</label>
+                                <p-input-text v-model="filters.pincode" :placeholder="$t('sellers.zipcode')" @keyup.enter="applyFilters" class="st-ext-w-full st-ext-h-full st-ext-text-sm"></p-input-text>
                             </div>
 
                             <div v-if="showVendorCategory">
