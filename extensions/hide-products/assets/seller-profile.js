@@ -1417,6 +1417,11 @@ function mountSellerProfile () {
                                                         <small v-if="contactFormErrors.message" class="st-ext-text-red-500 st-ext-text-sm">[[ contactFormErrors.message ]]</small>
                                                     </div>
 
+                                                    <div class="honeypot-fields">
+                                                        <p-input-text type="text" id="contactHoneypotNameFieldName" name="contact_honeypot_name_field_name" autocomplete="off" tabindex="-1"></p-input-text>
+                                                        <p-input-text type="text" id="contactHoneypotValidFromFieldName" name="contact_honeypot_valid_from_field_name" autocomplete="off" tabindex="-1"></p-input-text>
+                                                    </div>
+
                                                     <!-- Submit Button -->
                                                     <div class="st-ext-flex st-ext-justify-end">
                                                         <p-button
@@ -1549,6 +1554,11 @@ function mountSellerProfile () {
             const contactFormSubmitting = ref(false)
             const contactFormSuccess = ref(false)
             const contactFormError = ref('')
+            const contactHoneypotData = ref({
+                nameFieldName: '',
+                validFromFieldName: '',
+                encryptedValidFrom: ''
+            })
             const cartLoading = ref({})
 
             const handleAddToCart = async (product) => {
@@ -1989,6 +1999,32 @@ function mountSellerProfile () {
                 }
             }
 
+            const getContactHoneyPot = async () => {
+                try {
+                    const res = await fetchViaAppProxy(`${API_BASE_URL}/honeypot-data`)
+                    const { honeypot } = await res.json()
+
+                    contactHoneypotData.value = {
+                        nameFieldName: honeypot.nameFieldName,
+                        validFromFieldName: honeypot.validFromFieldName,
+                        encryptedValidFrom: honeypot.encryptedValidFrom
+                    }
+
+                    const honeypotNameFieldEl = document.getElementById('contactHoneypotNameFieldName')
+                    const honeypotValidFromFieldEl = document.getElementById('contactHoneypotValidFromFieldName')
+
+                    if (honeypotNameFieldEl) {
+                        honeypotNameFieldEl.setAttribute('name', honeypot.nameFieldName)
+                    }
+                    if (honeypotValidFromFieldEl) {
+                        honeypotValidFromFieldEl.setAttribute('name', honeypot.validFromFieldName)
+                        honeypotValidFromFieldEl.value = honeypot.encryptedValidFrom
+                    }
+                } catch (error) {
+                    console.error('Error fetching honeypot data:', error)
+                }
+            }
+
             const validateContactForm = () => {
                 contactFormErrors.value = {}
                 if (!contactForm.value.name.trim()) {
@@ -2017,7 +2053,10 @@ function mountSellerProfile () {
                         shop: shop,
                         name: contactForm.value.name.trim(),
                         email: contactForm.value.email.trim(),
-                        message: contactForm.value.message.trim()
+                        message: contactForm.value.message.trim(),
+                        honeypot_enabled: true,
+                        [contactHoneypotData.value.nameFieldName]: null,
+                        [contactHoneypotData.value.validFromFieldName]: contactHoneypotData.value.encryptedValidFrom
                     }
                     
                     const response = await fetch(`${API_BASE_URL}/vendor/contact`, {
@@ -2124,6 +2163,7 @@ function mountSellerProfile () {
 
             onMounted(() => {
                 fetchVendorDetails()
+                getContactHoneyPot()
                 document.addEventListener('click', handleCategoryOutsideClick)
             })
 

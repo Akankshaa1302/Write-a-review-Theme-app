@@ -179,6 +179,10 @@
 }
 
 
+#seller-profile-app .honeypot-fields {
+    display: none;
+}
+
 #seller-profile-app .p-select-label {
     font-size: 0.875rem !important;
 }
