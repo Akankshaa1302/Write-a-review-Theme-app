@@ -236,6 +236,18 @@
       "fillFields": "Please fillout all required fields.",
       "messageSent": "Your message has been sent.",
       "submitFailed": "Couldn't submit your request."
+    },
+    "live-chat": {
+      "scopeNote": "This conversation is only about {product}",
+      "customerLabel": "Customer",
+      "sellerLabel": "Seller",
+      "seenBySeller": "Seen by seller",
+      "sellerTyping": "Seller is typing...",
+      "messagePlaceholder": "Message {vendor}...",
+      "closeChat": "Close chat",
+      "vendorFallback": "Vendor",
+      "loginRequiredTitle": "Login Required",
+      "loginRequiredDetail": "Please login to continue"
     }
   },
   "de": {
@@ -476,6 +488,18 @@
       "fillFields": "Bitte füllen Sie alle Pflichtfelder aus.",
       "messageSent": "Ihre Nachricht wurde gesendet.",
       "submitFailed": "Ihre Anfrage konnte nicht übermittelt werden."
+    },
+    "live-chat": {
+      "scopeNote": "Dieses Gespräch bezieht sich nur auf {product}",
+      "customerLabel": "Kunde",
+      "sellerLabel": "Verkäufer",
+      "seenBySeller": "Vom Verkäufer gesehen",
+      "sellerTyping": "Verkäufer schreibt...",
+      "messagePlaceholder": "Nachricht an {vendor}...",
+      "closeChat": "Chat schließen",
+      "vendorFallback": "Verkäufer",
+      "loginRequiredTitle": "Anmeldung erforderlich",
+      "loginRequiredDetail": "Bitte melden Sie sich an, um fortzufahren"
     }
   },
   "es": {
@@ -716,6 +740,18 @@
       "fillFields": "Por favor, completa todos los campos obligatorios.",
       "messageSent": "Tu mensaje ha sido enviado.",
       "submitFailed": "No se pudo enviar tu solicitud."
+    },
+    "live-chat": {
+      "scopeNote": "Esta conversación es solo sobre {product}",
+      "customerLabel": "Cliente",
+      "sellerLabel": "Vendedor",
+      "seenBySeller": "Visto por el vendedor",
+      "sellerTyping": "El vendedor está escribiendo...",
+      "messagePlaceholder": "Mensaje a {vendor}...",
+      "closeChat": "Cerrar chat",
+      "vendorFallback": "Vendedor",
+      "loginRequiredTitle": "Inicio de sesión requerido",
+      "loginRequiredDetail": "Por favor inicia sesión para continuar"
     }
   },
   "nl": {
@@ -952,6 +988,18 @@
       "fillFields": "Vul alle verplichte velden in.",
       "messageSent": "Uw bericht is verzonden.",
       "submitFailed": "Uw verzoek kon niet worden ingediend."
+    },
+    "live-chat": {
+      "scopeNote": "Dit gesprek gaat alleen over {product}",
+      "customerLabel": "Klant",
+      "sellerLabel": "Verkoper",
+      "seenBySeller": "Gezien door verkoper",
+      "sellerTyping": "Verkoper is aan het typen...",
+      "messagePlaceholder": "Bericht aan {vendor}...",
+      "closeChat": "Chat sluiten",
+      "vendorFallback": "Verkoper",
+      "loginRequiredTitle": "Inloggen vereist",
+      "loginRequiredDetail": "Log in om verder te gaan"
     }
   },
   "pt": {
@@ -1188,6 +1236,18 @@
       "fillFields": "Por favor, preencha todos os campos obrigatórios.",
       "messageSent": "A sua mensagem foi enviada.",
       "submitFailed": "Não foi possível submeter o seu pedido."
+    },
+    "live-chat": {
+      "scopeNote": "Esta conversa é apenas sobre {product}",
+      "customerLabel": "Cliente",
+      "sellerLabel": "Vendedor",
+      "seenBySeller": "Visto pelo vendedor",
+      "sellerTyping": "O vendedor está a escrever...",
+      "messagePlaceholder": "Mensagem para {vendor}...",
+      "closeChat": "Fechar chat",
+      "vendorFallback": "Vendedor",
+      "loginRequiredTitle": "Login necessário",
+      "loginRequiredDetail": "Por favor, inicie sessão para continuar"
     }
   },
   "no": {
@@ -1424,6 +1484,18 @@
       "fillFields": "Please fillout all required fields.",
       "messageSent": "Your message has been sent.",
       "submitFailed": "Couldn't submit your request."
+    },
+    "live-chat": {
+      "scopeNote": "Denne samtalen handler bare om {product}",
+      "customerLabel": "Kunde",
+      "sellerLabel": "Selger",
+      "seenBySeller": "Sett av selger",
+      "sellerTyping": "Selger skriver...",
+      "messagePlaceholder": "Melding til {vendor}...",
+      "closeChat": "Lukk chat",
+      "vendorFallback": "Selger",
+      "loginRequiredTitle": "Innlogging nødvendig",
+      "loginRequiredDetail": "Vennligst logg inn for å fortsette"
     }
   },
   "ro": {
@@ -1660,6 +1732,18 @@
       "fillFields": "Te rugăm să completezi toate câmpurile obligatorii.",
       "messageSent": "Mesajul tău a fost trimis.",
       "submitFailed": "Solicitarea ta nu a putut fi trimisă."
+    },
+    "live-chat": {
+      "scopeNote": "Această conversație este doar despre {product}",
+      "customerLabel": "Client",
+      "sellerLabel": "Vânzător",
+      "seenBySeller": "Văzut de vânzător",
+      "sellerTyping": "Vânzătorul scrie...",
+      "messagePlaceholder": "Mesaj către {vendor}...",
+      "closeChat": "Închide chatul",
+      "vendorFallback": "Vânzător",
+      "loginRequiredTitle": "Autentificare necesară",
+      "loginRequiredDetail": "Te rugăm să te autentifici pentru a continua"
     }
   }
 }

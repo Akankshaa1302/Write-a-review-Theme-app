@@ -1,6 +1,32 @@
-function LiveChatThemeAppExtension() {
+async function LiveChatThemeAppExtension() {
   const { createApp, ref, computed, onMounted, onBeforeMount , onBeforeUnmount, watch, nextTick  } = Vue;
   const { useToast } = PrimeVue;
+  const { createI18n } = VueI18n;
+
+  const getShopifyLocale = () => {
+    const shopifyLocale = document.documentElement.lang ||
+      document.querySelector('html')?.getAttribute('lang') ||
+      window.Shopify?.locale ||
+      navigator.language.split('-')[0]
+    const supportedLocales = ['en', 'de', 'es', 'nl', 'pt', 'no', 'ro']
+    const normalizedLocale = shopifyLocale.toLowerCase().split('-')[0]
+    return supportedLocales.includes(normalizedLocale) ? normalizedLocale : 'en'
+  }
+
+  const loadLocaleMessages = async () => {
+    const locale = getShopifyLocale()
+    try {
+      const appElement = document.getElementById('st-live-chat-app')
+      const langJSONUrl = appElement?.getAttribute('data-lang-asset')
+      if (!langJSONUrl) return { messages: { en: {} }, locale: 'en' }
+      const allMessages = await fetch(langJSONUrl).then(r => r.json())
+      if (!allMessages.en) allMessages.en = {}
+      return { messages: allMessages, locale }
+    } catch (error) {
+      console.error('Failed to load locale messages:', error)
+      return { messages: { en: {} }, locale: 'en' }
+    }
+  }
 
   const getBlockSettings = () => {
     try {
@@ -58,49 +84,70 @@ function LiveChatThemeAppExtension() {
     return res
   }
 
+  const { messages, locale } = await loadLocaleMessages()
+  const i18n = createI18n({
+    legacy: false,
+    locale: locale,
+    fallbackLocale: 'en',
+    messages
+  })
+
   const app = createApp({
     template: `
-      <div class="st-live-chat-wrapper">
-        <!-- Floating Chat Button -->
-        <div 
-          v-if="!isDialogVisible" 
-          class="st-chat-float-button"
+      <div class="st-live-chat-wrapper" :style="{ '--st-chat-primary': accentColor }">
+        <!-- Inline Chat Trigger Button (merchant places this near Add to Cart / Buy Now) -->
+        <button
+          type="button"
+          class="st-chat-trigger-button"
           @click="openChat"
-          :style="{ background: buttonBgColor }"
+          :style="triggerButtonStyle"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
           </svg>
-        </div>
+          <span class="st-chat-trigger-text">{{ buttonLabel }}</span>
+        </button>
         <p-toast></p-toast>
-        <!-- Chat Dialog -->
-        <p-dialog 
+        <!-- Chat Drawer -->
+        <p-drawer
           v-model:visible="isDialogVisible"
-          :modal="false"
-          :dismissableMask="false"
-          :closable="true"
-          :draggable="false"
-          class="st-chat-dialog"
-          position="bottomright"
-          :style="{ width: '400px', height: '600px' }"
+          position="right"
+          :showCloseIcon="false"
+          class="st-chat-drawer"
+          :style="{ width: 'min(420px, 100vw)' }"
         >
           <template #header>
             <div class="st-chat-header">
-              <div class="st-chat-header-info">
-                <i class="pi pi-user" style="font-size: 2rem; color: white;"></i>
-                <div class="st-chat-header-text">
-                  <h3>Chat With Seller</h3>
-                </div>
+              <div class="st-chat-header-text">
+                <h3>{{ vendorName }}</h3>
               </div>
+              <button type="button" class="st-chat-close-button" @click="closeChat" :aria-label="t('live-chat.closeChat')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           </template>
 
+          <!-- Product Context -->
+          <div v-if="productInfo.title" class="st-chat-product-bar">
+            <img v-if="productInfo.image" :src="productInfo.image" class="st-chat-product-image" :alt="productInfo.title" />
+            <div class="st-chat-product-info">
+              <div class="st-chat-product-title">{{ productInfo.title }}</div>
+              <div v-if="productInfo.price" class="st-chat-product-price">{{ productInfo.price }}</div>
+            </div>
+          </div>
+
+          <div v-if="productInfo.title" class="st-chat-scope-note">
+            {{ t('live-chat.scopeNote', { product: productInfo.title }) }}
+          </div>
+
           <!-- Messages Area -->
           <div class="st-chat-messages-container" ref="messagesContainer">
-            <template  
-              v-for="(message, index) in messages" 
+            <template
+              v-for="(message, index) in messages"
               :key="message.id"
-            >  
+            >
               <div
                 v-if="shouldShowDate(index)"
                 class="st-date-header"
@@ -110,19 +157,19 @@ function LiveChatThemeAppExtension() {
               <div :class="['st-message-wrapper', message.sender_type === 'customer' ? 'st-message-user' : 'st-message-support']">
                 <div class="st-message-bubble">
                   <div class="st-message-header">
-                    <span class="st-message-chip">{{ message.sender_type === 'customer' ? 'Customer' : 'Seller' }}</span>
+                    <span class="st-message-chip">{{ message.sender_type === 'customer' ? t('live-chat.customerLabel') : t('live-chat.sellerLabel') }}</span>
                     <span class="st-message-text">{{ message.message }}</span>
                   </div>
                   <div class="st-message-time">{{ formatTime(message.created_at)}}</div>
-                  <span 
+                  <span
                     v-if="
                       isLastMessage(index) &&
                       message.sender_type === 'customer' &&
                       getSeenByString(message)
-                    " 
+                    "
                     class="st-seen-by"
                   >
-                    Seen by seller
+                    {{ t('live-chat.seenBySeller') }}
                   </span>
                 </div>
               </div>
@@ -137,43 +184,83 @@ function LiveChatThemeAppExtension() {
             </div>
 
             <span class="st-typing-text">
-              Seller is typing...
+              {{ t('live-chat.sellerTyping') }}
             </span>
           </div>
           </div>
 
           <!-- Input Area -->
           <template #footer>
-              <p-input-text 
-                v-model="newMessage"
-                placeholder="Type your message..."
-                @keyup.enter="sendMessage"
-                class="st-chat-input"
-                :disabled="isSending"
-              />
-              <p-button 
-                icon="pi pi-send"
-                @click="sendMessage"
-                :disabled="!newMessage.trim() || isSending"
-                class="st-send-button"
-                :loading="isSending"
-                severity="primary"
-              />
+            <div class="st-chat-footer">
+              <div v-if="quickReplies.length" class="st-chat-quick-replies">
+                <button
+                  v-for="reply in quickReplies"
+                  :key="reply"
+                  type="button"
+                  class="st-quick-reply-chip"
+                  @click="sendQuickReply(reply)"
+                >
+                  {{ reply }}
+                </button>
+              </div>
+              <div class="st-chat-input-row">
+                <p-input-text
+                  v-model="newMessage"
+                  :placeholder="t('live-chat.messagePlaceholder', { vendor: vendorName })"
+                  @keyup.enter="sendMessage"
+                  class="st-chat-input"
+                  :disabled="isSending"
+                />
+                <p-button
+                  icon="pi pi-send"
+                  @click="sendMessage"
+                  :disabled="!newMessage.trim() || isSending"
+                  class="st-send-button"
+                  :loading="isSending"
+                  severity="primary"
+                />
+              </div>
             </div>
           </template>
-        </p-dialog>
+        </p-drawer>
       </div>
     `,
     setup() {
+      const { t } = VueI18n.useI18n();
       const isDialogVisible = ref(false);
       const messages = ref([]);
       const newMessage = ref('');
       const isSending = ref(false);
       const isTyping = ref(false);
-      const buttonBgColor = ref(window.stLiveChatConfig?.buttonColor || '#4F46E5');
       const messagesContainer = ref(null);
       const blockSettings = getBlockSettings();
       const baseApiUrl = normalizeAppProxyPrefix(blockSettings.app_proxy_prefix);
+      const accentColor = ref(window.stLiveChatConfig?.accentColor || blockSettings.accent_color || '#4F46E5');
+      const buttonLabel = computed(() => {
+        const labelTemplate = blockSettings.button_text || 'Chat with {vendor}';
+        return labelTemplate.replace('{vendor}', window.productVendor || t('live-chat.vendorFallback'));
+      });
+      const triggerButtonStyle = computed(() => ({
+        background: blockSettings.button_bg_color || '#EEF2FF',
+        color: blockSettings.button_text_color || '#4F46E5',
+        borderColor: blockSettings.button_border_color || '#C7D2FE',
+        width: blockSettings.custom_width || '100%',
+        height: blockSettings.custom_height || 'auto'
+      }));
+      const vendorName = computed(() => window.productVendor || t('live-chat.vendorFallback'));
+      const productInfo = computed(() => ({
+        title: window.productTitle || '',
+        image: window.productImage || '',
+        price: window.productPrice || ''
+      }));
+      const quickReplies = computed(() => {
+        const raw = blockSettings.quick_replies || '';
+        return raw.split(',').map(s => s.trim()).filter(Boolean);
+      });
+      const sendQuickReply = (text) => {
+        newMessage.value = text;
+        sendMessage();
+      };
       const shopifyDomain = ref(Shopify.shop);
       const productId = ref(ShopifyAnalytics.meta.product.id);
       const chatExists = ref(false);
@@ -244,11 +331,11 @@ function LiveChatThemeAppExtension() {
               scrollToBottom();
             });
         } else {
-            toast.add({ 
-                severity: 'warn', 
-                summary: 'Login Required', 
-                detail: 'Please login to continue', 
-                life: 3000 
+            toast.add({
+                severity: 'warn',
+                summary: t('live-chat.loginRequiredTitle'),
+                detail: t('live-chat.loginRequiredDetail'),
+                life: 3000
             });
             setTimeout(() => {
                 window.location.href = "/account/login"
@@ -468,13 +555,20 @@ function LiveChatThemeAppExtension() {
       });
 
       return {
+        t,
         isDialogVisible,
         messages,
         newMessage,
         isSending,
         isTyping,
         typingUsers,
-        buttonBgColor,
+        accentColor,
+        buttonLabel,
+        triggerButtonStyle,
+        vendorName,
+        productInfo,
+        quickReplies,
+        sendQuickReply,
         messagesContainer,
         openChat,
         closeChat,
@@ -495,8 +589,9 @@ function LiveChatThemeAppExtension() {
     }
   });
   app.use(PrimeVue.ToastService);
+  app.use(i18n);
   // Register PrimeVue components
-  app.component('p-dialog', PrimeVue.Dialog);
+  app.component('p-drawer', PrimeVue.Drawer);
   app.component('p-button', PrimeVue.Button);
   app.component('p-toast', PrimeVue.Toast);
   app.component('p-input-text', PrimeVue.InputText);

@@ -1,4 +1,4 @@
-<div id="st-live-chat-app" data-block-settings='{{ block.settings | json }}'></div>
+<div id="st-live-chat-app" data-lang-asset="{{ 'lang.json' | asset_url }}" data-block-settings='{{ block.settings | json }}'></div>
 
 {% schema %}
 {
@@ -7,10 +7,64 @@
   "templates": ["product"],
   "settings": [
     {
+      "type": "header",
+      "content": "Chat button"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Chat with {vendor}",
+      "info": "Use {vendor} to insert the product's vendor name."
+    },
+    {
+      "type": "text",
+      "id": "custom_width",
+      "label": "Custom width",
+      "default": "100%",
+      "info": "Set to 100% to size the button full width. Accepts CSS values like 280px or 60%."
+    },
+    {
+      "type": "text",
+      "id": "custom_height",
+      "label": "Custom height",
+      "default": "auto",
+      "info": "Set to auto to size the button automatically. Accepts CSS values like 48px."
+    },
+    {
       "type": "color",
-      "id": "button_color",
-      "label": "Chat Button Color",
+      "id": "button_bg_color",
+      "label": "Button background color",
+      "default": "#EEF2FF"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
       "default": "#4F46E5"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button border color",
+      "default": "#C7D2FE"
+    },
+    {
+      "type": "header",
+      "content": "Chat panel"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Chat panel accent color",
+      "default": "#4F46E5"
+    },
+    {
+      "type": "text",
+      "id": "quick_replies",
+      "label": "Quick reply suggestions",
+      "default": "Is this in stock?, Delivery time?, Size guide",
+      "info": "Comma-separated. Shown as tappable chips above the message box. Leave blank to hide."
     },
     {
       "type": "header",
@@ -36,7 +90,10 @@
   window.customerEmail = {{ customer.email | json }};
   window.productVendor = {{ product.vendor | json }};
   window.customerName = {{ customer.name | json }};
+  window.productTitle = {{ product.title | json }};
+  window.productImage = {% if product.featured_image %}{{ product.featured_image | image_url: width: 160 | json }}{% else %}null{% endif %};
+  window.productPrice = {{ product.selected_or_first_available_variant.price | money | json }};
   window.stLiveChatConfig = {
-    buttonColor: {{ block.settings.button_color | json }}
+    accentColor: {{ block.settings.accent_color | json }}
   };
 </script>
