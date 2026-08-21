@@ -85,6 +85,10 @@ function renderChat(app, settings, t, customerEmail) {
                     <label for="customer-chat">${escapeHtml(t.message)}*</label>
                     <textarea id="customer-chat-user-request" name="customer-chat" rows="${escapeHtml(settings.stChatTxtBoxRows)}" cols="50" placeholder="${escapeHtml(settings.stChatTxtBoxPlaceholder)}"></textarea>
                 </div>
+                <div class="honeypot-fields">
+                    <input type="text" id="chatHoneypotNameFieldName" name="chat_honeypot_name_field_name" autocomplete="off" tabindex="-1" />
+                    <input type="text" id="chatHoneypotValidFromFieldName" name="chat_honeypot_valid_from_field_name" autocomplete="off" tabindex="-1" />
+                </div>
                 <div id="customer-chat-success"></div>
                 <div id="customer-chat-error"></div>
                 <button type="submit" form="chat-with-seller-form" id="submit-customer-query" class="chat-submit-btn-custom-styling">
@@ -113,6 +117,29 @@ async function CustomerChat() {
     const t = await loadCustomerChatMessages(app);
     applyChatStyles(settings);
     renderChat(app, settings, t, customerEmail);
+
+    let honeypotData = null;
+    const getHoneyPot = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/honeypot-data`)
+            const { honeypot } = await res.json()
+            honeypotData = honeypot
+
+            const honeypotNameFieldEl = document.getElementById('chatHoneypotNameFieldName')
+            const honeypotValidFromFieldEl = document.getElementById('chatHoneypotValidFromFieldName')
+
+            if (honeypotNameFieldEl) {
+                honeypotNameFieldEl.setAttribute('name', honeypot.nameFieldName)
+            }
+            if (honeypotValidFromFieldEl) {
+                honeypotValidFromFieldEl.setAttribute('name', honeypot.validFromFieldName)
+                honeypotValidFromFieldEl.value = honeypot.encryptedValidFrom
+            }
+        } catch (error) {
+            console.error('customer-chat: failed to load honeypot data', error)
+        }
+    }
+    getHoneyPot();
 
     const url = `${API_BASE_URL}/vendor/contact`
     let chatWithSellerBtn = document.getElementById('st-customer-chat-cta')
@@ -167,6 +194,11 @@ async function CustomerChat() {
         formData.append('message', userRequest.value);
         formData.append('email', customerEmailInput.value)
         formData.append('variant_id', variantId);
+        formData.append('honeypot_enabled', true);
+        if (honeypotData) {
+            formData.append(honeypotData.nameFieldName, '');
+            formData.append(honeypotData.validFromFieldName, honeypotData.encryptedValidFrom);
+        }
 
         submitButton.disabled = true;
 
