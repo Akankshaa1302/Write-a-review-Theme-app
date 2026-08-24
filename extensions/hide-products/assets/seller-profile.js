@@ -435,11 +435,12 @@ function mountSellerProfile () {
                                     <div class="st-ext-bg-white st-ext-rounded-lg st-ext-border st-ext-border-gray-200 st-ext-p-3 st-ext-shadow-sm st-ext-border-round-xl st-ext-border-2 st-ext-h-full st-ext-flex st-ext-flex-column">
                                     <div class="st-ext-flex st-ext-align-items-start st-ext-gap-3 st-ext-mb-3">
                                         <p-image
-                                        v-if="vendor.logo_link && !isDefaultLogoLink(vendor.logo_link)"
+                                        v-if="vendor.logo_link && !vendor.logoLoadFailed"
                                         :src="vendor.logo_link"
                                         :alt="[[ vendor.brand_name || vendor.title ]]"
                                         image-class="st-ext-object-cover st-ext-border-circle st-ext-h-full st-ext-w-full"
-                                        style="object-fit: cover; width: 50px; height: 50px; display: block"></p-image>
+                                        style="object-fit: cover; width: 50px; height: 50px; display: block"
+                                        @error="vendor.logoLoadFailed = true"></p-image>
 
                                         <div v-else class="st-ext-border-circle st-ext-bg-gray-200 st-ext-flex st-ext-align-items-center st-ext-justify-content-center st-ext-font-medium st-ext-text-gray-600 st-ext-flex-shrink-0 st-ext-text-white"
                                         :class="getLetterBackgroundColor((vendor.brand_name || vendor.title)?.charAt(0) || '')"
@@ -620,7 +621,9 @@ function mountSellerProfile () {
                     const payload = await res.json()
 
                     if (payload.success) {
-                        vendors.value = Array.isArray(payload.data?.vendors) ? payload.data.vendors : []
+                        vendors.value = Array.isArray(payload.data?.vendors)
+                            ? payload.data.vendors.map(vendor => ({ ...vendor, logoLoadFailed: false }))
+                            : []
                         totalCount.value = Number(payload.data?.count || 0)
                         parentCompany.value = payload.data?.parent_company || null
                         vendorCategoryOptions.value = Array.isArray(payload.data?.vendor_categories) ? payload.data.vendor_categories : []
@@ -797,10 +800,6 @@ function mountSellerProfile () {
                 return colors[index];
             }
 
-            const isDefaultLogoLink = (logoLink) => {
-                return logoLink === 'https://api-v2.shipturtle.com/assets/no-logo.jpeg' || logoLink === 'https://api-v2.shipturtle.com/assets/no-logo.png';
-            }
-
             const truncateHtml = (html, maxLen = 100) => {
                 if (!html) return ''
                 const tmp = document.createElement('div')
@@ -867,7 +866,6 @@ function mountSellerProfile () {
                 getVendorCategoryName,
                 getProductCategoryName,
                 getLetterBackgroundColor,
-                isDefaultLogoLink,
                 truncateHtml,
                 getVendorReviewsCount,
                 getVendorAverageRating,
