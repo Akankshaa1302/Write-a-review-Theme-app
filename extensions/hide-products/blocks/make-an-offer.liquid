@@ -44,19 +44,25 @@
       {
             "type": "checkbox",
             "id": "restrict_offer_quantity",
-            "label": "Restrict offer quantity to be equal to inventory?",
+            "label": "Restrict offer quantity to be equal to inventory",
             "default": false
       },
       {
             "type": "checkbox",
             "id": "hide_make_an_offer_button",
-            "label": "Hide make an offer button when inventory sold out?",
+            "label": "Hide make an offer button when inventory sold out",
             "default": false
       },
       {
          "type": "checkbox",
           "id": "restrict_offer_by_customer",
-          "label": "Restrict multiple offers by the same customer?",
+          "label": "Restrict multiple offers by the same customer",
+          "default": false
+      },
+      {
+          "type": "checkbox",
+          "id": "require_login",
+          "label": "Require customer login to make an offer",
           "default": false
       }
     ]
@@ -65,6 +71,7 @@
 {% endschema %}
 <link rel="stylesheet" href="{{ 'make-an-offer.css' | asset_url }}" />
 <link rel="stylesheet" href="{{ 'prime-flex-min.css' | asset_url }}">
+<link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
 <script src="{{ 'resources.js' | asset_url }}" defer></script>
 <script src="{{ 'make-an-offer.js' | asset_url }}" defer></script>
 

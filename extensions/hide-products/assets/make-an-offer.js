@@ -73,6 +73,7 @@ async function MakeAnOfferCode(){
                 restrictOfferQuantity: false,
                 restrictOfferByCustomer: false,
                 hideMakeAnOfferButton: false,
+                requireLogin: false,
                 variantInventory: null
             }
         } catch (error) {
@@ -102,6 +103,7 @@ async function MakeAnOfferCode(){
             const restrictOfferQuantity = ref(settings?.restrictOfferQuantity || false);
             const restrictOfferByCustomer = ref(settings?.restrictOfferByCustomer || false);
             const hideMakeAnOfferButton = ref(settings?.hideMakeAnOfferButton || false);
+            const requireLogin = ref(settings?.requireLogin ?? false);
             
             const isSoldOut = computed(() => {
                 return variantInventory.value !== null && variantInventory.value <= 0;
@@ -236,17 +238,17 @@ async function MakeAnOfferCode(){
                         return;
                     }
 
-                    if(email.value) {
+                    if (email.value || !requireLogin.value) {
                         visible.value = true;
                     } else {
-                        toast.add({ 
-                            severity: 'warn', 
-                            summary: t('make_an_offer.login_required_summary'), 
-                            detail: t('make_an_offer.login_required_detail'), 
-                            life: 3000 
+                        toast.add({
+                            severity: 'warn',
+                            summary: t('make_an_offer.login_required_summary'),
+                            detail: t('make_an_offer.login_required_detail'),
+                            life: 3000
                         });
                         setTimeout(() => {
-                            window.location.href = "/account/login"
+                            window.location.href = `/customer_authentication/login?return_to=${encodeURIComponent(window.location.pathname)}`
                         }, 1500);
                     }
                 } catch (error) {

@@ -4,10 +4,11 @@
         "restrictOfferQuantity": {{ block.settings.restrict_offer_quantity | json }},
         "restrictOfferByCustomer": {{ block.settings.restrict_offer_by_customer | json }},
         "hideMakeAnOfferButton": {{ block.settings.hide_make_an_offer_button | json }},
+        "requireLogin": {{ block.settings.require_login | json }},
         "variantInventory": {{ product.variants.first.inventory_quantity | json }}
     }'>
     <p-toast></p-toast>
-    <p-button v-if="isButtonVisible" :disabled="isSoldOut" :title="isSoldOut ? 'Sold Out – Offers Not Available' : ''" class="make-an-offer-button" size="large" label="{{ block.settings.make_an_offer_btn_text }}" @click="showDialog"></p-button>
+    <p-button v-if="isButtonVisible" :disabled="isSoldOut" :title="isSoldOut ? 'Sold Out – Offers Not Available' : ''" class="make-an-offer-button" size="medium" icon="pi pi-tag" label="{{ block.settings.make_an_offer_btn_text }}" @click="showDialog"></p-button>
     <p style="color: green; margin-top: 1rem;" v-if="offerSuccess">{{ 'offer.your-offer-request-has-been-sent-successfully' | t }}</p>
     <p-dialog modal v-model:visible="visible" header="{{ block.settings.offers_popup_title }}" :style="{ width: '35rem' }" @hide="handleCancel">
         <span>{{ block.settings.offers_notice_text }}</span>
