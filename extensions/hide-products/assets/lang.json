@@ -63,6 +63,9 @@
         "filter": {
           "allCategories": "All Categories",
           "done": "Done",
+          "loadingCategories": "Loading categories...",
+          "searchCategoriesPlaceholder": "Search categories...",
+          "noCategoriesFound": "No categories found",
           "noCategoriesAvailable": "No categories available",
           "selectedSuffix": "selected",
           "clearAll": "Clear All"
@@ -314,6 +317,9 @@
         "filter": {
           "allCategories": "Alle Kategorien",
           "done": "Fertig",
+          "loadingCategories": "Kategorien werden geladen...",
+          "searchCategoriesPlaceholder": "Kategorien suchen...",
+          "noCategoriesFound": "Keine Kategorien gefunden",
           "noCategoriesAvailable": "Keine Kategorien verfügbar",
           "selectedSuffix": "ausgewählt",
           "clearAll": "Alles löschen"
@@ -566,6 +572,9 @@
         "filter": {
           "allCategories": "Todas las categorías",
           "done": "Listo",
+          "loadingCategories": "Cargando categorías...",
+          "searchCategoriesPlaceholder": "Buscar categorías...",
+          "noCategoriesFound": "No se encontraron categorías",
           "noCategoriesAvailable": "No hay categorías disponibles",
           "selectedSuffix": "seleccionadas",
           "clearAll": "Borrar todo"
@@ -818,6 +827,9 @@
         "filter": {
           "allCategories": "Alle categorieën",
           "done": "Klaar",
+          "loadingCategories": "Categorieën laden...",
+          "searchCategoriesPlaceholder": "Categorieën zoeken...",
+          "noCategoriesFound": "Geen categorieën gevonden",
           "noCategoriesAvailable": "Geen categorieën beschikbaar",
           "selectedSuffix": "geselecteerd",
           "clearAll": "Alles wissen"
@@ -1066,6 +1078,9 @@
         "filter": {
           "allCategories": "Todas as categorias",
           "done": "Concluído",
+          "loadingCategories": "Carregando categorias...",
+          "searchCategoriesPlaceholder": "Pesquisar categorias...",
+          "noCategoriesFound": "Nenhuma categoria encontrada",
           "noCategoriesAvailable": "Nenhuma categoria disponível",
           "selectedSuffix": "selecionadas",
           "clearAll": "Limpar tudo"
@@ -1314,6 +1329,9 @@
         "filter": {
           "allCategories": "Alle kategorier",
           "done": "Ferdig",
+          "loadingCategories": "Laster kategorier...",
+          "searchCategoriesPlaceholder": "Søk i kategorier...",
+          "noCategoriesFound": "Ingen kategorier funnet",
           "noCategoriesAvailable": "Ingen kategorier tilgjengelig",
           "selectedSuffix": "valgt",
           "clearAll": "Fjern alle"
@@ -1562,6 +1580,9 @@
         "filter": {
           "allCategories": "Toate categoriile",
           "done": "Gata",
+          "loadingCategories": "Se încarcă categoriile...",
+          "searchCategoriesPlaceholder": "Căutați categorii...",
+          "noCategoriesFound": "Nu s-au găsit categorii",
           "noCategoriesAvailable": "Nu există categorii disponibile",
           "selectedSuffix": "selectate",
           "clearAll": "Șterge tot"

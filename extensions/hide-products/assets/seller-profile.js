@@ -1006,16 +1006,29 @@ function mountSellerProfile () {
                                                 <i class="pi pi-chevron-down sp-category-caret"></i>
                                             </button>
                                             <div class="sp-category-dropdown-menu" v-show="categoryDropdownOpen" @click.stop>
+                                                <div class="sp-category-search-wrap">
+                                                    <i class="pi pi-search sp-category-search-icon"></i>
+                                                    <input
+                                                        type="text"
+                                                        v-model="categorySearch"
+                                                        class="sp-category-search"
+                                                        :placeholder="$t('sellers.vendorDetails.filter.searchCategoriesPlaceholder')">
+                                                </div>
                                                 <ul class="sp-category-options">
-                                                    <li v-for="cat in productCategoryOptionsForTab" :key="cat.id">
-                                                        <label>
-                                                            <input type="checkbox" :checked="isProductCategorySelected(cat.id)" @change="toggleProductCategory(cat.id)">
-                                                            <span>[[ cat.title ]]</span>
-                                                        </label>
+                                                    <li v-if="productCategoriesLoading" class="sp-category-empty">
+                                                        [[ $t('sellers.vendorDetails.filter.loadingCategories') ]]
                                                     </li>
-                                                    <li v-if="productCategoryOptionsForTab.length === 0" class="sp-category-empty">
-                                                        [[ $t('sellers.vendorDetails.filter.noCategoriesAvailable') ]]
-                                                    </li>
+                                                    <template v-else>
+                                                        <li v-for="cat in filteredProductCategoryOptions" :key="cat.id">
+                                                            <label>
+                                                                <input type="checkbox" :checked="isProductCategorySelected(cat.id)" @change="toggleProductCategory(cat.id)">
+                                                                <span>[[ cat.title ]]</span>
+                                                            </label>
+                                                        </li>
+                                                        <li v-if="filteredProductCategoryOptions.length === 0" class="sp-category-empty">
+                                                            [[ categorySearch.trim() ? $t('sellers.vendorDetails.filter.noCategoriesFound') : $t('sellers.vendorDetails.filter.noCategoriesAvailable') ]]
+                                                        </li>
+                                                    </template>
                                                 </ul>
                                                 <div class="sp-category-dropdown-footer">
                                                     <button type="button" class="sp-category-done-btn" @click="closeCategoryDropdown">[[ $t('sellers.vendorDetails.filter.done') ]]</button>
@@ -1529,10 +1542,16 @@ function mountSellerProfile () {
             // Product category filter state
             const selectedProductCategories = ref([])
             const productCategoryOptionsForTab = ref([])
+            const productCategoriesLoading = ref(true)
             const categoryDropdownOpen = ref(false)
             const categoryFilterDirty = ref(false)
-            let productCategoriesHydrated = false
-            
+            const categorySearch = ref('')
+            const filteredProductCategoryOptions = computed(() => {
+                const query = categorySearch.value.trim().toLowerCase()
+                if (!query) return productCategoryOptionsForTab.value
+                return productCategoryOptionsForTab.value.filter(cat => (cat.title || '').toLowerCase().includes(query))
+            })
+
             // Reviews state
             const reviews = ref([])
             const reviewsLoading = ref(false)
@@ -1716,9 +1735,22 @@ function mountSellerProfile () {
                 }
             }
 
+            const fetchProductCategories = async () => {
+                productCategoriesLoading.value = true
+                try {
+                    const res = await fetch(`${API_BASE_URL}/product-categories`)
+                    const data = await res.json()
+                    productCategoryOptionsForTab.value = Array.isArray(data?.data?.product_categories) ? data.data.product_categories : []
+                } catch (e) {
+                    productCategoryOptionsForTab.value = []
+                } finally {
+                    productCategoriesLoading.value = false
+                }
+            }
+
             const fetchProducts = async () => {
                 if (!handle.value) return
-                
+
                 productsLoading.value = true
                 try {
                     const params = new URLSearchParams({
@@ -1744,10 +1776,6 @@ function mountSellerProfile () {
                         products.value = data.data.products || []
                         totalProducts.value = data.data.count || 0
                         showProductCountryAndFlag.value = !!data.data.show_vendor_country_on_products
-                        if (!productCategoriesHydrated && Array.isArray(data.data.product_categories)) {
-                            productCategoryOptionsForTab.value = data.data.product_categories
-                            productCategoriesHydrated = true
-                        }
                         const country = data.data.company?.country || ''
                         if (showProductCountryAndFlag.value && country && country !== productsCompanyCountry.value) {
                             productsCompanyCountry.value = country
@@ -2138,8 +2166,12 @@ function mountSellerProfile () {
 
             const toggleCategoryDropdown = (event) => {
                 if (event) event.stopPropagation()
-                if (categoryDropdownOpen.value) closeCategoryDropdown()
-                else categoryDropdownOpen.value = true
+                if (categoryDropdownOpen.value) {
+                    closeCategoryDropdown()
+                } else {
+                    categorySearch.value = ''
+                    categoryDropdownOpen.value = true
+                }
             }
 
             const removeProductCategoryChip = (id) => {
@@ -2161,6 +2193,7 @@ function mountSellerProfile () {
 
             onMounted(() => {
                 fetchVendorDetails()
+                fetchProductCategories()
                 getContactHoneyPot()
                 document.addEventListener('click', handleCategoryOutsideClick)
             })
@@ -2228,7 +2261,10 @@ function mountSellerProfile () {
                 // Product category filter
                 selectedProductCategories,
                 productCategoryOptionsForTab,
+                filteredProductCategoryOptions,
+                productCategoriesLoading,
                 categoryDropdownOpen,
+                categorySearch,
                 isProductCategorySelected,
                 toggleProductCategory,
                 getProductCategoryNameById,
