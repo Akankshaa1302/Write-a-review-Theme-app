@@ -289,30 +289,20 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     z-index: 1;
 }
-#seller-profile-app .sp-category-search-wrap {
-    position: relative;
+#seller-profile-app .sp-category-search {
     padding: 8px 10px;
     border-bottom: 1px solid #e5e7eb;
 }
-#seller-profile-app .sp-category-search-icon {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 0.75rem;
-    color: #9ca3af;
-    pointer-events: none;
-}
-#seller-profile-app .sp-category-search {
+#seller-profile-app .sp-category-search-input {
     width: 100%;
     box-sizing: border-box;
     border: 1px solid #e5e7eb;
     border-radius: 6px;
-    padding: 6px 10px 6px 28px;
-    font-size: 0.8125rem;
+    padding: 6px 10px;
+    font-size: 0.875rem;
     color: #1f2937;
 }
-#seller-profile-app .sp-category-search:focus {
+#seller-profile-app .sp-category-search-input:focus {
     outline: none;
     border-color: #2563eb;
 }

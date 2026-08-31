@@ -621,9 +621,7 @@ function mountSellerProfile () {
                     const payload = await res.json()
 
                     if (payload.success) {
-                        vendors.value = Array.isArray(payload.data?.vendors)
-                            ? payload.data.vendors.map(vendor => ({ ...vendor, logoLoadFailed: false }))
-                            : []
+                        vendors.value = Array.isArray(payload.data?.vendors) ? payload.data.vendors : []
                         totalCount.value = Number(payload.data?.count || 0)
                         parentCompany.value = payload.data?.parent_company || null
                         vendorCategoryOptions.value = Array.isArray(payload.data?.vendor_categories) ? payload.data.vendor_categories : []
@@ -1006,27 +1004,29 @@ function mountSellerProfile () {
                                                 <i class="pi pi-chevron-down sp-category-caret"></i>
                                             </button>
                                             <div class="sp-category-dropdown-menu" v-show="categoryDropdownOpen" @click.stop>
-                                                <div class="sp-category-search-wrap">
-                                                    <i class="pi pi-search sp-category-search-icon"></i>
+                                                <div class="sp-category-search">
                                                     <input
                                                         type="text"
                                                         v-model="categorySearch"
-                                                        class="sp-category-search"
-                                                        :placeholder="$t('sellers.vendorDetails.filter.searchCategoriesPlaceholder')">
+                                                        :placeholder="$t('sellers.vendorDetails.filter.searchCategories')"
+                                                        class="sp-category-search-input">
                                                 </div>
                                                 <ul class="sp-category-options">
                                                     <li v-if="productCategoriesLoading" class="sp-category-empty">
                                                         [[ $t('sellers.vendorDetails.filter.loadingCategories') ]]
                                                     </li>
                                                     <template v-else>
-                                                        <li v-for="cat in filteredProductCategoryOptions" :key="cat.id">
+                                                        <li v-for="cat in productCategoryOptionsForTab" :key="cat.id">
                                                             <label>
                                                                 <input type="checkbox" :checked="isProductCategorySelected(cat.id)" @change="toggleProductCategory(cat.id)">
                                                                 <span>[[ cat.title ]]</span>
                                                             </label>
                                                         </li>
-                                                        <li v-if="filteredProductCategoryOptions.length === 0" class="sp-category-empty">
-                                                            [[ categorySearch.trim() ? $t('sellers.vendorDetails.filter.noCategoriesFound') : $t('sellers.vendorDetails.filter.noCategoriesAvailable') ]]
+                                                        <li v-if="productCategoryOptionsForTab.length === 0 && categorySearch" class="sp-category-empty">
+                                                            [[ $t('sellers.vendorDetails.filter.noMatchingCategories') ]]
+                                                        </li>
+                                                        <li v-else-if="productCategoryOptionsForTab.length === 0" class="sp-category-empty">
+                                                            [[ $t('sellers.vendorDetails.filter.noCategoriesAvailable') ]]
                                                         </li>
                                                     </template>
                                                 </ul>
@@ -1546,11 +1546,8 @@ function mountSellerProfile () {
             const categoryDropdownOpen = ref(false)
             const categoryFilterDirty = ref(false)
             const categorySearch = ref('')
-            const filteredProductCategoryOptions = computed(() => {
-                const query = categorySearch.value.trim().toLowerCase()
-                if (!query) return productCategoryOptionsForTab.value
-                return productCategoryOptionsForTab.value.filter(cat => (cat.title || '').toLowerCase().includes(query))
-            })
+            const categoryNameCache = {}
+            let categorySearchDebounceTimer = null
 
             // Reviews state
             const reviews = ref([])
@@ -1735,12 +1732,18 @@ function mountSellerProfile () {
                 }
             }
 
-            const fetchProductCategories = async () => {
+            const fetchProductCategories = async (search) => {
                 productCategoriesLoading.value = true
                 try {
-                    const res = await fetch(`${API_BASE_URL}/product-categories`)
+                    const params = new URLSearchParams({ shop: shop })
+                    if (search && search.trim()) {
+                        params.append('search', search.trim())
+                    }
+                    const res = await fetch(`${API_BASE_URL}/product-categories?${params.toString()}`)
                     const data = await res.json()
-                    productCategoryOptionsForTab.value = Array.isArray(data?.data?.product_categories) ? data.data.product_categories : []
+                    const categories = Array.isArray(data?.data?.product_categories) ? data.data.product_categories : []
+                    productCategoryOptionsForTab.value = categories
+                    categories.forEach(cat => { categoryNameCache[cat.id] = cat.title })
                 } catch (e) {
                     productCategoryOptionsForTab.value = []
                 } finally {
@@ -2120,6 +2123,21 @@ function mountSellerProfile () {
                 }, 300) // 300ms delay
             }
 
+            // Debounced category autocomplete search
+            const debouncedCategorySearch = () => {
+                if (categorySearchDebounceTimer) {
+                    clearTimeout(categorySearchDebounceTimer)
+                }
+                categorySearchDebounceTimer = setTimeout(() => {
+                    fetchProductCategories(categorySearch.value)
+                }, 300) // 300ms delay
+            }
+
+            // Watch for category search changes with debouncing
+            watch(categorySearch, () => {
+                debouncedCategorySearch()
+            })
+
             // Watch for search changes with debouncing
             watch(productSearch, () => {
                 debouncedSearch()
@@ -2145,6 +2163,7 @@ function mountSellerProfile () {
             }
 
             const getProductCategoryNameById = (id) => {
+                if (categoryNameCache[id]) return categoryNameCache[id]
                 const opt = productCategoryOptionsForTab.value.find(c => c.id === id)
                 return opt ? opt.title : id
             }
@@ -2158,6 +2177,7 @@ function mountSellerProfile () {
             const closeCategoryDropdown = () => {
                 if (!categoryDropdownOpen.value) return
                 categoryDropdownOpen.value = false
+                categorySearch.value = ''
                 if (categoryFilterDirty.value) {
                     categoryFilterDirty.value = false
                     refreshAfterCategoryChange()
@@ -2166,12 +2186,8 @@ function mountSellerProfile () {
 
             const toggleCategoryDropdown = (event) => {
                 if (event) event.stopPropagation()
-                if (categoryDropdownOpen.value) {
-                    closeCategoryDropdown()
-                } else {
-                    categorySearch.value = ''
-                    categoryDropdownOpen.value = true
-                }
+                if (categoryDropdownOpen.value) closeCategoryDropdown()
+                else categoryDropdownOpen.value = true
             }
 
             const removeProductCategoryChip = (id) => {
@@ -2261,7 +2277,6 @@ function mountSellerProfile () {
                 // Product category filter
                 selectedProductCategories,
                 productCategoryOptionsForTab,
-                filteredProductCategoryOptions,
                 productCategoriesLoading,
                 categoryDropdownOpen,
                 categorySearch,

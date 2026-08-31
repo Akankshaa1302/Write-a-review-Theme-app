@@ -64,9 +64,9 @@
           "allCategories": "All Categories",
           "done": "Done",
           "loadingCategories": "Loading categories...",
-          "searchCategoriesPlaceholder": "Search categories...",
-          "noCategoriesFound": "No categories found",
           "noCategoriesAvailable": "No categories available",
+          "noMatchingCategories": "No matching categories",
+          "searchCategories": "Search categories...",
           "selectedSuffix": "selected",
           "clearAll": "Clear All"
         },
@@ -238,7 +238,9 @@
       "submit": "Submit",
       "fillFields": "Please fillout all required fields.",
       "messageSent": "Your message has been sent.",
-      "submitFailed": "Couldn't submit your request."
+      "submitFailed": "Couldn't submit your request.",
+      "loginRequiredTitle": "Login Required",
+      "loginRequiredDetail": "Please login to chat with the seller"
     },
     "live-chat": {
       "scopeNote": "This conversation is only about {product}",
@@ -318,9 +320,9 @@
           "allCategories": "Alle Kategorien",
           "done": "Fertig",
           "loadingCategories": "Kategorien werden geladen...",
-          "searchCategoriesPlaceholder": "Kategorien suchen...",
-          "noCategoriesFound": "Keine Kategorien gefunden",
           "noCategoriesAvailable": "Keine Kategorien verfügbar",
+          "noMatchingCategories": "Keine passenden Kategorien",
+          "searchCategories": "Kategorien suchen...",
           "selectedSuffix": "ausgewählt",
           "clearAll": "Alles löschen"
         },
@@ -493,7 +495,9 @@
       "submit": "Senden",
       "fillFields": "Bitte füllen Sie alle Pflichtfelder aus.",
       "messageSent": "Ihre Nachricht wurde gesendet.",
-      "submitFailed": "Ihre Anfrage konnte nicht übermittelt werden."
+      "submitFailed": "Ihre Anfrage konnte nicht übermittelt werden.",
+      "loginRequiredTitle": "Anmeldung erforderlich",
+      "loginRequiredDetail": "Bitte melden Sie sich an, um mit dem Verkäufer zu chatten"
     },
     "live-chat": {
       "scopeNote": "Dieses Gespräch bezieht sich nur auf {product}",
@@ -573,9 +577,9 @@
           "allCategories": "Todas las categorías",
           "done": "Listo",
           "loadingCategories": "Cargando categorías...",
-          "searchCategoriesPlaceholder": "Buscar categorías...",
-          "noCategoriesFound": "No se encontraron categorías",
           "noCategoriesAvailable": "No hay categorías disponibles",
+          "noMatchingCategories": "No hay categorías coincidentes",
+          "searchCategories": "Buscar categorías...",
           "selectedSuffix": "seleccionadas",
           "clearAll": "Borrar todo"
         },
@@ -748,7 +752,9 @@
       "submit": "Enviar",
       "fillFields": "Por favor, completa todos los campos obligatorios.",
       "messageSent": "Tu mensaje ha sido enviado.",
-      "submitFailed": "No se pudo enviar tu solicitud."
+      "submitFailed": "No se pudo enviar tu solicitud.",
+      "loginRequiredTitle": "Inicio de sesión requerido",
+      "loginRequiredDetail": "Por favor, inicia sesión para chatear con el vendedor"
     },
     "live-chat": {
       "scopeNote": "Esta conversación es solo sobre {product}",
@@ -828,9 +834,9 @@
           "allCategories": "Alle categorieën",
           "done": "Klaar",
           "loadingCategories": "Categorieën laden...",
-          "searchCategoriesPlaceholder": "Categorieën zoeken...",
-          "noCategoriesFound": "Geen categorieën gevonden",
           "noCategoriesAvailable": "Geen categorieën beschikbaar",
+          "noMatchingCategories": "Geen overeenkomende categorieën",
+          "searchCategories": "Categorieën zoeken...",
           "selectedSuffix": "geselecteerd",
           "clearAll": "Alles wissen"
         },
@@ -999,7 +1005,9 @@
       "submit": "Verzenden",
       "fillFields": "Vul alle verplichte velden in.",
       "messageSent": "Uw bericht is verzonden.",
-      "submitFailed": "Uw verzoek kon niet worden ingediend."
+      "submitFailed": "Uw verzoek kon niet worden ingediend.",
+      "loginRequiredTitle": "Inloggen vereist",
+      "loginRequiredDetail": "Log in om met de verkoper te chatten"
     },
     "live-chat": {
       "scopeNote": "Dit gesprek gaat alleen over {product}",
@@ -1079,9 +1087,9 @@
           "allCategories": "Todas as categorias",
           "done": "Concluído",
           "loadingCategories": "Carregando categorias...",
-          "searchCategoriesPlaceholder": "Pesquisar categorias...",
-          "noCategoriesFound": "Nenhuma categoria encontrada",
           "noCategoriesAvailable": "Nenhuma categoria disponível",
+          "noMatchingCategories": "Nenhuma categoria correspondente",
+          "searchCategories": "Buscar categorias...",
           "selectedSuffix": "selecionadas",
           "clearAll": "Limpar tudo"
         },
@@ -1250,7 +1258,9 @@
       "submit": "Enviar",
       "fillFields": "Por favor, preencha todos os campos obrigatórios.",
       "messageSent": "A sua mensagem foi enviada.",
-      "submitFailed": "Não foi possível submeter o seu pedido."
+      "submitFailed": "Não foi possível submeter o seu pedido.",
+      "loginRequiredTitle": "Login necessário",
+      "loginRequiredDetail": "Por favor, inicie sessão para conversar com o vendedor"
     },
     "live-chat": {
       "scopeNote": "Esta conversa é apenas sobre {product}",
@@ -1330,9 +1340,9 @@
           "allCategories": "Alle kategorier",
           "done": "Ferdig",
           "loadingCategories": "Laster kategorier...",
-          "searchCategoriesPlaceholder": "Søk i kategorier...",
-          "noCategoriesFound": "Ingen kategorier funnet",
           "noCategoriesAvailable": "Ingen kategorier tilgjengelig",
+          "noMatchingCategories": "Ingen samsvarende kategorier",
+          "searchCategories": "Søk kategorier...",
           "selectedSuffix": "valgt",
           "clearAll": "Fjern alle"
         },
@@ -1501,7 +1511,9 @@
       "submit": "Submit",
       "fillFields": "Please fillout all required fields.",
       "messageSent": "Your message has been sent.",
-      "submitFailed": "Couldn't submit your request."
+      "submitFailed": "Couldn't submit your request.",
+      "loginRequiredTitle": "Innlogging nødvendig",
+      "loginRequiredDetail": "Vennligst logg inn for å chatte med selgeren"
     },
     "live-chat": {
       "scopeNote": "Denne samtalen handler bare om {product}",
@@ -1581,9 +1593,9 @@
           "allCategories": "Toate categoriile",
           "done": "Gata",
           "loadingCategories": "Se încarcă categoriile...",
-          "searchCategoriesPlaceholder": "Căutați categorii...",
-          "noCategoriesFound": "Nu s-au găsit categorii",
           "noCategoriesAvailable": "Nu există categorii disponibile",
+          "noMatchingCategories": "Nicio categorie corespunzătoare",
+          "searchCategories": "Căutați categorii...",
           "selectedSuffix": "selectate",
           "clearAll": "Șterge tot"
         },
@@ -1752,7 +1764,9 @@
       "submit": "Trimite",
       "fillFields": "Te rugăm să completezi toate câmpurile obligatorii.",
       "messageSent": "Mesajul tău a fost trimis.",
-      "submitFailed": "Solicitarea ta nu a putut fi trimisă."
+      "submitFailed": "Solicitarea ta nu a putut fi trimisă.",
+      "loginRequiredTitle": "Autentificare necesară",
+      "loginRequiredDetail": "Te rugăm să te autentifici pentru a discuta cu vânzătorul"
     },
     "live-chat": {
       "scopeNote": "Această conversație este doar despre {product}",
