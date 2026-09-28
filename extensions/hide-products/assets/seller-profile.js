@@ -197,8 +197,14 @@ function mountSellerProfile () {
     }
 
     // Vendor List component
-    // LocalStorage key for vendor list state
+    // SessionStorage key for vendor list state (kept while navigating within a visit,
+    // reset once the tab/browser is closed)
     const VENDOR_LIST_STATE_KEY = 'shipturtle_vendor_list_state'
+
+    // Remove state persisted in localStorage by earlier versions so returning visitors start fresh
+    try {
+        localStorage.removeItem(VENDOR_LIST_STATE_KEY)
+    } catch (error) {}
     
     // Default state
     const defaultVendorListState = {
@@ -214,27 +220,27 @@ function mountSellerProfile () {
         }
     }
 
-    // Load state from localStorage
+    // Load state from sessionStorage
     const loadVendorListState = () => {
         try {
-            const saved = localStorage.getItem(VENDOR_LIST_STATE_KEY)
+            const saved = sessionStorage.getItem(VENDOR_LIST_STATE_KEY)
             return saved ? JSON.parse(saved) : { ...defaultVendorListState }
         } catch (error) {
-            console.warn('Failed to load vendor list state from localStorage:', error)
+            console.warn('Failed to load vendor list state from sessionStorage:', error)
             return { ...defaultVendorListState }
         }
     }
 
-    // Save state to localStorage
+    // Save state to sessionStorage
     const saveVendorListStateToStorage = (state) => {
         try {
-            localStorage.setItem(VENDOR_LIST_STATE_KEY, JSON.stringify(state))
+            sessionStorage.setItem(VENDOR_LIST_STATE_KEY, JSON.stringify(state))
         } catch (error) {
-            console.warn('Failed to save vendor list state to localStorage:', error)
+            console.warn('Failed to save vendor list state to sessionStorage:', error)
         }
     }
 
-    // Initialize state from localStorage
+    // Initialize state from sessionStorage
     const vendorListState = loadVendorListState()
 
     const VendorList = {
