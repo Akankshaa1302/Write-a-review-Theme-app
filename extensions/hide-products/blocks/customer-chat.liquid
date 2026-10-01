@@ -64,7 +64,7 @@
             "type": "number",
             "id": "stChatFontSize",
             "label": "Content font size (px)",
-            "info": "Title, inputs, labels, and message area. Submit button uses its own size below.",
+            "info": "Title, inputs, labels, and message area. Buttons use their own size below.",
             "default": 14
         },
         {
@@ -94,20 +94,32 @@
         {
             "type": "color",
             "id": "stChatSubmitBtnBgColor",
-            "label": "Submit button background",
+            "label": "Button background",
+            "info": "Applies to the Submit, Verify Email and Verify buttons.",
             "default": "#000"
         },
         {
             "type": "color",
             "id": "stChatSubmitBtnTxtColor",
-            "label": "Submit button text color",
+            "label": "Button text color",
             "default": "#fff"
         },
         {
             "type": "number",
             "id": "stChatSubmitBtnFontSize",
-            "label": "Submit button font size (px)",
+            "label": "Button font size (px)",
             "default": 14
+        },
+        {
+            "type": "header",
+            "content": "Email verification"
+        },
+        {
+            "type": "checkbox",
+            "id": "stChatEmailVerificationRequired",
+            "label": "Add OTP-based Email Verification",
+            "info": "When enabled, users must verify their email address using a 6-digit OTP before sending a message.",
+            "default": false
         },
         {
             "type": "header",

@@ -39,11 +39,11 @@ function escapeHtml(value) {
 function applyChatStyles(settings) {
     const root = document.documentElement.style
     root.setProperty('--st-chat-popup-bg', settings.stChatPopupBgColor)
+    root.setProperty('--st-chat-popup-color', settings.stPopupTxtColor)
     root.setProperty('--st-chat-cta-bg', settings.stChatWithSellerBtnBgColor)
     root.setProperty('--st-chat-cta-color', settings.stChatWithSellerBtnTxtColor)
     root.setProperty('--st-chat-cta-min-height', settings.stChatBtnHeight + 'px')
     root.setProperty('--st-chat-cta-font-size', settings.stChatCtaFontSize + 'px')
-    root.setProperty('--st-chat-popup-color', settings.stPopupTxtColor)
     root.setProperty('--st-chat-font-size', settings.stChatFontSize + 'px')
     root.setProperty('--st-chat-submit-color', settings.stChatSubmitBtnTxtColor)
     root.setProperty('--st-chat-submit-bg', settings.stChatSubmitBtnBgColor)
@@ -53,6 +53,30 @@ function applyChatStyles(settings) {
 function renderChat(app, settings, t, customerEmail) {
     const ctaText = settings.stChatWithSellerBtnTxt === 'Chat With Seller' ? t.chatWithSeller : settings.stChatWithSellerBtnTxt
     const headerText = settings.stChatHeaderText === 'Chat With Seller' ? t.chatWithSeller : settings.stChatHeaderText
+    const verificationRequired = !!settings.stChatEmailVerificationRequired
+
+    const emailField = verificationRequired ? `
+                <div>
+                    <label for="chat-customer-email">${escapeHtml(t.email)}*</label>
+                    <div class="st-chat-email-group">
+                        <input name="chat-customer-email" id="chat-customer-email" type="email" value="${escapeHtml(customerEmail)}" placeholder="${escapeHtml(t.emailPlaceholder)}"/>
+                        <button type="button" id="st-chat-verify-email-btn" class="st-chat-verify-email-btn">${escapeHtml(t.verifyEmail)}</button>
+                    </div>
+                </div>
+                <div class="st-chat-code-section" id="st-chat-code-section">
+                    <label>${escapeHtml(t.enterCode)}</label>
+                    <div class="st-chat-code-inputs" id="st-chat-code-inputs">
+                        ${Array.from({ length: 6 }, (_, i) => `<input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" class="st-chat-code-input" data-index="${i}" aria-label="${escapeHtml(t.enterCode)} ${i + 1}" disabled/>`).join('')}
+                    </div>
+                    <div class="st-chat-code-footer">
+                        <p class="st-chat-code-hint" id="st-chat-code-hint">${escapeHtml(t.codeHint)}</p>
+                        <button type="button" id="st-chat-verify-code-btn" class="st-chat-verify-code-btn" hidden disabled>${escapeHtml(t.verify)}</button>
+                    </div>
+                </div>` : `
+                <div>
+                    <label for="chat-customer-email">${escapeHtml(t.email)}*</label>
+                    <input name="chat-customer-email" id="chat-customer-email" type="email" value="${escapeHtml(customerEmail)}"/>
+                </div>`
 
     app.innerHTML = `
     <input type="hidden" name="shipturtle_customer_chat" id="shipturtle_customer_chat" value="${escapeHtml(customerEmail)}" />
@@ -77,10 +101,7 @@ function renderChat(app, settings, t, customerEmail) {
                     <label for="chat-customer-name">${escapeHtml(t.name)}*</label>
                     <input name="chat-customer-name" id="chat-customer-name" type="text"/>
                 </div>
-                <div>
-                    <label for="chat-customer-email">${escapeHtml(t.email)}*</label>
-                    <input name="chat-customer-email" id="chat-customer-email" type="email" value="${escapeHtml(customerEmail)}"/>
-                </div>
+                ${emailField}
                 <div>
                     <label for="customer-chat">${escapeHtml(t.message)}*</label>
                     <textarea id="customer-chat-user-request" name="customer-chat" rows="${escapeHtml(settings.stChatTxtBoxRows)}" cols="50" placeholder="${escapeHtml(settings.stChatTxtBoxPlaceholder)}"></textarea>
@@ -175,6 +196,185 @@ async function CustomerChat() {
     userRequest.value = null;
     userName.value = null;
 
+    // Email verification (only when enabled in block settings)
+    const verificationRequired = !!settings.stChatEmailVerificationRequired
+    let otpSent = false
+    let emailVerified = false
+    let verifiedEmail = ''
+    let otpCountdown = 0
+    let otpCountdownInterval = null
+    const verifyEmailBtn = document.getElementById('st-chat-verify-email-btn')
+    const verifyCodeBtn = document.getElementById('st-chat-verify-code-btn')
+    const codeInputs = Array.from(document.querySelectorAll('#st-chat-code-inputs .st-chat-code-input'))
+    const codeHint = document.getElementById('st-chat-code-hint')
+
+    const isEmailValid = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || '')
+    const getOtp = () => codeInputs.map(input => input.value).join('')
+
+    const setCodeHint = (html, state) => {
+        if (!codeHint) return
+        codeHint.innerHTML = html
+        codeHint.classList.remove('is-error', 'is-success')
+        if (state) codeHint.classList.add(`is-${state}`)
+    }
+
+    const updateVerifyButtons = () => {
+        if (!verifyEmailBtn) return
+        verifyEmailBtn.textContent = emailVerified ? `✓ ${t.verified}` : (otpSent ? t.resendEmail : t.verifyEmail)
+        verifyEmailBtn.classList.toggle('is-verified', emailVerified)
+        verifyEmailBtn.disabled = emailVerified || (otpSent && otpCountdown > 0) || !isEmailValid(customerEmailInput.value.trim())
+        verifyCodeBtn.hidden = !otpSent || emailVerified
+        verifyCodeBtn.disabled = getOtp().length !== codeInputs.length
+        submitButton.disabled = !emailVerified
+    }
+
+    const renderCountdown = () => {
+        const m = Math.floor(otpCountdown / 60).toString().padStart(2, '0')
+        const s = (otpCountdown % 60).toString().padStart(2, '0')
+        setCodeHint(`${escapeHtml(t.resendIn)} <strong>${m}:${s}</strong>`)
+    }
+
+    const stopCountdown = () => {
+        clearInterval(otpCountdownInterval)
+        otpCountdownInterval = null
+        otpCountdown = 0
+    }
+
+    const startCountdown = (seconds = 60) => {
+        clearInterval(otpCountdownInterval)
+        otpCountdown = seconds
+        renderCountdown()
+        updateVerifyButtons()
+        otpCountdownInterval = setInterval(() => {
+            otpCountdown--
+            if (otpCountdown > 0) {
+                renderCountdown()
+            } else {
+                stopCountdown()
+                setCodeHint('')
+            }
+            updateVerifyButtons()
+        }, 1000)
+    }
+
+    const enableCodeInputs = () => {
+        codeInputs.forEach(input => {
+            input.value = ''
+            input.disabled = false
+        })
+        codeInputs[0]?.focus()
+    }
+
+    const resetVerification = () => {
+        otpSent = false
+        emailVerified = false
+        verifiedEmail = ''
+        stopCountdown()
+        codeInputs.forEach(input => {
+            input.value = ''
+            input.disabled = true
+        })
+        setCodeHint(escapeHtml(t.codeHint))
+        updateVerifyButtons()
+    }
+
+    const sendOtp = async () => {
+        const email = customerEmailInput.value.trim()
+        if (!isEmailValid(email)) {
+            setCodeHint(escapeHtml(t.invalidEmail), 'error')
+            return
+        }
+        verifyEmailBtn.disabled = true
+        verifyEmailBtn.textContent = t.sending
+        try {
+            const res = await fetch(`${API_BASE_URL}/vendor/registration-otp/send`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ email, shop_domain: Shopify.shop })
+            })
+            const data = await res.json().catch(() => ({}))
+            if (!res.ok && !data?.retry_after) {
+                throw new Error(data?.message || t.codeSendFailed)
+            }
+            otpSent = true
+            enableCodeInputs()
+            startCountdown(res.ok ? 60 : data.retry_after)
+        } catch (error) {
+            console.error('customer-chat: failed to send OTP', error)
+            setCodeHint(escapeHtml(error.message || t.codeSendFailed), 'error')
+            updateVerifyButtons()
+        }
+    }
+
+    const verifyOtp = async () => {
+        const otp = getOtp()
+        if (otp.length !== codeInputs.length) return
+        const email = customerEmailInput.value.trim()
+        verifyCodeBtn.disabled = true
+        verifyCodeBtn.textContent = t.verifying
+        try {
+            const res = await fetch(`${API_BASE_URL}/vendor/registration-otp/verify`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ email, otp })
+            })
+            const data = await res.json().catch(() => ({}))
+            if (!res.ok) {
+                let msg = data?.message || t.invalidCode
+                if (data?.attempts_remaining !== undefined) {
+                    msg += ` (${data.attempts_remaining} ${data.attempts_remaining === 1 ? t.attemptRemaining : t.attemptsRemaining})`
+                }
+                throw new Error(msg)
+            }
+            emailVerified = true
+            verifiedEmail = email
+            stopCountdown()
+            codeInputs.forEach(input => { input.disabled = true })
+            setCodeHint(escapeHtml(t.emailVerified), 'success')
+        } catch (error) {
+            setCodeHint(escapeHtml(error.message || t.invalidCode), 'error')
+        } finally {
+            verifyCodeBtn.textContent = t.verify
+            updateVerifyButtons()
+        }
+    }
+
+    if (verificationRequired && verifyEmailBtn) {
+        verifyEmailBtn.addEventListener('click', sendOtp)
+        verifyCodeBtn.addEventListener('click', verifyOtp)
+        customerEmailInput.addEventListener('input', () => {
+            if (otpSent || emailVerified) resetVerification()
+            else updateVerifyButtons()
+        })
+        updateVerifyButtons()
+
+        codeInputs.forEach((input, index) => {
+            input.addEventListener('input', () => {
+                input.value = input.value.replace(/\D/g, '').slice(-1)
+                if (input.value && index < codeInputs.length - 1) codeInputs[index + 1].focus()
+                updateVerifyButtons()
+            })
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    codeInputs[index - 1].value = ''
+                    codeInputs[index - 1].focus()
+                    updateVerifyButtons()
+                } else if (e.key === 'Enter') {
+                    e.preventDefault()
+                    verifyOtp()
+                }
+            })
+            input.addEventListener('paste', (e) => {
+                const digits = (e.clipboardData?.getData('text') || '').replace(/\D/g, '').slice(0, codeInputs.length)
+                if (!digits) return
+                e.preventDefault()
+                codeInputs.forEach((codeInput, i) => { codeInput.value = digits[i] || '' })
+                codeInputs[Math.min(digits.length, codeInputs.length) - 1].focus()
+                updateVerifyButtons()
+            })
+        })
+    }
+
     const submitForm = (e) => {
         e.preventDefault()
         successText.textContent = '';
@@ -187,6 +387,11 @@ async function CustomerChat() {
             return
         }
 
+        if (verificationRequired && (!emailVerified || verifiedEmail !== customerEmailInput.value.trim())) {
+            errorText.textContent = t.verifyEmailFirst
+            return
+        }
+
         var formData = new FormData()
         formData.append('shopify_domain', Shopify.shop);
         formData.append('channel_id',  productId);
@@ -195,6 +400,9 @@ async function CustomerChat() {
         formData.append('email', customerEmailInput.value)
         formData.append('variant_id', variantId);
         formData.append('honeypot_enabled', true);
+        if (verificationRequired) {
+            formData.append('email_verification', true);
+        }
         if (honeypotData) {
             formData.append(honeypotData.nameFieldName, '');
             formData.append(honeypotData.validFromFieldName, honeypotData.encryptedValidFrom);

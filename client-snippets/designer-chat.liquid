@@ -1,0 +1,563 @@
+{%- liquid
+  assign button_label = button_label | default: 'Message the Designer'
+  assign uid = uid | default: 'designer-chat'
+
+  # Associate the enquiry with the first available product (fallback: first product).
+  assign chat_product = collection.products | where: 'available', true | first
+  unless chat_product
+    assign chat_product = collection.products.first
+  endunless
+-%}
+<div class="designer-chat" id="designer-chat-{{ uid }}" data-designer-chat>
+  <style>
+    #designer-chat-{{ uid }} {
+      width: 100%;
+    }
+    #designer-chat-{{ uid }} .designer-chat__cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      width: 100%;
+      min-height: 38px;
+      padding: 0.6rem 1.2rem;
+      color: #fff;
+      background: #d27fc7;
+      border: 1px solid #d27fc7;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.2;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    #designer-chat-{{ uid }} .designer-chat__cta:hover {
+      opacity: 0.85;
+    }
+    #designer-chat-{{ uid }} .designer-chat__cta svg {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+    }
+    #designer-chat-{{ uid }} .designer-chat__cta.is-hidden {
+      display: none;
+    }
+    #designer-chat-{{ uid }} .designer-chat__box {
+      margin-top: 1rem;
+      width: 100%;
+      min-width: min(480px, calc(100vw - 32px));
+      max-width: 560px;
+      box-sizing: border-box;
+      background: #fff;
+      color: #000;
+      border: 1px solid #d27fc7;
+      border-radius: 6px;
+      padding: 2rem;
+      position: relative;
+    }
+    #designer-chat-{{ uid }} .designer-chat__box.is-hidden {
+      display: none;
+    }
+    #designer-chat-{{ uid }} .designer-chat__title {
+      font-size: 16px;
+      margin: 0 0 1.2rem;
+      padding-right: 2.4rem;
+      color: #000;
+    }
+    #designer-chat-{{ uid }} .designer-chat__field {
+      margin-bottom: 1rem;
+    }
+    #designer-chat-{{ uid }} .designer-chat__field label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 0.4rem;
+      color: #000;
+    }
+    #designer-chat-{{ uid }} .designer-chat__field input,
+    #designer-chat-{{ uid }} .designer-chat__field textarea {
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 0.8rem;
+      font-size: 14px;
+      font-family: inherit;
+      color: #000;
+      background: #fff;
+    }
+    #designer-chat-{{ uid }} .designer-chat__close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      cursor: pointer;
+      background: none;
+      border: 0;
+      padding: 0.4rem;
+      line-height: 0;
+      color: #000;
+    }
+    #designer-chat-{{ uid }} .designer-chat__submit {
+      width: 100%;
+      background: #d27fc7;
+      color: #fff;
+      border: 1px solid #d27fc7;
+      border-radius: 6px;
+      padding: 0.9rem;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #designer-chat-{{ uid }} .designer-chat__submit:disabled {
+      background: lightgrey;
+      border-color: lightgrey;
+      color: #777;
+      cursor: not-allowed;
+    }
+    #designer-chat-{{ uid }} .designer-chat__msg {
+      font-size: 13px;
+      margin-top: 0.4rem;
+    }
+    #designer-chat-{{ uid }} .designer-chat__msg--success {
+      color: #2e7d32;
+    }
+    #designer-chat-{{ uid }} .designer-chat__msg--error {
+      color: #c0392b;
+    }
+
+    /* Email verification */
+    #designer-chat-{{ uid }} .designer-chat__email-group {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+    }
+    #designer-chat-{{ uid }} .designer-chat__email-group input {
+      flex: 1 1 auto;
+      width: auto;
+      min-width: 0;
+      margin: 0;
+      box-sizing: border-box;
+      border-right: 0;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    #designer-chat-{{ uid }} .designer-chat__email-group input:focus,
+    #designer-chat-{{ uid }} .designer-chat__email-group input:focus-visible {
+      outline: none;
+      box-shadow: none;
+      border-color: #d27fc7;
+    }
+    #designer-chat-{{ uid }} .designer-chat__verify-email {
+      flex: 0 0 auto;
+      margin: 0;
+      box-sizing: border-box;
+      padding: 0 1.6rem;
+      background: #d27fc7;
+      color: #fff;
+      border: 1px solid #d27fc7;
+      border-radius: 0 4px 4px 0;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    #designer-chat-{{ uid }} .designer-chat__verify-email:disabled {
+      background: #6b6b6b;
+      border-color: #6b6b6b;
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    #designer-chat-{{ uid }} .designer-chat__verify-email.is-verified {
+      background: #2e7d32;
+      border-color: #2e7d32;
+      opacity: 1;
+    }
+    #designer-chat-{{ uid }} .designer-chat__code-inputs {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+    #designer-chat-{{ uid }} .designer-chat__field .designer-chat__code-input {
+      flex: 1;
+      min-width: 0;
+      height: 48px;
+      padding: 0;
+      text-align: center;
+      font-size: 20px;
+      background: #f3f3f3;
+    }
+    #designer-chat-{{ uid }} .designer-chat__code-input:disabled {
+      cursor: not-allowed;
+    }
+    #designer-chat-{{ uid }} .designer-chat__code-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 34px;
+      margin-top: 0.6rem;
+    }
+    #designer-chat-{{ uid }} .designer-chat__code-hint {
+      margin: 0;
+      font-size: 13px;
+      color: #5b9bd5;
+    }
+    #designer-chat-{{ uid }} .designer-chat__code-hint.is-error {
+      color: #c0392b;
+    }
+    #designer-chat-{{ uid }} .designer-chat__code-hint.is-success {
+      color: #2e7d32;
+    }
+    #designer-chat-{{ uid }} .designer-chat__verify-code {
+      flex: 0 0 auto;
+      margin-left: auto;
+      padding: 0.8rem 1.8rem;
+      background: #d27fc7;
+      color: #fff;
+      border: 0;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    #designer-chat-{{ uid }} .designer-chat__verify-code:not(:disabled):hover {
+      opacity: 0.85;
+    }
+    #designer-chat-{{ uid }} .designer-chat__verify-code:disabled {
+      background: #5a6268;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    #designer-chat-{{ uid }} .designer-chat__verify-code[hidden] {
+      display: none;
+    }
+  </style>
+
+  <button type="button" class="designer-chat__cta" data-chat-open>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"></path>
+    </svg>
+    <span>{{ button_label | escape }}</span>
+  </button>
+
+  <div class="designer-chat__box is-hidden" data-chat-box>
+    <button type="button" class="designer-chat__close" data-chat-close aria-label="Close">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 9l6 6m0-6l-6 6"></path>
+      </svg>
+    </button>
+    <p class="designer-chat__title">{{ button_label | escape }}</p>
+    <form data-chat-form>
+      <div class="designer-chat__field">
+        <label>Name*</label>
+        <input type="text" data-chat-name autocomplete="name">
+      </div>
+      <div class="designer-chat__field">
+        <label>Email*</label>
+        <div class="designer-chat__email-group">
+          <input type="email" data-chat-email autocomplete="email" placeholder="Enter your email">
+          <button type="button" class="designer-chat__verify-email" data-chat-verify-email disabled>Verify Email</button>
+        </div>
+      </div>
+      <div class="designer-chat__field">
+        <label>Enter 6-Digit Code</label>
+        <div class="designer-chat__code-inputs" data-chat-code-inputs>
+          <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" class="designer-chat__code-input" aria-label="Digit 1" disabled>
+          <input type="text" inputmode="numeric" maxlength="1" class="designer-chat__code-input" aria-label="Digit 2" disabled>
+          <input type="text" inputmode="numeric" maxlength="1" class="designer-chat__code-input" aria-label="Digit 3" disabled>
+          <input type="text" inputmode="numeric" maxlength="1" class="designer-chat__code-input" aria-label="Digit 4" disabled>
+          <input type="text" inputmode="numeric" maxlength="1" class="designer-chat__code-input" aria-label="Digit 5" disabled>
+          <input type="text" inputmode="numeric" maxlength="1" class="designer-chat__code-input" aria-label="Digit 6" disabled>
+        </div>
+        <div class="designer-chat__code-footer">
+          <p class="designer-chat__code-hint" data-chat-code-hint>Click "Verify Email" to receive your code</p>
+          <button type="button" class="designer-chat__verify-code" data-chat-verify-code hidden disabled>Verify</button>
+        </div>
+      </div>
+      <div class="designer-chat__field">
+        <label>Message*</label>
+        <textarea rows="6" placeholder="Write your queries..." data-chat-message></textarea>
+      </div>
+      <div class="designer-chat__msg designer-chat__msg--success" data-chat-success></div>
+      <div class="designer-chat__msg designer-chat__msg--error" data-chat-error></div>
+      <button type="submit" class="designer-chat__submit" data-chat-submit disabled>Send to the Designer</button>
+    </form>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.getElementById('designer-chat-{{ uid }}');
+      if (!root || root.dataset.chatInit) return;
+      root.dataset.chatInit = '1';
+
+      var channelId = {{ chat_product.id | json }};
+      var shopDomain = {{ shop.permanent_domain | json }};
+      // App proxy base URL (must match the Shopify app proxy subpath prefix)
+      var apiBaseUrl = '/a/dashboard';
+      var url = apiBaseUrl + '/vendor/contact';
+      var otpBaseUrl = apiBaseUrl + '/vendor/registration-otp';
+
+      var openBtn = root.querySelector('[data-chat-open]');
+      var box = root.querySelector('[data-chat-box]');
+      var closeBtn = root.querySelector('[data-chat-close]');
+      var form = root.querySelector('[data-chat-form]');
+      var name = root.querySelector('[data-chat-name]');
+      var email = root.querySelector('[data-chat-email]');
+      var message = root.querySelector('[data-chat-message]');
+      var success = root.querySelector('[data-chat-success]');
+      var error = root.querySelector('[data-chat-error]');
+      var submit = root.querySelector('[data-chat-submit]');
+      var verifyEmailBtn = root.querySelector('[data-chat-verify-email]');
+      var verifyCodeBtn = root.querySelector('[data-chat-verify-code]');
+      var codeHint = root.querySelector('[data-chat-code-hint]');
+      var codeInputs = Array.prototype.slice.call(root.querySelectorAll('[data-chat-code-inputs] input'));
+
+      // Email verification state
+      var otpSent = false;
+      var emailVerified = false;
+      var verifiedEmail = '';
+      var countdown = 0;
+      var countdownTimer = null;
+
+      function isEmailValid(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || '');
+      }
+
+      function getOtp() {
+        return codeInputs.map(function (input) { return input.value; }).join('');
+      }
+
+      function setHint(text, state, time) {
+        codeHint.textContent = text;
+        if (time) {
+          var strong = document.createElement('strong');
+          strong.textContent = ' ' + time;
+          codeHint.appendChild(strong);
+        }
+        codeHint.classList.remove('is-error', 'is-success');
+        if (state) codeHint.classList.add('is-' + state);
+      }
+
+      function updateButtons() {
+        verifyEmailBtn.textContent = emailVerified ? '✓ Verified' : (otpSent ? 'Resend Email' : 'Verify Email');
+        verifyEmailBtn.classList.toggle('is-verified', emailVerified);
+        verifyEmailBtn.disabled = emailVerified || (otpSent && countdown > 0) || !isEmailValid(email.value.trim());
+        verifyCodeBtn.hidden = !otpSent || emailVerified;
+        verifyCodeBtn.disabled = getOtp().length !== codeInputs.length;
+        submit.disabled = !emailVerified;
+      }
+
+      function renderCountdown() {
+        var m = String(Math.floor(countdown / 60)).padStart(2, '0');
+        var s = String(countdown % 60).padStart(2, '0');
+        setHint('Resend in', null, m + ':' + s);
+      }
+
+      function stopCountdown() {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+        countdown = 0;
+      }
+
+      function startCountdown(seconds) {
+        clearInterval(countdownTimer);
+        countdown = seconds || 60;
+        renderCountdown();
+        updateButtons();
+        countdownTimer = setInterval(function () {
+          countdown--;
+          if (countdown > 0) {
+            renderCountdown();
+          } else {
+            stopCountdown();
+            setHint('');
+          }
+          updateButtons();
+        }, 1000);
+      }
+
+      function resetVerification() {
+        otpSent = false;
+        emailVerified = false;
+        verifiedEmail = '';
+        stopCountdown();
+        codeInputs.forEach(function (input) {
+          input.value = '';
+          input.disabled = true;
+        });
+        setHint('Click "Verify Email" to receive your code');
+        updateButtons();
+      }
+
+      function postJson(endpoint, payload) {
+        return fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        }).then(function (res) {
+          return res.json().catch(function () { return {}; }).then(function (data) {
+            return { ok: res.ok, data: data || {} };
+          });
+        });
+      }
+
+      function sendOtp() {
+        var value = email.value.trim();
+        if (!isEmailValid(value)) {
+          setHint('Please enter a valid email address.', 'error');
+          return;
+        }
+        verifyEmailBtn.disabled = true;
+        verifyEmailBtn.textContent = 'Sending...';
+
+        postJson(otpBaseUrl + '/send', { email: value, shop_domain: shopDomain })
+          .then(function (result) {
+            if (!result.ok && !result.data.retry_after) {
+              throw new Error(result.data.message || "Couldn't send the verification code. Please try again.");
+            }
+            otpSent = true;
+            codeInputs.forEach(function (input) {
+              input.value = '';
+              input.disabled = false;
+            });
+            codeInputs[0].focus();
+            startCountdown(result.ok ? 60 : result.data.retry_after);
+          })
+          .catch(function (err) {
+            setHint(err.message || "Couldn't send the verification code. Please try again.", 'error');
+            updateButtons();
+          });
+      }
+
+      function verifyOtp() {
+        var otp = getOtp();
+        if (otp.length !== codeInputs.length) return;
+        var value = email.value.trim();
+        verifyCodeBtn.disabled = true;
+        verifyCodeBtn.textContent = 'Verifying...';
+
+        postJson(otpBaseUrl + '/verify', { email: value, otp: otp })
+          .then(function (result) {
+            if (!result.ok) {
+              var msg = result.data.message || 'Invalid code. Please try again.';
+              if (result.data.attempts_remaining !== undefined) {
+                msg += ' (' + result.data.attempts_remaining + ' attempt' + (result.data.attempts_remaining === 1 ? '' : 's') + ' remaining)';
+              }
+              throw new Error(msg);
+            }
+            emailVerified = true;
+            verifiedEmail = value;
+            stopCountdown();
+            codeInputs.forEach(function (input) { input.disabled = true; });
+            setHint('Code verified successfully', 'success');
+          })
+          .catch(function (err) {
+            setHint(err.message || 'Invalid code. Please try again.', 'error');
+          })
+          .then(function () {
+            verifyCodeBtn.textContent = 'Verify';
+            updateButtons();
+          });
+      }
+
+      verifyEmailBtn.addEventListener('click', sendOtp);
+      verifyCodeBtn.addEventListener('click', verifyOtp);
+      email.addEventListener('input', function () {
+        if (otpSent || emailVerified) resetVerification();
+        else updateButtons();
+      });
+
+      codeInputs.forEach(function (input, index) {
+        input.addEventListener('input', function () {
+          input.value = input.value.replace(/\D/g, '').slice(-1);
+          if (input.value && index < codeInputs.length - 1) codeInputs[index + 1].focus();
+          updateButtons();
+        });
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Backspace' && !input.value && index > 0) {
+            codeInputs[index - 1].value = '';
+            codeInputs[index - 1].focus();
+            updateButtons();
+          } else if (e.key === 'Enter') {
+            e.preventDefault();
+            verifyOtp();
+          }
+        });
+        input.addEventListener('paste', function (e) {
+          var digits = ((e.clipboardData || window.clipboardData).getData('text') || '').replace(/\D/g, '').slice(0, codeInputs.length);
+          if (!digits) return;
+          e.preventDefault();
+          codeInputs.forEach(function (codeInput, i) { codeInput.value = digits[i] || ''; });
+          codeInputs[Math.min(digits.length, codeInputs.length) - 1].focus();
+          updateButtons();
+        });
+      });
+
+      function show() {
+        box.classList.remove('is-hidden');
+        openBtn.classList.add('is-hidden');
+      }
+
+      function hide() {
+        box.classList.add('is-hidden');
+        openBtn.classList.remove('is-hidden');
+        name.value = '';
+        email.value = '';
+        message.value = '';
+        success.textContent = '';
+        error.textContent = '';
+        resetVerification();
+      }
+
+      openBtn.addEventListener('click', show);
+      closeBtn.addEventListener('click', hide);
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        success.textContent = '';
+        error.textContent = '';
+
+        if (!name.value || !email.value || !message.value) {
+          error.textContent = 'Please fill out all fields.';
+          return;
+        }
+
+        if (!emailVerified || verifiedEmail !== email.value.trim()) {
+          error.textContent = 'Please verify your email before submitting.';
+          return;
+        }
+
+        if (!channelId) {
+          error.textContent = "Couldn't submit your request.";
+          return;
+        }
+
+        var formData = new FormData();
+        formData.append('shopify_domain', shopDomain);
+        formData.append('channel_id', channelId);
+        formData.append('name', name.value);
+        formData.append('email', email.value);
+        formData.append('message', '[General enquiry from designer collection page] ' + message.value);
+        formData.append('email_verification', true);
+
+        submit.disabled = true;
+
+        fetch(url, { method: 'POST', body: formData })
+          .then(function (res) {
+            if (!res.ok) throw new Error();
+            success.textContent = 'Your message has been sent.';
+            submit.disabled = false;
+            setTimeout(hide, 1200);
+          })
+          .catch(function () {
+            error.textContent = "Couldn't submit your request.";
+            submit.disabled = false;
+          });
+      });
+
+      updateButtons();
+    })();
+  </script>
+</div>
