@@ -256,6 +256,62 @@
   border-bottom-left-radius: 4px;
 }
 
+/* Attachments inside a message. The bubble colour sits on .st-message-text,
+   so these render as their own cards beside it rather than inside a fill. */
+.st-chat-atts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.st-message-user .st-chat-atts {
+  align-items: flex-end;
+}
+
+.st-chat-att-image {
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* A definite width, not a percentage: the bubble is a shrink-to-fit flex item,
+   so on an attachment-only message (message: "") it sizes to just the sender
+   chip and a percentage width would collapse the image to nothing. */
+.st-chat-att-image img {
+  display: block;
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+}
+
+.st-chat-att-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 9px 12px;
+  color: var(--st-chat-text);
+  text-decoration: none;
+  background: var(--st-chat-support-bubble);
+  border: 1px solid var(--st-chat-border);
+  border-radius: 12px;
+}
+
+.st-chat-att-file:hover {
+  border-color: var(--st-chat-primary);
+}
+
+.st-chat-att-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Message Content */
 .st-message-header {
   display: flex;
@@ -409,6 +465,121 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+/* Attachments queued for the next message */
+.st-chat-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.st-chat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 6px 8px 6px 12px;
+  font-size: 12.5px;
+  border: 1px solid var(--st-chat-border);
+  border-radius: 999px;
+}
+
+.st-chat-chip.is-success {
+  color: #166534;
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.st-chat-chip.is-failed {
+  color: #991b1b;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.st-chat-chip-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-chat-chip-remove {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.65;
+}
+
+.st-chat-chip-remove:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.st-chat-chip-spinner {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--st-chat-border);
+  border-top-color: var(--st-chat-primary);
+  border-radius: 50%;
+  animation: st-chat-spin 0.7s linear infinite;
+}
+
+@keyframes st-chat-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Paperclip. FileUpload puts the class we pass onto the choose button itself,
+   so this is a compound selector — .st-chat-attach IS the .p-button. It also
+   outranks PrimeVue's own .p-button, injected after this file, which would
+   otherwise paint it in Aura's green primary. */
+.st-chat-attach.p-button {
+  flex: 0 0 auto;
+  width: auto !important;
+  min-width: 0;
+  height: auto !important;
+  padding: 0 !important;
+  color: var(--st-chat-primary) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.st-chat-attach.p-button:hover,
+.st-chat-attach.p-button:focus,
+.st-chat-attach.p-button:focus-visible {
+  color: var(--st-chat-primary) !important;
+  background: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.st-chat-attach.p-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.st-chat-attach .p-button-label {
+  display: none;
+}
+
+.st-chat-attach .p-button-icon {
+  margin: 0;
+  font-size: 18px;
 }
 
 /* Input Container */
