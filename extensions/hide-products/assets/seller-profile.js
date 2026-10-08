@@ -1394,7 +1394,7 @@ function mountSellerProfile () {
 
                                                 <form @submit.prevent="submitContactForm" class="st-ext-space-y-4">
                                                     <!-- Name and Email Row -->
-                                                    <div class="st-ext-grid st-ext-grid-cols-1 st-ext-sm:st-ext-grid-cols-2 st-ext-gap-4 st-ext-m-auto">
+                                                    <div class="st-ext-grid st-ext-grid-cols-1 st-ext-sm:st-ext-grid-cols-2 st-ext-gap-4 st-ext-m-auto sp-contact-otp-grid">
                                                         <div>
                                                             <label for="contactName" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700">[[ $t('sellers.vendorDetails.fullName') ]] *</label>
                                                             <p-input-text
@@ -1409,16 +1409,65 @@ function mountSellerProfile () {
 
                                                         <div>
                                                             <label for="contactEmail" class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700">[[ $t('sellers.vendorDetails.email') ]] *</label>
-                                                            <p-input-text
-                                                                id="contactEmail"
-                                                                v-model="contactForm.email"
-                                                                type="email"
-                                                                :placeholder="$t('sellers.vendorDetails.enterEmail')"
-                                                                class="st-ext-w-full st-ext-text-sm"
-                                                                :class="{'st-ext-border-red-500': contactFormErrors.email}"
-                                                                required></p-input-text>
+                                                            <div :class="{'sp-otp-email-group': emailVerificationEnabled}">
+                                                                <p-input-text
+                                                                    id="contactEmail"
+                                                                    v-model="contactForm.email"
+                                                                    type="email"
+                                                                    :placeholder="$t('sellers.vendorDetails.enterEmail')"
+                                                                    class="st-ext-w-full st-ext-text-sm"
+                                                                    :class="{'st-ext-border-red-500': contactFormErrors.email}"
+                                                                    @input="onContactEmailInput"
+                                                                    required></p-input-text>
+                                                                <p-button
+                                                                    v-if="emailVerificationEnabled"
+                                                                    type="button"
+                                                                    class="sp-otp-send-btn st-ext-text-sm"
+                                                                    :class="{'sp-otp-send-btn--verified': otpVerified}"
+                                                                    :label="otpVerified ? '✓ ' + $t('sellers.vendorDetails.otp.verified') : (otpSent ? $t('sellers.vendorDetails.otp.resendEmail') : $t('sellers.vendorDetails.otp.verifyEmail'))"
+                                                                    :loading="otpSending"
+                                                                    :disabled="otpSendDisabled"
+                                                                    @click="sendContactOtp"></p-button>
+                                                            </div>
                                                             <small v-if="contactFormErrors.email" class="st-ext-text-red-500 st-ext-text-sm">[[ contactFormErrors.email ]]</small>
                                                         </div>
+                                                    <!-- Email OTP verification (sits next to the email field) -->
+                                                    <div v-if="emailVerificationEnabled" class="sp-otp sp-otp-full-row">
+                                                        <label class="st-ext-block st-ext-text-sm st-ext-font-medium st-ext-text-gray-700">[[ otpVerified ? $t('sellers.vendorDetails.otp.emailVerified') : $t('sellers.vendorDetails.otp.enterCode') ]]</label>
+                                                        <div class="sp-otp-digits">
+                                                            <input
+                                                                v-for="(digit, i) in otpDigits"
+                                                                :key="i"
+                                                                :id="'sp-otp-digit-' + i"
+                                                                :value="otpDigits[i]"
+                                                                type="text"
+                                                                inputmode="numeric"
+                                                                maxlength="1"
+                                                                :autocomplete="i === 0 ? 'one-time-code' : 'off'"
+                                                                :aria-label="$t('sellers.vendorDetails.otp.enterCode') + ' ' + (i + 1)"
+                                                                class="sp-otp-digit"
+                                                                :disabled="!otpSent || otpVerified"
+                                                                @input="onOtpInput(i, $event)"
+                                                                @keydown.backspace="onOtpBackspace(i, $event)"
+                                                                @keydown.enter.prevent="verifyContactOtp"
+                                                                @paste="onOtpPaste" />
+                                                        </div>
+                                                        <div class="sp-otp-footer">
+                                                            <small v-if="otpError" class="sp-otp-error">[[ otpError ]]</small>
+                                                            <small v-else-if="otpVerified" class="sp-otp-success">[[ $t('sellers.vendorDetails.otp.codeVerified') ]]</small>
+                                                            <small v-else-if="otpSent && otpCountdown > 0" class="sp-otp-hint">[[ $t('sellers.vendorDetails.otp.resendIn') ]] <strong>[[ otpCountdownText ]]</strong></small>
+                                                            <small v-else-if="!otpSent" class="sp-otp-hint">[[ $t('sellers.vendorDetails.otp.codeHint') ]]</small>
+                                                            <span v-else></span>
+                                                            <p-button
+                                                                v-if="otpSent && !otpVerified"
+                                                                type="button"
+                                                                class="sp-otp-verify-btn st-ext-text-sm"
+                                                                :label="$t('sellers.vendorDetails.otp.verify')"
+                                                                :loading="otpVerifying"
+                                                                :disabled="otpDigits.join('').length !== 6 || otpVerifying"
+                                                                @click="verifyContactOtp"></p-button>
+                                                        </div>
+                                                    </div>
                                                     </div>
                                                     <!-- Message -->
                                                     <div>
@@ -1446,7 +1495,8 @@ function mountSellerProfile () {
                                                             :label="$t('sellers.vendorDetails.sendMessage')"
                                                             icon="pi pi-send"
                                                             :loading="contactFormSubmitting"
-                                                            class="st-ext-text-sm"></p-button>
+                                                            :disabled="emailVerificationEnabled && !otpVerified"
+                                                            class="st-ext-text-sm sp-contact-submit-btn"></p-button>
                                                     </div>
                                                 </form>
 
@@ -1579,6 +1629,143 @@ function mountSellerProfile () {
                 validFromFieldName: '',
                 encryptedValidFrom: ''
             })
+
+            // Contact form email OTP verification (only when enabled in block settings)
+            const emailVerificationEnabled = !!blockSettings.emailVerificationRequired
+            const otpBaseUrl = `${appProxyBase}/vendor/registration-otp`
+            const otpDigits = ref(['', '', '', '', '', ''])
+            const otpSent = ref(false)
+            const otpVerified = ref(false)
+            const otpVerifiedEmail = ref('')
+            const otpSending = ref(false)
+            const otpVerifying = ref(false)
+            const otpError = ref('')
+            const otpCountdown = ref(0)
+            let otpCountdownInterval = null
+            const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || '')
+            const otpCountdownText = computed(() => {
+                const m = Math.floor(otpCountdown.value / 60).toString().padStart(2, '0')
+                const s = (otpCountdown.value % 60).toString().padStart(2, '0')
+                return `${m}:${s}`
+            })
+            const otpSendDisabled = computed(() =>
+                otpVerified.value || otpSending.value || (otpSent.value && otpCountdown.value > 0) || !isValidEmail(contactForm.value.email.trim())
+            )
+            const focusOtpDigit = (index) => {
+                setTimeout(() => document.getElementById(`sp-otp-digit-${index}`)?.focus(), 0)
+            }
+            const stopOtpCountdown = () => {
+                clearInterval(otpCountdownInterval)
+                otpCountdownInterval = null
+                otpCountdown.value = 0
+            }
+            const startOtpCountdown = (seconds = 60) => {
+                clearInterval(otpCountdownInterval)
+                otpCountdown.value = seconds
+                otpCountdownInterval = setInterval(() => {
+                    if (otpCountdown.value > 1) {
+                        otpCountdown.value--
+                    } else {
+                        stopOtpCountdown()
+                    }
+                }, 1000)
+            }
+            const resetOtp = () => {
+                otpDigits.value = ['', '', '', '', '', '']
+                otpSent.value = false
+                otpVerified.value = false
+                otpVerifiedEmail.value = ''
+                otpError.value = ''
+                stopOtpCountdown()
+            }
+            const onContactEmailInput = () => {
+                if (emailVerificationEnabled && (otpSent.value || otpVerified.value)) resetOtp()
+            }
+            const sendContactOtp = async () => {
+                const email = contactForm.value.email.trim()
+                if (!isValidEmail(email)) {
+                    otpError.value = t('sellers.vendorDetails.validation.emailInvalid')
+                    return
+                }
+                otpSending.value = true
+                otpError.value = ''
+                try {
+                    const res = await fetchViaAppProxy(`${otpBaseUrl}/send`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify({ email, shop_domain: shop })
+                    })
+                    const data = await res.json().catch(() => ({}))
+                    if (!res.ok && !data?.retry_after) {
+                        throw new Error(data?.message || t('sellers.vendorDetails.otp.codeSendFailed'))
+                    }
+                    otpSent.value = true
+                    otpDigits.value = ['', '', '', '', '', '']
+                    startOtpCountdown(res.ok ? 60 : data.retry_after)
+                    focusOtpDigit(0)
+                } catch (e) {
+                    console.error('Error sending OTP:', e)
+                    otpError.value = e.message || t('sellers.vendorDetails.otp.codeSendFailed')
+                } finally {
+                    otpSending.value = false
+                }
+            }
+            const verifyContactOtp = async () => {
+                const otp = otpDigits.value.join('')
+                if (otp.length !== 6 || otpVerifying.value) return
+                const email = contactForm.value.email.trim()
+                otpVerifying.value = true
+                otpError.value = ''
+                try {
+                    const res = await fetchViaAppProxy(`${otpBaseUrl}/verify`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify({ email, otp })
+                    })
+                    const data = await res.json().catch(() => ({}))
+                    if (!res.ok) {
+                        let msg = data?.message || t('sellers.vendorDetails.otp.invalidCode')
+                        if (data?.attempts_remaining !== undefined) {
+                            msg += ` (${t('sellers.vendorDetails.otp.attemptsRemaining', { count: data.attempts_remaining })})`
+                        }
+                        throw new Error(msg)
+                    }
+                    otpVerified.value = true
+                    otpVerifiedEmail.value = email
+                    stopOtpCountdown()
+                    if (contactFormErrors.value.email) delete contactFormErrors.value.email
+                } catch (e) {
+                    otpError.value = e.message || t('sellers.vendorDetails.otp.invalidCode')
+                } finally {
+                    otpVerifying.value = false
+                }
+            }
+            const onOtpInput = (index, event) => {
+                const val = event.target.value.replace(/\D/g, '').slice(-1)
+                event.target.value = val
+                const digits = [...otpDigits.value]
+                digits[index] = val
+                otpDigits.value = digits
+                otpError.value = ''
+                if (val && index < 5) focusOtpDigit(index + 1)
+            }
+            const onOtpBackspace = (index, event) => {
+                if (!otpDigits.value[index] && index > 0) {
+                    event.preventDefault()
+                    const digits = [...otpDigits.value]
+                    digits[index - 1] = ''
+                    otpDigits.value = digits
+                    focusOtpDigit(index - 1)
+                }
+            }
+            const onOtpPaste = (event) => {
+                const text = (event.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6)
+                if (!text) return
+                event.preventDefault()
+                otpDigits.value = Array.from({ length: 6 }, (_, i) => text[i] || '')
+                focusOtpDigit(Math.min(text.length, 6) - 1)
+            }
+
             const cartLoading = ref({})
 
             const handleAddToCart = async (product) => {
@@ -2073,6 +2260,10 @@ function mountSellerProfile () {
                 if (!contactForm.value.message.trim()) {
                     contactFormErrors.value.message = t('sellers.vendorDetails.validation.messageRequired')
                 }
+                if (emailVerificationEnabled && !contactFormErrors.value.email &&
+                    (!otpVerified.value || otpVerifiedEmail.value !== contactForm.value.email.trim())) {
+                    contactFormErrors.value.email = t('sellers.vendorDetails.otp.verifyEmailFirst')
+                }
                 return Object.keys(contactFormErrors.value).length === 0
             }
 
@@ -2093,7 +2284,10 @@ function mountSellerProfile () {
                         [contactHoneypotData.value.nameFieldName]: null,
                         [contactHoneypotData.value.validFromFieldName]: contactHoneypotData.value.encryptedValidFrom
                     }
-                    
+                    if (emailVerificationEnabled) {
+                        payload.email_verification = true
+                    }
+
                     const response = await fetch(`${API_BASE_URL}/vendor/contact`, {
                         method: 'POST',
                         headers: {
@@ -2105,6 +2299,7 @@ function mountSellerProfile () {
                     if (response.ok) {
                         contactFormSuccess.value = true
                         contactForm.value = { name: '', email: '', message: '' }
+                        if (emailVerificationEnabled) resetOtp()
                     } else {
                         const errorData = await response.json()
                         contactFormError.value = errorData.message || 'Failed to send message. Please try again.'
@@ -2222,6 +2417,7 @@ function mountSellerProfile () {
 
             onUnmounted(() => {
                 document.removeEventListener('click', handleCategoryOutsideClick)
+                clearInterval(otpCountdownInterval)
             })
 
             return {
@@ -2275,6 +2471,23 @@ function mountSellerProfile () {
                 contactFormSuccess,
                 contactFormError,
                 submitContactForm,
+                // Contact form email OTP verification
+                emailVerificationEnabled,
+                otpDigits,
+                otpSent,
+                otpVerified,
+                otpSending,
+                otpVerifying,
+                otpError,
+                otpCountdown,
+                otpCountdownText,
+                otpSendDisabled,
+                onContactEmailInput,
+                sendContactOtp,
+                verifyContactOtp,
+                onOtpInput,
+                onOtpBackspace,
+                onOtpPaste,
                 handleAddToCart,
                 cartLoading,
                 terminology,
