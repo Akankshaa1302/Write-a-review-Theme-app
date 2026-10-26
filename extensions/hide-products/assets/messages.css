@@ -983,28 +983,6 @@
   }
 }
 
-/* -------------------------------------------------------------- gate/ui -- */
-
-.st-messages-gate {
-  max-width: 420px;
-  margin: 48px auto;
-  padding: 28px;
-  text-align: center;
-  border: 1px solid var(--st-msg-border, #e5e7eb);
-  border-radius: 12px;
-}
-
-.st-messages-gate p {
-  margin: 0 0 12px;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.st-messages-gate a {
-  font-weight: 600;
-  color: #4f46e5;
-}
-
 /* ----------------------------------------------------------- responsive -- */
 
 @media (max-width: 749px) {

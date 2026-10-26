@@ -17,11 +17,6 @@
     Not signed in: render nothing but the redirect. This runs while the browser
     is still parsing the page, so the inbox markup never reaches the screen.
   {%- endcomment -%}
-  <noscript>
-    <div class="st-messages-gate">
-      <a href="/account/login">Sign in to view your messages</a>
-    </div>
-  </noscript>
   <script>
     (function () {
       window.location.replace('/account/login');

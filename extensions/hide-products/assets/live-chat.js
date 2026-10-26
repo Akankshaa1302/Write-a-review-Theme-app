@@ -32,22 +32,16 @@ async function LiveChatThemeAppExtension() {
     try {
       const el = document.getElementById('st-live-chat-app')
       const raw = el?.getAttribute('data-block-settings')
-      if (!raw) return { app_proxy_prefix: '/a/dashboard' }
+      if (!raw) return {}
       return JSON.parse(raw)
     } catch (error) {
       console.error('Failed to load live-chat block settings:', error)
-      return { app_proxy_prefix: '/a/dashboard' }
+      return {}
     }
   }
 
-  /** Must match Shopify app proxy "Subpath prefix" (leading slash, no trailing slash). */
-  const normalizeAppProxyPrefix = (raw) => {
-    const fallback = '/a/dashboard'
-    if (typeof raw !== 'string' || !raw.trim()) return fallback
-    const base = raw.trim().replace(/\/+$/, '')
-    if (!base) return fallback
-    return base.startsWith('/') ? base : `/${base}`
-  }
+  /** Shopify app proxy subpath; must match the app's App Proxy "Subpath prefix". */
+  const baseApiUrl = '/a/dashboard'
 
   /** Attachment types the API accepts. */
   const ACCEPTED_FILES = '.jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv'
@@ -304,7 +298,6 @@ async function LiveChatThemeAppExtension() {
       const isTyping = ref(false);
       const messagesContainer = ref(null);
       const blockSettings = getBlockSettings();
-      const baseApiUrl = normalizeAppProxyPrefix(blockSettings.app_proxy_prefix);
       const accentColor = ref(window.stLiveChatConfig?.accentColor || blockSettings.accent_color || '#4F46E5');
       const buttonLabel = computed(() => {
         const labelTemplate = blockSettings.button_text || 'Chat with {vendor}';
