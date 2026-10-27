@@ -259,6 +259,26 @@
     margin: 0;
 }
 
+#seller-profile-app .sp-chat-with-seller {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    font-family: inherit;
+    /* px, not rem: rem scales with the theme's root font-size. */
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    /* Not --sp-accent-color — that token is the stars/badges accent, amber by default. */
+    color: #4f46e5;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+#seller-profile-app .sp-chat-with-seller:hover { background: #e0e7ff; }
+
 #seller-profile-app .sp-category-filter { position: relative; }
 #seller-profile-app .sp-category-dropdown-btn {
     cursor: pointer;

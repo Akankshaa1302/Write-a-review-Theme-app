@@ -1,0 +1,94 @@
+<link rel="stylesheet" href="{{ 'messages.css' | asset_url }}" />
+<!-- PrimeVue toasts draw their severity icons from primeicons, as in live-chat. -->
+<link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
+
+{%- if block.settings.customCss != blank -%}
+  <style>{{ block.settings.customCss }}</style>
+{%- endif -%}
+
+{%- comment -%}
+  `request.design_mode` is true only inside the theme editor, where there is no
+  logged-in customer. Without it the redirect below fires there and the editor
+  preview lands on a 404, since /account/login is not reachable in that frame.
+{%- endcomment -%}
+{%- if customer == blank and request.design_mode != true -%}
+
+  {%- comment -%}
+    Not signed in: render nothing but the redirect. This runs while the browser
+    is still parsing the page, so the inbox markup never reaches the screen.
+  {%- endcomment -%}
+  <script>
+    (function () {
+      window.location.replace('/account/login');
+    })();
+  </script>
+
+{%- else -%}
+
+  <div
+    id="st-messages-app"
+    data-lang-asset="{{ 'lang.json' | asset_url }}"
+    data-block-settings='{{ block.settings | json }}'
+  ></div>
+
+  <script>
+    window.stMessagesCustomer = {
+      id: {{ customer.id | json }},
+      email: {{ customer.email | json }},
+      name: {{ customer.name | json }},
+      firstName: {{ customer.first_name | json }}
+    };
+  </script>
+  <script src="{{ 'resources.js' | asset_url }}" defer></script>
+  <script src="{{ 'messages.js' | asset_url }}" defer></script>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Messages",
+  "target": "section",
+  "templates": ["page"],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "text",
+      "id": "panel_height",
+      "label": "Panel height",
+      "default": "640px",
+      "info": "Any CSS length, e.g. 640px or 70vh."
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "composer_placeholder",
+      "label": "Message box placeholder",
+      "default": "Write your message..."
+    },
+    {
+      "type": "text",
+      "id": "quick_replies",
+      "label": "Quick reply suggestions",
+      "default": "Yes, please hold it, Return policy?, Size guide",
+      "info": "Comma-separated. Shown as tappable chips above the message box. Leave blank to hide."
+    },
+    {
+      "type": "header",
+      "content": "Advanced Customization"
+    },
+    {
+      "type": "liquid",
+      "id": "customCss",
+      "label": "Custom CSS",
+      "info": "Add your own CSS styles. Always scope your styles to #st-messages-app to avoid affecting other elements. Example: #st-messages-app .my-custom-class { color: red; }",
+      "default": "/*  Helpful CSS Selectors for Customization: */\n\n/* The whole panel and its colour tokens */\n/*\n#st-messages-app .st-messages-root {\n  --st-msg-accent: #4F46E5;\n  --st-msg-border: #e5e7eb;\n  --st-msg-surface: #ffffff;\n}\n*/\n\n/* Example: conversation list on the left */\n/*\n#st-messages-app .st-msg-list-pane {\n  flex: 0 0 360px;\n  width: 360px;\n}\n\n#st-messages-app .st-msg-conv.is-active {\n  background: #f1f0fe;\n}\n*/\n\n/* Example: message bubbles */\n/*\n#st-messages-app .st-msg-row.is-own .st-msg-bubble {\n  background: #111827;\n}\n\n#st-messages-app .st-msg-row.is-them .st-msg-bubble {\n  border-color: #d1d5db;\n}\n*/\n\n/* Example: the composer and Send button */\n/*\n#st-messages-app .st-msg-input-wrap {\n  border-radius: 999px;\n}\n\n#st-messages-app .st-msg-send {\n  border-radius: 999px;\n  text-transform: uppercase;\n}\n*/\n\n/* Add your custom styles below this line */\n"
+    }
+  ]
+}
+{% endschema %}
