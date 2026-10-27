@@ -981,16 +981,6 @@ function mountSellerProfile () {
                                     <p v-if="parentCompany?.display_vendor_short_description && vendorDetails.short_description" v-html="vendorDetails.short_description" class="st-ext-text-gray-700 st-ext-leading-relaxed st-ext-text-base st-ext-m-0">
                                     </p>
                                 </div>
-
-                                <!-- Live chat stands in for the contact form when it is enabled. -->
-                                <div v-if="parentCompany?.live_chat_enabled" class="st-ext-flex-shrink-0">
-                                    <button type="button" class="sp-chat-with-seller" @click="chatWithSeller">
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                            <path d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                                        </svg>
-                                        <span>[[ $t('sellers.vendorDetails.chatWithSeller') ]]</span>
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -1875,8 +1865,7 @@ function mountSellerProfile () {
                     case 'about': return !!settings.seller_about_us_tab
                     case 'reviews': return !!settings.seller_reviews_tab
                     case 'events': return !!settings.seller_events_tab
-                    // Live chat replaces the contact form, so the tab steps aside for it.
-                    case 'contact': return !!settings.seller_contact_us_tab && !parentCompany.value.live_chat_enabled
+                    case 'contact': return !!settings.seller_contact_us_tab
                     case 'policy': return !!settings.seller_policy_tab
                     default: return false
                 }
@@ -2102,32 +2091,6 @@ function mountSellerProfile () {
                 }
                 
                 return Object.keys(reviewFormErrors.value).length === 0
-            }
-
-            /**
-             * Sends the customer to the Messages page, which opens the thread
-             * with this vendor. No product is involved — this is a vendor-level
-             * conversation. Signing in is handled by the Messages page itself.
-             *
-             * TODO(confirm): which identifier the Messages page keys the thread
-             * on. The vendor id is passed for now.
-             */
-            const chatWithSeller = () => {
-                const vendor = vendorDetails.value
-                if (!vendor?.id) {
-                    window.location.href = '/pages/messages'
-
-                    return
-                }
-
-                // The name rides along so Messages can title a brand-new thread
-                // before any chat with this vendor exists.
-                const params = new URLSearchParams({
-                    vendor: vendor.id,
-                    vendor_name: vendor.brand_name || vendor.title || '',
-                })
-
-                window.location.href = `/pages/messages?${params.toString()}`
             }
 
             const showReviewDialog = () => {
@@ -2465,7 +2428,6 @@ function mountSellerProfile () {
                 parentCompany,
                 showLocation,
                 hasTab,
-                chatWithSeller,
                 getLocationText,
                 productSearch,
                 productSort,

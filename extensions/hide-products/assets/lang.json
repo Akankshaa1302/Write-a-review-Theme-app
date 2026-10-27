@@ -1,27 +1,5 @@
 {
   "en": {
-    "messages": {
-      "attachType": "That file type is not supported",
-      "removeAttachment": "Remove attachment",
-      "attach": "Attach a file",
-      "attachFailed": "Could not upload the file",
-      "inbox": "Inbox",
-      "searchPlaceholder": "Search by product or seller",
-      "composerPlaceholder": "Write your message...",
-      "you": "You",
-      "seller": "Seller",
-      "soldBy": "Sold by",
-      "qty": "Qty",
-      "send": "Send",
-      "sendFailed": "Not sent",
-      "delivered": "Delivered",
-      "seen": "Seen",
-      "sellerTyping": "Seller is typing...",
-      "backToList": "Back to all messages",
-      "emptyListTitle": "No messages yet",
-      "emptyListText": "Conversations with sellers will show up here.",
-      "noThreadTitle": "Select a chat to start messaging"
-    },
     "sellers": {
       "searchVendors": "Search {vendors}...",
       "searchVendor": "Search {vendor}",
@@ -82,7 +60,6 @@
         "zipcode": "Zip Code: {pincode}"
       },
       "vendorDetails": {
-        "chatWithSeller": "Chat with seller",
         "filter": {
           "allCategories": "All Categories",
           "done": "Done",
@@ -177,7 +154,7 @@
         "sortOptions": {
           "bestSelling": "Best Selling",
           "nameAscending": "Name A-Z",
-          "nameDescending": "Name Z-A",
+          "nameDescending": "Name Z-A", 
           "priceAscending": "Price Low-High",
           "priceDescending": "Price High-Low",
           "newestFirst": "Newest First",
@@ -225,6 +202,7 @@
       "review-by": "By",
       "leave-a-review": "Leave a Review",
       "verified-purchaser": "Verified Purchaser",
+      
       "write-review-label": "Write a review *",
       "write-review-placeholder": "What should other customers know?",
       "title-review-label": "Title your review *",
@@ -233,11 +211,14 @@
       "public-name-placeholder": "Enter your name",
       "email-label": "Email *",
       "email-placeholder": "email@example.com",
+      
       "cancel": "Cancel",
       "submit-review": "Submit Review",
+      
       "toast-error": "Error",
       "toast-success": "Success",
       "toast-login-required": "Login Required",
+      
       "toast-all-fields-required": "All fields marked with * are required",
       "toast-error-submitting": "Error while submitting review",
       "toast-review-submitted": "Review submitted successfully",
@@ -294,9 +275,6 @@
       "verifyEmailFirst": "Please verify your email before submitting."
     },
     "live-chat": {
-      "attachFailed": "Could not upload the file",
-      "attachType": "That file type is not supported",
-      "removeAttachment": "Remove attachment",
       "scopeNote": "This conversation is only about {product}",
       "customerLabel": "Customer",
       "sellerLabel": "Seller",
@@ -310,28 +288,6 @@
     }
   },
   "de": {
-    "messages": {
-      "attachType": "Dieser Dateityp wird nicht unterstützt",
-      "removeAttachment": "Anhang entfernen",
-      "attach": "Datei anhängen",
-      "attachFailed": "Datei konnte nicht hochgeladen werden",
-      "inbox": "Posteingang",
-      "searchPlaceholder": "Nach Produkt oder Verkäufer suchen",
-      "composerPlaceholder": "Schreiben Sie Ihre Nachricht...",
-      "you": "Sie",
-      "seller": "Verkäufer",
-      "soldBy": "Verkauft von",
-      "qty": "Menge",
-      "send": "Senden",
-      "sendFailed": "Nicht gesendet",
-      "delivered": "Zugestellt",
-      "seen": "Gelesen",
-      "sellerTyping": "Verkäufer schreibt...",
-      "backToList": "Zurück zu allen Nachrichten",
-      "emptyListTitle": "Noch keine Nachrichten",
-      "emptyListText": "Unterhaltungen mit Verkäufern erscheinen hier.",
-      "noThreadTitle": "Wählen Sie einen Chat aus, um zu schreiben"
-    },
     "sellers": {
       "searchVendors": "Anbieter suchen...",
       "searchVendor": "Anbieter suchen",
@@ -392,7 +348,6 @@
         "zipcode": "PLZ: {pincode}"
       },
       "vendorDetails": {
-        "chatWithSeller": "Mit Verkäufer chatten",
         "filter": {
           "allCategories": "Alle Kategorien",
           "done": "Fertig",
@@ -536,6 +491,7 @@
       "review-by": "Von",
       "leave-a-review": "Bewertung abgeben",
       "verified-purchaser": "Verifizierter Käufer",
+      
       "write-review-label": "Bewertung schreiben *",
       "write-review-placeholder": "Was sollten andere Kunden wissen?",
       "title-review-label": "Titel Ihrer Bewertung *",
@@ -544,11 +500,14 @@
       "public-name-placeholder": "Geben Sie Ihren Namen ein",
       "email-label": "E-Mail *",
       "email-placeholder": "email@beispiel.de",
+      
       "cancel": "Abbrechen",
       "submit-review": "Bewertung absenden",
+      
       "toast-error": "Fehler",
       "toast-success": "Erfolg",
       "toast-login-required": "Anmeldung erforderlich",
+      
       "toast-all-fields-required": "Alle mit * markierten Felder sind erforderlich",
       "toast-error-submitting": "Fehler beim Absenden der Bewertung",
       "toast-review-submitted": "Bewertung erfolgreich übermittelt",
@@ -605,9 +564,6 @@
       "verifyEmailFirst": "Bitte bestätigen Sie Ihre E-Mail-Adresse vor dem Absenden."
     },
     "live-chat": {
-      "attachFailed": "Datei konnte nicht hochgeladen werden",
-      "attachType": "Dieser Dateityp wird nicht unterstützt",
-      "removeAttachment": "Anhang entfernen",
       "scopeNote": "Dieses Gespräch bezieht sich nur auf {product}",
       "customerLabel": "Kunde",
       "sellerLabel": "Verkäufer",
@@ -621,28 +577,6 @@
     }
   },
   "es": {
-    "messages": {
-      "attachType": "Ese tipo de archivo no es compatible",
-      "removeAttachment": "Quitar el archivo adjunto",
-      "attach": "Adjuntar un archivo",
-      "attachFailed": "No se pudo subir el archivo",
-      "inbox": "Bandeja de entrada",
-      "searchPlaceholder": "Buscar por producto o vendedor",
-      "composerPlaceholder": "Escribe tu mensaje...",
-      "you": "Tú",
-      "seller": "Vendedor",
-      "soldBy": "Vendido por",
-      "qty": "Cant.",
-      "send": "Enviar",
-      "sendFailed": "No enviado",
-      "delivered": "Entregado",
-      "seen": "Visto",
-      "sellerTyping": "El vendedor está escribiendo...",
-      "backToList": "Volver a todos los mensajes",
-      "emptyListTitle": "Aún no hay mensajes",
-      "emptyListText": "Las conversaciones con vendedores aparecerán aquí.",
-      "noThreadTitle": "Selecciona un chat para empezar a escribir"
-    },
     "sellers": {
       "searchVendors": "Buscar vendedores...",
       "searchVendor": "Buscar vendedor",
@@ -703,7 +637,6 @@
         "zipcode": "Código postal: {pincode}"
       },
       "vendorDetails": {
-        "chatWithSeller": "Chatear con el vendedor",
         "filter": {
           "allCategories": "Todas las categorías",
           "done": "Listo",
@@ -847,6 +780,7 @@
       "review-by": "Por",
       "leave-a-review": "Dejar una reseña",
       "verified-purchaser": "Comprador verificado",
+      
       "write-review-label": "Escribir una reseña *",
       "write-review-placeholder": "¿Qué deberían saber otros clientes?",
       "title-review-label": "Título de tu reseña *",
@@ -855,11 +789,14 @@
       "public-name-placeholder": "Ingresa tu nombre",
       "email-label": "Email *",
       "email-placeholder": "email@ejemplo.com",
+      
       "cancel": "Cancelar",
       "submit-review": "Enviar reseña",
+      
       "toast-error": "Error",
       "toast-success": "Éxito",
       "toast-login-required": "Inicio de sesión requerido",
+      
       "toast-all-fields-required": "Todos los campos marcados con * son requeridos",
       "toast-error-submitting": "Error al enviar la reseña",
       "toast-review-submitted": "Reseña enviada exitosamente",
@@ -873,18 +810,18 @@
       "confirm-delete-message": "¿Estás seguro de que deseas eliminar esta reseña?"
     },
     "make_an_offer": {
-      "limit_reached_summary": "Límite alcanzado",
-      "inventory_limit_detail": "La cantidad no puede superar el inventario disponible. {count} artículos disponibles.",
-      "pending_offer_limit_detail": "Ya tienes una oferta pendiente para este producto.",
-      "validation_error_summary": "Error de validación",
-      "fill_required_fields_detail": "Por favor, completa todos los campos obligatorios",
-      "success_summary": "Éxito",
-      "offer_submitted_success_detail": "¡Oferta enviada con éxito!",
-      "error_summary": "Error",
-      "submit_offer_error_detail": "Error al enviar la oferta",
-      "generic_error_detail": "Ocurrió un error al procesar tu solicitud.",
-      "login_required_summary": "Inicio de sesión requerido",
-      "login_required_detail": "Por favor, inicia sesión para hacer una oferta"
+        "limit_reached_summary": "Límite alcanzado",
+        "inventory_limit_detail": "La cantidad no puede superar el inventario disponible. {count} artículos disponibles.",
+        "pending_offer_limit_detail": "Ya tienes una oferta pendiente para este producto.",
+        "validation_error_summary": "Error de validación",
+        "fill_required_fields_detail": "Por favor, completa todos los campos obligatorios",
+        "success_summary": "Éxito",
+        "offer_submitted_success_detail": "¡Oferta enviada con éxito!",
+        "error_summary": "Error",
+        "submit_offer_error_detail": "Error al enviar la oferta",
+        "generic_error_detail": "Ocurrió un error al procesar tu solicitud.",
+        "login_required_summary": "Inicio de sesión requerido",
+        "login_required_detail": "Por favor, inicia sesión para hacer una oferta"
     },
     "customer-chat": {
       "chatWithSeller": "Chatear con el vendedor",
@@ -916,9 +853,6 @@
       "verifyEmailFirst": "Verifica tu correo electrónico antes de enviar."
     },
     "live-chat": {
-      "attachFailed": "No se pudo subir el archivo",
-      "attachType": "Ese tipo de archivo no es compatible",
-      "removeAttachment": "Quitar el archivo adjunto",
       "scopeNote": "Esta conversación es solo sobre {product}",
       "customerLabel": "Cliente",
       "sellerLabel": "Vendedor",
@@ -932,28 +866,6 @@
     }
   },
   "nl": {
-    "messages": {
-      "attachType": "Dit bestandstype wordt niet ondersteund",
-      "removeAttachment": "Bijlage verwijderen",
-      "attach": "Bestand bijvoegen",
-      "attachFailed": "Bestand kon niet worden geüpload",
-      "inbox": "Postvak IN",
-      "searchPlaceholder": "Zoek op product of verkoper",
-      "composerPlaceholder": "Schrijf je bericht...",
-      "you": "Jij",
-      "seller": "Verkoper",
-      "soldBy": "Verkocht door",
-      "qty": "Aantal",
-      "send": "Verzenden",
-      "sendFailed": "Niet verzonden",
-      "delivered": "Afgeleverd",
-      "seen": "Gezien",
-      "sellerTyping": "Verkoper is aan het typen...",
-      "backToList": "Terug naar alle berichten",
-      "emptyListTitle": "Nog geen berichten",
-      "emptyListText": "Gesprekken met verkopers verschijnen hier.",
-      "noThreadTitle": "Selecteer een chat om te beginnen"
-    },
     "sellers": {
       "searchVendors": "Zoek verkopers...",
       "searchVendor": "Zoek verkoper",
@@ -1014,7 +926,6 @@
         "zipcode": "Postcode: {pincode}"
       },
       "vendorDetails": {
-        "chatWithSeller": "Chat met verkoper",
         "filter": {
           "allCategories": "Alle categorieën",
           "done": "Klaar",
@@ -1227,9 +1138,6 @@
       "verifyEmailFirst": "Verifieer uw e-mailadres voordat u verzendt."
     },
     "live-chat": {
-      "attachFailed": "Bestand kon niet worden geüpload",
-      "attachType": "Dit bestandstype wordt niet ondersteund",
-      "removeAttachment": "Bijlage verwijderen",
       "scopeNote": "Dit gesprek gaat alleen over {product}",
       "customerLabel": "Klant",
       "sellerLabel": "Verkoper",
@@ -1243,28 +1151,6 @@
     }
   },
   "pt": {
-    "messages": {
-      "attachType": "Esse tipo de ficheiro não é suportado",
-      "removeAttachment": "Remover o anexo",
-      "attach": "Anexar um ficheiro",
-      "attachFailed": "Não foi possível carregar o ficheiro",
-      "inbox": "Caixa de entrada",
-      "searchPlaceholder": "Pesquisar por produto ou vendedor",
-      "composerPlaceholder": "Escreva a sua mensagem...",
-      "you": "Você",
-      "seller": "Vendedor",
-      "soldBy": "Vendido por",
-      "qty": "Qtd.",
-      "send": "Enviar",
-      "sendFailed": "Não enviada",
-      "delivered": "Entregue",
-      "seen": "Visto",
-      "sellerTyping": "O vendedor está a escrever...",
-      "backToList": "Voltar a todas as mensagens",
-      "emptyListTitle": "Ainda não há mensagens",
-      "emptyListText": "As conversas com vendedores aparecerão aqui.",
-      "noThreadTitle": "Selecione uma conversa para começar"
-    },
     "sellers": {
       "searchVendors": "Pesquisar vendedores...",
       "searchVendor": "Pesquisar vendedor",
@@ -1325,7 +1211,6 @@
         "zipcode": "Código postal: {pincode}"
       },
       "vendorDetails": {
-        "chatWithSeller": "Conversar com o vendedor",
         "filter": {
           "allCategories": "Todas as categorias",
           "done": "Concluído",
@@ -1538,9 +1423,6 @@
       "verifyEmailFirst": "Verifique o seu email antes de submeter."
     },
     "live-chat": {
-      "attachFailed": "Não foi possível carregar o ficheiro",
-      "attachType": "Esse tipo de ficheiro não é suportado",
-      "removeAttachment": "Remover o anexo",
       "scopeNote": "Esta conversa é apenas sobre {product}",
       "customerLabel": "Cliente",
       "sellerLabel": "Vendedor",
@@ -1554,28 +1436,6 @@
     }
   },
   "no": {
-    "messages": {
-      "attachType": "Denne filtypen støttes ikke",
-      "removeAttachment": "Fjern vedlegget",
-      "attach": "Legg ved en fil",
-      "attachFailed": "Kunne ikke laste opp filen",
-      "inbox": "Innboks",
-      "searchPlaceholder": "Søk etter produkt eller selger",
-      "composerPlaceholder": "Skriv meldingen din...",
-      "you": "Du",
-      "seller": "Selger",
-      "soldBy": "Solgt av",
-      "qty": "Ant.",
-      "send": "Send",
-      "sendFailed": "Ikke sendt",
-      "delivered": "Levert",
-      "seen": "Sett",
-      "sellerTyping": "Selgeren skriver...",
-      "backToList": "Tilbake til alle meldinger",
-      "emptyListTitle": "Ingen meldinger ennå",
-      "emptyListText": "Samtaler med selgere vises her.",
-      "noThreadTitle": "Velg en samtale for å begynne"
-    },
     "sellers": {
       "searchVendors": "Søk leverandører...",
       "searchVendor": "Søk leverandør",
@@ -1636,7 +1496,6 @@
         "zipcode": "Postnummer: {pincode}"
       },
       "vendorDetails": {
-        "chatWithSeller": "Chat med selgeren",
         "filter": {
           "allCategories": "Alle kategorier",
           "done": "Ferdig",
@@ -1849,9 +1708,6 @@
       "verifyEmailFirst": "Bekreft e-postadressen din før du sender."
     },
     "live-chat": {
-      "attachFailed": "Kunne ikke laste opp filen",
-      "attachType": "Denne filtypen støttes ikke",
-      "removeAttachment": "Fjern vedlegget",
       "scopeNote": "Denne samtalen handler bare om {product}",
       "customerLabel": "Kunde",
       "sellerLabel": "Selger",
@@ -1865,28 +1721,6 @@
     }
   },
   "ro": {
-    "messages": {
-      "attachType": "Acest tip de fișier nu este acceptat",
-      "removeAttachment": "Elimină atașamentul",
-      "attach": "Atașează un fișier",
-      "attachFailed": "Fișierul nu a putut fi încărcat",
-      "inbox": "Inbox",
-      "searchPlaceholder": "Caută după produs sau vânzător",
-      "composerPlaceholder": "Scrie mesajul tău...",
-      "you": "Tu",
-      "seller": "Vânzător",
-      "soldBy": "Vândut de",
-      "qty": "Cant.",
-      "send": "Trimite",
-      "sendFailed": "Netrimis",
-      "delivered": "Livrat",
-      "seen": "Văzut",
-      "sellerTyping": "Vânzătorul scrie...",
-      "backToList": "Înapoi la toate mesajele",
-      "emptyListTitle": "Încă nu există mesaje",
-      "emptyListText": "Conversațiile cu vânzătorii vor apărea aici.",
-      "noThreadTitle": "Selectează o conversație pentru a începe"
-    },
     "sellers": {
       "searchVendors": "Caută vânzători...",
       "searchVendor": "Caută vânzător",
@@ -1947,7 +1781,6 @@
         "zipcode": "Cod poștal: {pincode}"
       },
       "vendorDetails": {
-        "chatWithSeller": "Discută cu vânzătorul",
         "filter": {
           "allCategories": "Toate categoriile",
           "done": "Gata",
@@ -2160,9 +1993,6 @@
       "verifyEmailFirst": "Te rugăm să îți verifici e-mailul înainte de a trimite."
     },
     "live-chat": {
-      "attachFailed": "Fișierul nu a putut fi încărcat",
-      "attachType": "Acest tip de fișier nu este acceptat",
-      "removeAttachment": "Elimină atașamentul",
       "scopeNote": "Această conversație este doar despre {product}",
       "customerLabel": "Client",
       "sellerLabel": "Vânzător",

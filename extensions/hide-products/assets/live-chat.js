@@ -32,19 +32,22 @@ async function LiveChatThemeAppExtension() {
     try {
       const el = document.getElementById('st-live-chat-app')
       const raw = el?.getAttribute('data-block-settings')
-      if (!raw) return {}
+      if (!raw) return { app_proxy_prefix: '/a/dashboard' }
       return JSON.parse(raw)
     } catch (error) {
       console.error('Failed to load live-chat block settings:', error)
-      return {}
+      return { app_proxy_prefix: '/a/dashboard' }
     }
   }
 
-  /** Shopify app proxy subpath; must match the app's App Proxy "Subpath prefix". */
-  const baseApiUrl = '/a/dashboard'
-
-  /** Attachment types the API accepts. */
-  const ACCEPTED_FILES = '.jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv'
+  /** Must match Shopify app proxy "Subpath prefix" (leading slash, no trailing slash). */
+  const normalizeAppProxyPrefix = (raw) => {
+    const fallback = '/a/dashboard'
+    if (typeof raw !== 'string' || !raw.trim()) return fallback
+    const base = raw.trim().replace(/\/+$/, '')
+    if (!base) return fallback
+    return base.startsWith('/') ? base : `/${base}`
+  }
 
   const NOTIFY_DEVELOPER_URL = 'https://api-v2.shipturtle.com/api/v1/notify-developer'
 
@@ -155,38 +158,7 @@ async function LiveChatThemeAppExtension() {
                 <div class="st-message-bubble">
                   <div class="st-message-header">
                     <span class="st-message-chip">{{ message.sender_type === 'customer' ? t('live-chat.customerLabel') : t('live-chat.sellerLabel') }}</span>
-                    <span v-if="message.message" class="st-message-text">{{ message.message }}</span>
-                  </div>
-
-                  <div v-if="message.attachments?.length" class="st-chat-atts">
-                    <template v-for="att in message.attachments" :key="att.id">
-                      <a
-                        v-if="att.kind === 'image'"
-                        class="st-chat-att-image"
-                        :href="att.url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img :src="att.url" :alt="att.file_name" loading="lazy" />
-                      </a>
-
-                      <a
-                        v-else
-                        class="st-chat-att-file"
-                        :href="att.url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
-                          <path d="M14 2v6h6" />
-                        </svg>
-                        <span class="st-chat-att-name">{{ att.file_name }}</span>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16" />
-                        </svg>
-                      </a>
-                    </template>
+                    <span class="st-message-text">{{ message.message }}</span>
                   </div>
                   <div class="st-message-time">{{ formatTime(message.created_at)}}</div>
                   <span
@@ -231,43 +203,7 @@ async function LiveChatThemeAppExtension() {
                   {{ reply }}
                 </button>
               </div>
-              <div v-if="attachments.length" class="st-chat-attachments">
-                <div
-                  v-for="item in attachments"
-                  :key="item.uid"
-                  class="st-chat-chip"
-                  :class="'is-' + item.status"
-                >
-                  <span v-if="item.status === 'uploading'" class="st-chat-chip-spinner" aria-hidden="true"></span>
-                  <span class="st-chat-chip-name">{{ item.name }}</span>
-                  <button
-                    type="button"
-                    class="st-chat-chip-remove"
-                    :aria-label="t('live-chat.removeAttachment')"
-                    :title="t('live-chat.removeAttachment')"
-                    @click="removeAttachment(item.uid)"
-                  >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                      <path d="M18 6 6 18M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
               <div class="st-chat-input-row">
-                <p-file-upload
-                  ref="fileUpload"
-                  mode="basic"
-                  name="file"
-                  class="st-chat-attach"
-                  :accept="acceptedFiles"
-                  choose-icon="pi pi-paperclip"
-                  :choose-label="''"
-                  :auto="true"
-                  :custom-upload="true"
-                  :multiple="true"
-                  :disabled="!chatExists || attachments.some((a) => a.status === 'uploading')"
-                  @uploader="uploadAttachment"
-                ></p-file-upload>
                 <p-input-text
                   v-model="newMessage"
                   :placeholder="t('live-chat.messagePlaceholder', { vendor: vendorName })"
@@ -278,7 +214,7 @@ async function LiveChatThemeAppExtension() {
                 <p-button
                   icon="pi pi-send"
                   @click="sendMessage"
-                  :disabled="!canSend"
+                  :disabled="!newMessage.trim() || isSending"
                   class="st-send-button"
                   :loading="isSending"
                   severity="primary"
@@ -298,6 +234,7 @@ async function LiveChatThemeAppExtension() {
       const isTyping = ref(false);
       const messagesContainer = ref(null);
       const blockSettings = getBlockSettings();
+      const baseApiUrl = normalizeAppProxyPrefix(blockSettings.app_proxy_prefix);
       const accentColor = ref(window.stLiveChatConfig?.accentColor || blockSettings.accent_color || '#4F46E5');
       const buttonLabel = computed(() => {
         const labelTemplate = blockSettings.button_text || 'Chat with {vendor}';
@@ -401,7 +338,7 @@ async function LiveChatThemeAppExtension() {
                 life: 3000
             });
             setTimeout(() => {
-                window.location.href = `/customer_authentication/login?return_to=${encodeURIComponent(window.location.pathname)}`
+                window.location.href = "/account/login"
             }, 1500);
         }
         if(chatId.value){
@@ -412,98 +349,6 @@ async function LiveChatThemeAppExtension() {
       const closeChat = () => {
         isDialogVisible.value = false;
       };
-      /* ------------------------------------------------- attachments -- */
-
-      const fileUpload = ref(null)
-      const acceptedFiles = ACCEPTED_FILES
-      /** Queued uploads: { uid, name, status: 'uploading'|'success'|'failed', id? } */
-      const attachments = ref([])
-      let attachmentSeq = 0
-
-      const uploadedIds = computed(() =>
-        attachments.value.filter(a => a.status === 'success').map(a => a.id)
-      )
-
-      const canSend = computed(() =>
-        !isSending.value &&
-        !attachments.value.some(a => a.status === 'uploading') &&
-        Boolean(newMessage.value.trim() || uploadedIds.value.length)
-      )
-
-      const isAcceptedFile = (fileName) => {
-        const name = fileName.toLowerCase()
-        return ACCEPTED_FILES.split(',').some(ext => name.endsWith(ext))
-      }
-
-      /** Patches a row through the reactive array so the chip re-renders. */
-      const patchAttachment = (uid, changes) => {
-        const row = attachments.value.find(a => a.uid === uid)
-        if (row) Object.assign(row, changes)
-      }
-
-      /** One request per file — the endpoint takes a single file at a time. */
-      const uploadOne = async (file, uid) => {
-        try{
-          const formData = new FormData()
-          formData.append('file', file, file.name)
-
-          const response = await fetchViaAppProxy(`${baseApiUrl}/customer/chats/${chatId.value}/attachments?shop=${shopifyDomain.value}&logged_in_customer_id=${customerDetails.value.id}`, {
-            method: 'POST',
-            body: formData
-          })
-
-          const data = await response.json()
-          const id = data?.id ?? data?.data?.id
-          if (!id) throw new Error('Attachment response carried no id')
-          patchAttachment(uid, { status: 'success', id })
-        }
-        catch(error){
-          console.error('Error uploading attachment:', error)
-          patchAttachment(uid, { status: 'failed' })
-          toast.add({
-            severity: 'error',
-            summary: t('live-chat.attachFailed'),
-            detail: file.name,
-            life: 3000
-          })
-        }
-      }
-
-      /**
-       * Picked files upload straight away, one call each, and queue up as chips.
-       * Their ids ride along with the next message as `attachments: [id, …]`.
-       */
-      const uploadAttachment = (event) => {
-        const files = Array.isArray(event.files) ? event.files : [event.files]
-        // Reset FileUpload's own state so the same file can be picked again.
-        fileUpload.value?.clear?.()
-        if (!chatId.value) return
-
-        files.filter(Boolean).forEach(file => {
-          // `accept` only filters the picker; the OS dialog can still be
-          // switched to "All files", so the extension is checked here too.
-          if (!isAcceptedFile(file.name)) {
-            toast.add({
-              severity: 'warn',
-              summary: t('live-chat.attachType'),
-              detail: file.name,
-              life: 4000
-            })
-
-            return
-          }
-
-          // Names repeat, so rows are keyed on their own counter.
-          const uid = ++attachmentSeq
-          attachments.value.push({ uid, name: file.name, status: 'uploading' })
-          uploadOne(file, uid)
-        })
-      }
-
-      const removeAttachment = (uid) => {
-        attachments.value = attachments.value.filter(a => a.uid !== uid)
-      }
-
       const sendMessage = () => {
         if(chatExists.value == false){
           sendMessageToNewChat();
@@ -511,8 +356,6 @@ async function LiveChatThemeAppExtension() {
           sendMessageToExistingChat();
         }
       }
-      // Attachments need a chat id, so this branch stays text-only; the
-      // paperclip is disabled until the chat exists.
       const sendMessageToNewChat = async () => {
         if (!newMessage.value.trim() || isSending.value) return;
 
@@ -549,29 +392,21 @@ async function LiveChatThemeAppExtension() {
         }
       }
       const sendMessageToExistingChat = async () => {
-        if (!canSend.value) return;
+        if (!newMessage.value.trim() || isSending.value) return;
 
         const messageText = newMessage.value.trim();
         isSending.value = true;
         try{
-          const body = {};
-          if (messageText) body.message = messageText;
-          if (uploadedIds.value.length) body.attachments = uploadedIds.value;
-
           const response = await fetchViaAppProxy(`${baseApiUrl}/customer/chats/${chatId.value}/messages`, {
             method: 'POST',
-            body: JSON.stringify(body)
+            body: JSON.stringify({
+              message: messageText
+            })
           });
 
           const data = await response.json();
 
           newMessage.value = '';
-          attachments.value = [];
-
-          // Refetch rather than wait for the broadcast: the pushed payload does
-          // not carry attachments, so the sent message would render without
-          // them. Same reason sendMessageToNewChat refetches.
-          await fetchchatMessages();
 
           // Scroll to bottom
           setTimeout(() => {
@@ -697,7 +532,7 @@ async function LiveChatThemeAppExtension() {
 
       onBeforeMount(async () => {
         // Initialize Pusher
-        pusher.value = new Pusher('d7db7850adabc9323922', {
+        pusher.value = new Pusher('c0b95db0cf51f0509b90', {
           cluster: 'ap2',
           authEndpoint : `${baseApiUrl}/customer/chats/broadcasting/auth?shop=${shopifyDomain.value}&logged_in_customer_id=${customerDetails.value.id}`
         });
@@ -735,13 +570,6 @@ async function LiveChatThemeAppExtension() {
         quickReplies,
         sendQuickReply,
         messagesContainer,
-        fileUpload,
-        acceptedFiles,
-        attachments,
-        canSend,
-        chatExists,
-        uploadAttachment,
-        removeAttachment,
         openChat,
         closeChat,
         sendMessage,
@@ -767,7 +595,6 @@ async function LiveChatThemeAppExtension() {
   app.component('p-button', PrimeVue.Button);
   app.component('p-toast', PrimeVue.Toast);
   app.component('p-input-text', PrimeVue.InputText);
-  app.component('p-file-upload', PrimeVue.FileUpload);
 
   app.config.compilerOptions.delimiters = ["{{", "}}"];
 
