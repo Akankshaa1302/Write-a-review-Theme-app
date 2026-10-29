@@ -1,6 +1,8 @@
+{%- assign st_storefront_settings = app.metafields.shipturtle.storefront_settings.value -%}
 <div
   id="seller-profile-app"
   data-lang-asset="{{ 'lang.json' | asset_url }}"
+  data-email-verification="{% if st_storefront_settings.email_verification == true or st_storefront_settings.email_verification == 'true' %}true{% else %}false{% endif %}"
   data-settings='{{ block.settings | json }}'></div>
 
 
@@ -18,8 +20,8 @@
     --sp-body-font-size: {{ block.settings.bodyFontSize | default: 14 }}px;
     --sp-vendors-per-row: {{ block.settings.vendorsPerRow | default: 3 }};
     --sp-products-per-row: {{ block.settings.productsPerRow | default: 4 }};
-    --sp-vendor-listing-banner-height: {{ block.settings.vendorListingBannerHeight | default: 20 }}rem;
-    --sp-vendor-details-banner-height: {{ block.settings.vendorDetailsBannerHeight | default: 20 }}rem;
+    --sp-vendor-listing-banner-height: {{ block.settings.vendorListingBannerHeight | default: 465 }}px;
+    --sp-vendor-details-banner-height: {{ block.settings.vendorDetailsBannerHeight | default: 465 }}px;
   }
 
   /* Custom CSS from block settings */
@@ -89,21 +91,21 @@
       }, {
         "type": "range",
         "id": "vendorListingBannerHeight",
-        "label": "Vendor listing banner height (rem)",
-        "min": 10,
-        "max": 30,
-        "step": 1,
-        "unit": "rem",
-        "default": 20
+        "label": "Vendor listing banner height (px)",
+        "min": 200,
+        "max": 600,
+        "step": 5,
+        "unit": "px",
+        "default": 465
       }, {
         "type": "range",
         "id": "vendorDetailsBannerHeight",
-        "label": "Vendor details banner height (rem)",
-        "min": 10,
-        "max": 30,
-        "step": 1,
-        "unit": "rem",
-        "default": 20
+        "label": "Vendor details banner height (px)",
+        "min": 200,
+        "max": 600,
+        "step": 5,
+        "unit": "px",
+        "default": 465
       }, {
         "type": "checkbox",
         "id": "hideVendorDetailsBanner",
@@ -198,12 +200,6 @@
         "max": 20,
         "step": 2,
         "default": 8
-      }, {
-        "type": "checkbox",
-        "id": "emailVerificationRequired",
-        "label": "Add OTP-based Email Verification",
-        "info": "When enabled, users must verify their email address using a 6-digit OTP before sending a message from the Contact tab.",
-        "default": false
       }, {
         "type": "header",
         "content": "App proxy"

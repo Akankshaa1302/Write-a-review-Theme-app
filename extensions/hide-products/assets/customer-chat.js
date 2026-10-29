@@ -50,10 +50,9 @@ function applyChatStyles(settings) {
     root.setProperty('--st-chat-submit-font-size', settings.stChatSubmitBtnFontSize + 'px')
 }
 
-function renderChat(app, settings, t, customerEmail) {
+function renderChat(app, settings, t, customerEmail, verificationRequired) {
     const ctaText = settings.stChatWithSellerBtnTxt === 'Chat With Seller' ? t.chatWithSeller : settings.stChatWithSellerBtnTxt
     const headerText = settings.stChatHeaderText === 'Chat With Seller' ? t.chatWithSeller : settings.stChatHeaderText
-    const verificationRequired = !!settings.stChatEmailVerificationRequired
 
     const emailField = verificationRequired ? `
                 <div>
@@ -135,9 +134,12 @@ async function CustomerChat() {
         console.error('customer-chat: invalid block settings', e);
     }
 
+    // From the app metafield shipturtle.storefront_settings.email_verification (set in Liquid)
+    const verificationRequired = app.dataset.emailVerification === 'true';
+
     const t = await loadCustomerChatMessages(app);
     applyChatStyles(settings);
-    renderChat(app, settings, t, customerEmail);
+    renderChat(app, settings, t, customerEmail, verificationRequired);
 
     let honeypotData = null;
     const getHoneyPot = async () => {
@@ -196,8 +198,7 @@ async function CustomerChat() {
     userRequest.value = null;
     userName.value = null;
 
-    // Email verification (only when enabled in block settings)
-    const verificationRequired = !!settings.stChatEmailVerificationRequired
+    // Email verification state (enabled via storefront_settings.email_verification)
     let otpSent = false
     let emailVerified = false
     let verifiedEmail = ''
@@ -400,9 +401,6 @@ async function CustomerChat() {
         formData.append('email', customerEmailInput.value)
         formData.append('variant_id', variantId);
         formData.append('honeypot_enabled', true);
-        if (verificationRequired) {
-            formData.append('email_verification', true);
-        }
         if (honeypotData) {
             formData.append(honeypotData.nameFieldName, '');
             formData.append(honeypotData.validFromFieldName, honeypotData.encryptedValidFrom);

@@ -1,145 +1,136 @@
 {% schema %}
+{
+"name": "Customer Chat",
+"target": "section",
+"templates": ["product"],
+"settings": [
     {
-    "name": "Customer Chat",
-    "target": "section",
-    "templates": ["product"],
-    "settings": [
-        {
-            "type": "header",
-            "content": "Chat button"
-        },
-        {
-            "type": "text",
-            "id": "stChatWithSellerBtnTxt",
-            "label": "Button text",
-            "default": "Chat With Seller"
-        },
-        {
-            "type": "color",
-            "id": "stChatWithSellerBtnBgColor",
-            "label": "Background",
-            "default": "#000"
-        },
-        {
-            "type": "color",
-            "id": "stChatWithSellerBtnTxtColor",
-            "label": "Text color",
-            "default": "#fff"
-        },
-        {
-            "type": "number",
-            "id": "stChatBtnHeight",
-            "label": "Height (px)",
-            "default": 50
-        },
-        {
-            "type": "number",
-            "id": "stChatCtaFontSize",
-            "label": "Font size (px)",
-            "default": 14
-        },
-        {
-            "type": "header",
-            "content": "Popup"
-        },
-        {
-            "type": "text",
-            "id": "stChatHeaderText",
-            "label": "Popup title",
-            "default": "Chat With Seller"
-        },
-        {
-            "type": "color",
-            "id": "stChatPopupBgColor",
-            "label": "Popup background",
-            "default": "#fff"
-        },
-        {
-            "type": "color",
-            "id": "stPopupTxtColor",
-            "label": "Popup text color",
-            "default": "#000"
-        },
-        {
-            "type": "number",
-            "id": "stChatFontSize",
-            "label": "Content font size (px)",
-            "info": "Title, inputs, labels, and message area. Buttons use their own size below.",
-            "default": 14
-        },
-        {
-            "type": "text",
-            "id": "stChatTxtBoxPlaceholder",
-            "label": "Message placeholder",
-            "default": "Write your queries...."
-        },
-        {
-            "type": "text",
-            "id": "stChatTxtBoxLable",
-            "label": "Message label",
-            "default": "Message"
-        },
-        {
-            "type": "number",
-            "id": "stChatTxtBoxRows",
-            "label": "Message text area rows",
-            "default": 8
-        },
-        {
-            "type": "text",
-            "id": "stChatSubmitButtonText",
-            "label": "Submit button text",
-            "default": "Submit"
-        },
-        {
-            "type": "color",
-            "id": "stChatSubmitBtnBgColor",
-            "label": "Button background",
-            "info": "Applies to the Submit, Verify Email and Verify buttons.",
-            "default": "#000"
-        },
-        {
-            "type": "color",
-            "id": "stChatSubmitBtnTxtColor",
-            "label": "Button text color",
-            "default": "#fff"
-        },
-        {
-            "type": "number",
-            "id": "stChatSubmitBtnFontSize",
-            "label": "Button font size (px)",
-            "default": 14
-        },
-        {
-            "type": "header",
-            "content": "Email verification"
-        },
-        {
-            "type": "checkbox",
-            "id": "stChatEmailVerificationRequired",
-            "label": "Add OTP-based Email Verification",
-            "info": "When enabled, users must verify their email address using a 6-digit OTP before sending a message.",
-            "default": false
-        },
-        {
-            "type": "header",
-            "content": "Advanced"
-        },
-        {
-            "type": "liquid",
-            "id": "stChatCustomCss",
-            "label": "Custom CSS",
-            "info": "Optional CSS only. Scope rules to .chat-with-seller-container, .st-customer-chat-cta-section, etc. to avoid affecting the rest of the theme."
-        }
-        ]
+        "type": "header",
+        "content": "Chat button"
+    },
+    {
+        "type": "text",
+        "id": "stChatWithSellerBtnTxt",
+        "label": "Button text",
+        "default": "Chat With Seller"
+    },
+    {
+        "type": "color",
+        "id": "stChatWithSellerBtnBgColor",
+        "label": "Background",
+        "default": "#000"
+    },
+    {
+        "type": "color",
+        "id": "stChatWithSellerBtnTxtColor",
+        "label": "Text color",
+        "default": "#fff"
+    },
+    {
+        "type": "number",
+        "id": "stChatBtnHeight",
+        "label": "Height (px)",
+        "default": 50
+    },
+    {
+        "type": "number",
+        "id": "stChatCtaFontSize",
+        "label": "Font size (px)",
+        "default": 14
+    },
+    {
+        "type": "header",
+        "content": "Popup"
+    },
+    {
+        "type": "text",
+        "id": "stChatHeaderText",
+        "label": "Popup title",
+        "default": "Chat With Seller"
+    },
+    {
+        "type": "color",
+        "id": "stChatPopupBgColor",
+        "label": "Popup background",
+        "default": "#fff"
+    },
+    {
+        "type": "color",
+        "id": "stPopupTxtColor",
+        "label": "Popup text color",
+        "default": "#000"
+    },
+    {
+        "type": "number",
+        "id": "stChatFontSize",
+        "label": "Content font size (px)",
+        "info": "Title, inputs, labels, and message area. Buttons use their own size below.",
+        "default": 14
+    },
+    {
+        "type": "text",
+        "id": "stChatTxtBoxPlaceholder",
+        "label": "Message placeholder",
+        "default": "Write your queries...."
+    },
+    {
+        "type": "text",
+        "id": "stChatTxtBoxLable",
+        "label": "Message label",
+        "default": "Message"
+    },
+    {
+        "type": "number",
+        "id": "stChatTxtBoxRows",
+        "label": "Message text area rows",
+        "default": 8
+    },
+    {
+        "type": "text",
+        "id": "stChatSubmitButtonText",
+        "label": "Submit button text",
+        "default": "Submit"
+    },
+    {
+        "type": "color",
+        "id": "stChatSubmitBtnBgColor",
+        "label": "Button background",
+        "info": "Applies to the Submit, Verify Email and Verify buttons.",
+        "default": "#000"
+    },
+    {
+        "type": "color",
+        "id": "stChatSubmitBtnTxtColor",
+        "label": "Button text color",
+        "default": "#fff"
+    },
+    {
+        "type": "number",
+        "id": "stChatSubmitBtnFontSize",
+        "label": "Button font size (px)",
+        "default": 14
+    },
+    {
+        "type": "header",
+        "content": "Advanced"
+    },
+    {
+        "type": "liquid",
+        "id": "stChatCustomCss",
+        "label": "Custom CSS",
+        "info": "Optional CSS only. Scope rules to .chat-with-seller-container, .st-customer-chat-cta-section, etc. to avoid affecting the rest of the theme."
     }
+    ]
+}
 {% endschema %}
 <link rel="stylesheet" href="{{ 'customer-chat.css' | asset_url }}" />
 {% if block.settings.stChatCustomCss != blank %}
 <style>{{ block.settings.stChatCustomCss }}</style>
 {% endif %}
+{%- assign st_storefront_settings = app.metafields.shipturtle.storefront_settings.value -%}
 <div id="st-customer-chat-app"
-    data-customer-email="{{ customer.email }}"
-    data-lang-asset="{{ 'lang.json' | asset_url }}"
-    data-block-settings='{{ block.settings | json }}'></div>
+data-customer-email="{{ customer.email }}"
+data-email-verification="{% if st_storefront_settings.email_verification == true or st_storefront_settings.email_verification == 'true' %}true{% else %}false{% endif %}"
+data-lang-asset="{{ 'lang.json' | asset_url }}"
+data-block-settings='{{ block.settings | json }}'></div>
 <script src="{{ 'customer-chat.js' | asset_url }}" defer></script>

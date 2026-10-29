@@ -1630,8 +1630,8 @@ function mountSellerProfile () {
                 encryptedValidFrom: ''
             })
 
-            // Contact form email OTP verification (only when enabled in block settings)
-            const emailVerificationEnabled = !!blockSettings.emailVerificationRequired
+            // Contact form email OTP verification (app metafield shipturtle.storefront_settings.email_verification, set in Liquid)
+            const emailVerificationEnabled = document.getElementById('seller-profile-app')?.dataset.emailVerification === 'true'
             const otpBaseUrl = `${appProxyBase}/vendor/registration-otp`
             const otpDigits = ref(['', '', '', '', '', ''])
             const otpSent = ref(false)
@@ -2283,9 +2283,6 @@ function mountSellerProfile () {
                         honeypot_enabled: true,
                         [contactHoneypotData.value.nameFieldName]: null,
                         [contactHoneypotData.value.validFromFieldName]: contactHoneypotData.value.encryptedValidFrom
-                    }
-                    if (emailVerificationEnabled) {
-                        payload.email_verification = true
                     }
 
                     const response = await fetch(`${API_BASE_URL}/vendor/contact`, {
