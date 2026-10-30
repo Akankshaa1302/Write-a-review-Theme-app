@@ -77,6 +77,12 @@ function renderChat(app, settings, t, customerEmail, verificationRequired) {
                     <input name="chat-customer-email" id="chat-customer-email" type="email" value="${escapeHtml(customerEmail)}"/>
                 </div>`
 
+    const phoneField = settings.stChatShowPhone ? `
+                <div>
+                    <label for="chat-customer-phone">${escapeHtml(t.phone)}${settings.stChatPhoneRequired ? '*' : ''}</label>
+                    <input name="chat-customer-phone" id="chat-customer-phone" type="tel" autocomplete="tel" placeholder="${escapeHtml(settings.stChatPhonePlaceholder || '')}"/>
+                </div>` : ''
+
     app.innerHTML = `
     <input type="hidden" name="shipturtle_customer_chat" id="shipturtle_customer_chat" value="${escapeHtml(customerEmail)}" />
     <div class="st-customer-chat-cta-section" id="st-customer-chat-cta">
@@ -101,6 +107,7 @@ function renderChat(app, settings, t, customerEmail, verificationRequired) {
                     <input name="chat-customer-name" id="chat-customer-name" type="text"/>
                 </div>
                 ${emailField}
+                ${phoneField}
                 <div>
                     <label for="customer-chat">${escapeHtml(t.message)}*</label>
                     <textarea id="customer-chat-user-request" name="customer-chat" rows="${escapeHtml(settings.stChatTxtBoxRows)}" cols="50" placeholder="${escapeHtml(settings.stChatTxtBoxPlaceholder)}"></textarea>
@@ -172,6 +179,7 @@ async function CustomerChat() {
     let userName = document.getElementById('chat-customer-name')
     let userRequest = document.getElementById('customer-chat-user-request')
     let customerEmailInput = document.getElementById('chat-customer-email')
+    let userPhone = document.getElementById('chat-customer-phone')
     let successText = document.getElementById('customer-chat-success')
     let errorText = document.getElementById('customer-chat-error')
     let submitButton = document.getElementById('submit-customer-query')
@@ -383,7 +391,8 @@ async function CustomerChat() {
 
         if(!userName.value || userName.value.length === 0 ||
            !customerEmailInput.value || customerEmailInput.value.length === 0 ||
-           !userRequest.value || userRequest.value.length === 0) {
+           !userRequest.value || userRequest.value.length === 0 ||
+           (userPhone && settings.stChatPhoneRequired && !userPhone.value.trim())) {
             errorText.textContent = t.fillFields
             return
         }
@@ -399,6 +408,9 @@ async function CustomerChat() {
         formData.append('name', userName.value);
         formData.append('message', userRequest.value);
         formData.append('email', customerEmailInput.value)
+        if (userPhone) {
+            formData.append('phone', userPhone.value.trim());
+        }
         formData.append('variant_id', variantId);
         formData.append('honeypot_enabled', true);
         if (honeypotData) {
@@ -442,6 +454,7 @@ async function CustomerChat() {
         successText.textContent = null;
         errorText.textContent = '';
         userName.value = null
+        if (userPhone) userPhone.value = null
     }
     if(chatWithSellerForm){
         chatWithSellerForm.addEventListener('submit', submitForm, false);
