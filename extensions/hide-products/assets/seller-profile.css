@@ -122,22 +122,21 @@
     }
   }
 
-  /* Mobile banner height - reduce by half */
+  /* Mobile banner height - set by the theme block's mobile height settings (default 230px) */
   @media (max-width: 639px) {
-    #seller-profile-app [style*="--sp-vendor-listing-banner-height"],
-    #seller-profile-app [style*="--sp-vendor-details-banner-height"] {
-      height: calc(var(--sp-vendor-listing-banner-height) / 2) !important;
-      max-height: calc(var(--sp-vendor-listing-banner-height) / 2) !important;
+    #seller-profile-app [style*="--sp-vendor-listing-banner-height"] {
+      height: var(--sp-vendor-listing-banner-height-mobile) !important;
+      max-height: var(--sp-vendor-listing-banner-height-mobile) !important;
     }
 
     #seller-profile-app [style*="--sp-vendor-details-banner-height"] {
-      height: calc(var(--sp-vendor-details-banner-height) / 2) !important;
-      max-height: calc(var(--sp-vendor-details-banner-height) / 2) !important;
+      height: var(--sp-vendor-details-banner-height-mobile) !important;
+      max-height: var(--sp-vendor-details-banner-height-mobile) !important;
     }
 
     /* Mobile skeleton loader height */
     #seller-profile-app .p-skeleton[style*="--sp-vendor-listing-banner-height"] {
-      height: calc(var(--sp-vendor-listing-banner-height) / 2) !important;
+      height: var(--sp-vendor-listing-banner-height-mobile) !important;
     }
   }
 
@@ -179,7 +178,7 @@
 }
 
 
-#seller-profile-app .honeypot-fields {
+#seller-profile-app .st-form-extra {
     display: none;
 }
 
@@ -258,6 +257,26 @@
     border-top: 1px solid #e5e7eb;
     margin: 0;
 }
+
+#seller-profile-app .sp-chat-with-seller {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    font-family: inherit;
+    /* px, not rem: rem scales with the theme's root font-size. */
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    /* Not --sp-accent-color — that token is the stars/badges accent, amber by default. */
+    color: #4f46e5;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+#seller-profile-app .sp-chat-with-seller:hover { background: #e0e7ff; }
 
 #seller-profile-app .sp-category-filter { position: relative; }
 #seller-profile-app .sp-category-dropdown-btn {

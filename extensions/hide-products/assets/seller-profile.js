@@ -201,7 +201,6 @@ function mountSellerProfile () {
     // reset once the tab/browser is closed)
     const VENDOR_LIST_STATE_KEY = 'shipturtle_vendor_list_state'
 
-    // Remove state persisted in localStorage by earlier versions so returning visitors start fresh
     try {
         localStorage.removeItem(VENDOR_LIST_STATE_KEY)
     } catch (error) {}
@@ -939,7 +938,8 @@ function mountSellerProfile () {
 
                         <!-- Vendor Info Card -->
                         <div class="st-ext-bg-white st-ext-border-round-2xl st-ext-p-3 st-ext-md:st-ext-p-4 st-ext-shadow-lg st-ext-border">
-                            <div class="st-ext-flex st-ext-gap-6 st-ext-align-items-start">
+                            <!-- Mobile: wrap + tighter gap so the name column isn't squeezed by the logo and chat button -->
+                            <div class="st-ext-flex st-ext-gap-6 st-ext-align-items-start st-ext-flex-wrap" :style="isMobile ? 'gap: 12px;' : ''">
                                 <!-- Vendor Logo -->
                                 <div class="st-ext-flex-shrink-0">
                                     <template v-if="vendorDetails.logo_link">
@@ -964,8 +964,8 @@ function mountSellerProfile () {
                                 </div>
 
                                 <!-- Vendor Details -->
-                                <div class="st-ext-flex-1">
-                                    <h1 class="st-ext-font-bold st-ext-text-gray-900 st-ext-mb-1 st-ext-capitalize">
+                                <div class="st-ext-flex-1" :style="isMobile ? 'min-width: 0; flex: 1 1 160px;' : 'min-width: 0;'">
+                                    <h1 class="st-ext-font-bold st-ext-text-gray-900 st-ext-mb-1 st-ext-capitalize" style="overflow-wrap: break-word;">
                                         [[ vendorDetails.brand_name || vendorDetails.title ]]
                                     </h1>
 
@@ -981,6 +981,16 @@ function mountSellerProfile () {
                                     <p v-if="parentCompany?.display_vendor_short_description && vendorDetails.short_description" v-html="vendorDetails.short_description" class="st-ext-text-gray-700 st-ext-leading-relaxed st-ext-text-base st-ext-m-0">
                                     </p>
                                 </div>
+
+                                <!-- Live chat stands in for the contact form when it is enabled. -->
+                                <div v-if="parentCompany?.live_chat_enabled" class="st-ext-flex-shrink-0" :class="{ 'st-ext-w-full': isMobile }">
+                                    <button type="button" class="sp-chat-with-seller" @click="chatWithSeller">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                                        </svg>
+                                        <span>[[ $t('sellers.vendorDetails.chatWithSeller') ]]</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -992,7 +1002,7 @@ function mountSellerProfile () {
                             <div class="st-ext-space-y-6">
                                 <!-- Search and Sort Bar -->
                                 <div class="st-ext-flex st-ext-justify-content-center st-ext-mb-2">
-                                    <div class="st-ext-flex st-ext-gap-4 st-ext-align-items-center st-ext-flex-wrap" style="width: 700px;">
+                                    <div class="st-ext-flex st-ext-gap-4 st-ext-align-items-center st-ext-flex-wrap" style="width: 700px; max-width: 100%;">
                                         <!-- Search Input -->
                                         <div class="st-ext-relative st-ext-w-5">
                                             <p-input-text 
@@ -1300,6 +1310,10 @@ function mountSellerProfile () {
                                         <small v-if="reviewFormErrors.email" class="st-ext-text-red-500">[[ reviewFormErrors.email ]]</small>
                                     </div>
 
+                                    <div style="display: none;">
+                                        <p-input-text type="text" id="st-review-fax-number" name="fax_number" autocomplete="off" tabindex="-1"></p-input-text>
+                                    </div>
+
                                     <!-- Error message -->
                                     <div v-if="reviewFormError" class="st-ext-p-3 st-ext-bg-red-50 st-ext-border st-ext-border-red-200 st-ext-rounded-lg">
                                         <div class="st-ext-flex st-ext-align-items-center st-ext-gap-2">
@@ -1483,10 +1497,14 @@ function mountSellerProfile () {
                                                         <small v-if="contactFormErrors.message" class="st-ext-text-red-500 st-ext-text-sm">[[ contactFormErrors.message ]]</small>
                                                     </div>
 
-                                                    <div class="honeypot-fields">
-                                                        <p-input-text type="text" id="contactHoneypotNameFieldName" name="contact_honeypot_name_field_name" autocomplete="off" tabindex="-1"></p-input-text>
-                                                        <p-input-text type="text" id="contactHoneypotValidFromFieldName" name="contact_honeypot_valid_from_field_name" autocomplete="off" tabindex="-1"></p-input-text>
+                                                    <div class="st-form-extra">
+                                                        <p-input-text type="text" id="st-contact-fax-number" name="fax_number" autocomplete="off" tabindex="-1"></p-input-text>
+                                                        <p-input-text type="text" id="st-contact-form-ref" name="form_ref" autocomplete="off" tabindex="-1"></p-input-text>
                                                     </div>
+
+                                                    <!-- reCAPTCHA checkbox (only rendered when enabled for this store) -->
+                                                    <div class="sp-contact-recaptcha" :ref="mountContactRecaptcha"></div>
+                                                    <small v-if="contactFormErrors.recaptcha" class="st-ext-text-red-500 st-ext-text-sm">[[ contactFormErrors.recaptcha ]]</small>
 
                                                     <!-- Submit Button -->
                                                     <div class="st-ext-flex st-ext-justify-end">
@@ -1865,7 +1883,8 @@ function mountSellerProfile () {
                     case 'about': return !!settings.seller_about_us_tab
                     case 'reviews': return !!settings.seller_reviews_tab
                     case 'events': return !!settings.seller_events_tab
-                    case 'contact': return !!settings.seller_contact_us_tab
+                    // Live chat replaces the contact form, so the tab steps aside for it.
+                    case 'contact': return !!settings.seller_contact_us_tab && !parentCompany.value.live_chat_enabled
                     case 'policy': return !!settings.seller_policy_tab
                     default: return false
                 }
@@ -2093,6 +2112,25 @@ function mountSellerProfile () {
                 return Object.keys(reviewFormErrors.value).length === 0
             }
 
+            /**
+             * Sends the customer to the Messages page, which opens the thread
+             * with this vendor. */
+            const chatWithSeller = () => {
+                const vendor = vendorDetails.value
+                if (!vendor?.id) {
+                    window.location.href = '/pages/messages'
+
+                    return
+                }
+
+                const params = new URLSearchParams({
+                    vendor: vendor.id,
+                    vendor_name: vendor.brand_name || vendor.title || '',
+                })
+
+                window.location.href = `/pages/messages?${params.toString()}`
+            }
+
             const showReviewDialog = () => {
                 if (!window.spCustomerEmail) {
                     toast.add({
@@ -2178,7 +2216,10 @@ function mountSellerProfile () {
                         email: reviewForm.value.email.trim(),
                         title: reviewForm.value.title.trim(),
                         ratings: reviewForm.value.rating,
-                        description: reviewForm.value.description.trim()
+                        description: reviewForm.value.description.trim(),
+                        honeypot_enabled: true,
+                        [contactHoneypotData.value.nameFieldName]: document.getElementById('st-review-fax-number')?.value ?? '',
+                        [contactHoneypotData.value.validFromFieldName]: contactHoneypotData.value.encryptedValidFrom
                     }
                     
                     const response = await fetch(`${API_BASE_URL}/post-vendor-reviews`, {
@@ -2232,8 +2273,8 @@ function mountSellerProfile () {
                         encryptedValidFrom: honeypot.encryptedValidFrom
                     }
 
-                    const honeypotNameFieldEl = document.getElementById('contactHoneypotNameFieldName')
-                    const honeypotValidFromFieldEl = document.getElementById('contactHoneypotValidFromFieldName')
+                    const honeypotNameFieldEl = document.getElementById('st-contact-fax-number')
+                    const honeypotValidFromFieldEl = document.getElementById('st-contact-form-ref')
 
                     if (honeypotNameFieldEl) {
                         honeypotNameFieldEl.setAttribute('name', honeypot.nameFieldName)
@@ -2245,6 +2286,19 @@ function mountSellerProfile () {
                 } catch (error) {
                     console.error('Error fetching honeypot data:', error)
                 }
+            }
+
+            // Function ref: runs whenever the Contact tab creates the container element.
+            // StRecaptcha renders at most one widget per element, so re-renders are safe.
+            let contactRecaptcha = null
+            const mountContactRecaptcha = async (el) => {
+                if (!el || !window.StRecaptcha) return
+                const handle = await window.StRecaptcha.mount(el, {
+                    onChange: (done) => {
+                        if (done) delete contactFormErrors.value.recaptcha
+                    }
+                })
+                if (handle) contactRecaptcha = handle
             }
 
             const validateContactForm = () => {
@@ -2264,6 +2318,9 @@ function mountSellerProfile () {
                     (!otpVerified.value || otpVerifiedEmail.value !== contactForm.value.email.trim())) {
                     contactFormErrors.value.email = t('sellers.vendorDetails.otp.verifyEmailFirst')
                 }
+                if (contactRecaptcha && !contactRecaptcha.getToken()) {
+                    contactFormErrors.value.recaptcha = 'Please complete the CAPTCHA.'
+                }
                 return Object.keys(contactFormErrors.value).length === 0
             }
 
@@ -2281,10 +2338,13 @@ function mountSellerProfile () {
                         email: contactForm.value.email.trim(),
                         message: contactForm.value.message.trim(),
                         honeypot_enabled: true,
-                        [contactHoneypotData.value.nameFieldName]: null,
+                        [contactHoneypotData.value.nameFieldName]: document.getElementById('st-contact-fax-number')?.value ?? '',
                         [contactHoneypotData.value.validFromFieldName]: contactHoneypotData.value.encryptedValidFrom
                     }
-
+                    if (contactRecaptcha) {
+                        payload.recaptcha_token = contactRecaptcha.getToken()
+                    }
+                    
                     const response = await fetch(`${API_BASE_URL}/vendor/contact`, {
                         method: 'POST',
                         headers: {
@@ -2293,6 +2353,9 @@ function mountSellerProfile () {
                         body: JSON.stringify(payload)
                     })
                     
+                    // A CAPTCHA token is single use, so always get a fresh one after a submit.
+                    if (contactRecaptcha) contactRecaptcha.reset()
+
                     if (response.ok) {
                         contactFormSuccess.value = true
                         contactForm.value = { name: '', email: '', message: '' }
@@ -2425,6 +2488,7 @@ function mountSellerProfile () {
                 parentCompany,
                 showLocation,
                 hasTab,
+                chatWithSeller,
                 getLocationText,
                 productSearch,
                 productSort,
@@ -2468,6 +2532,7 @@ function mountSellerProfile () {
                 contactFormSuccess,
                 contactFormError,
                 submitContactForm,
+                mountContactRecaptcha,
                 // Contact form email OTP verification
                 emailVerificationEnabled,
                 otpDigits,

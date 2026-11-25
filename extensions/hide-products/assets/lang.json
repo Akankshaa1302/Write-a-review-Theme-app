@@ -1,5 +1,27 @@
 {
   "en": {
+    "messages": {
+      "attachType": "That file type is not supported",
+      "removeAttachment": "Remove attachment",
+      "attach": "Attach a file",
+      "attachFailed": "Could not upload the file",
+      "inbox": "Inbox",
+      "searchPlaceholder": "Search by product or seller",
+      "composerPlaceholder": "Write your message...",
+      "you": "You",
+      "seller": "Seller",
+      "soldBy": "Sold by",
+      "qty": "Qty",
+      "send": "Send",
+      "sendFailed": "Not sent",
+      "delivered": "Delivered",
+      "seen": "Seen",
+      "sellerTyping": "Seller is typing...",
+      "backToList": "Back to all messages",
+      "emptyListTitle": "No messages yet",
+      "emptyListText": "Conversations with sellers will show up here.",
+      "noThreadTitle": "Select a chat to start messaging"
+    },
     "sellers": {
       "searchVendors": "Search {vendors}...",
       "searchVendor": "Search {vendor}",
@@ -60,6 +82,7 @@
         "zipcode": "Zip Code: {pincode}"
       },
       "vendorDetails": {
+        "chatWithSeller": "Chat with seller",
         "filter": {
           "allCategories": "All Categories",
           "done": "Done",
@@ -273,9 +296,14 @@
       "invalidEmail": "Please enter a valid email address.",
       "invalidCode": "Invalid code. Please try again.",
       "emailVerified": "Code verified successfully",
-      "verifyEmailFirst": "Please verify your email before submitting."
+      "verifyEmailFirst": "Please verify your email before submitting.",
+      "recaptchaRequired": "Please complete the CAPTCHA.",
+      "recaptchaExpired": "The CAPTCHA expired. Please complete it again."
     },
     "live-chat": {
+      "attachFailed": "Could not upload the file",
+      "attachType": "That file type is not supported",
+      "removeAttachment": "Remove attachment",
       "scopeNote": "This conversation is only about {product}",
       "customerLabel": "Customer",
       "sellerLabel": "Seller",
@@ -289,6 +317,28 @@
     }
   },
   "de": {
+    "messages": {
+      "attachType": "Dieser Dateityp wird nicht unterstützt",
+      "removeAttachment": "Anhang entfernen",
+      "attach": "Datei anhängen",
+      "attachFailed": "Datei konnte nicht hochgeladen werden",
+      "inbox": "Posteingang",
+      "searchPlaceholder": "Nach Produkt oder Verkäufer suchen",
+      "composerPlaceholder": "Schreiben Sie Ihre Nachricht...",
+      "you": "Sie",
+      "seller": "Verkäufer",
+      "soldBy": "Verkauft von",
+      "qty": "Menge",
+      "send": "Senden",
+      "sendFailed": "Nicht gesendet",
+      "delivered": "Zugestellt",
+      "seen": "Gelesen",
+      "sellerTyping": "Verkäufer schreibt...",
+      "backToList": "Zurück zu allen Nachrichten",
+      "emptyListTitle": "Noch keine Nachrichten",
+      "emptyListText": "Unterhaltungen mit Verkäufern erscheinen hier.",
+      "noThreadTitle": "Wählen Sie einen Chat aus, um zu schreiben"
+    },
     "sellers": {
       "searchVendors": "Anbieter suchen...",
       "searchVendor": "Anbieter suchen",
@@ -349,6 +399,7 @@
         "zipcode": "PLZ: {pincode}"
       },
       "vendorDetails": {
+        "chatWithSeller": "Mit Verkäufer chatten",
         "filter": {
           "allCategories": "Alle Kategorien",
           "done": "Fertig",
@@ -563,9 +614,14 @@
       "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
       "invalidCode": "Ungültiger Code. Bitte versuchen Sie es erneut.",
       "emailVerified": "Code erfolgreich bestätigt",
-      "verifyEmailFirst": "Bitte bestätigen Sie Ihre E-Mail-Adresse vor dem Absenden."
+      "verifyEmailFirst": "Bitte bestätigen Sie Ihre E-Mail-Adresse vor dem Absenden.",
+      "recaptchaRequired": "Bitte bestätigen Sie das CAPTCHA.",
+      "recaptchaExpired": "Das CAPTCHA ist abgelaufen. Bitte bestätigen Sie es erneut."
     },
     "live-chat": {
+      "attachFailed": "Datei konnte nicht hochgeladen werden",
+      "attachType": "Dieser Dateityp wird nicht unterstützt",
+      "removeAttachment": "Anhang entfernen",
       "scopeNote": "Dieses Gespräch bezieht sich nur auf {product}",
       "customerLabel": "Kunde",
       "sellerLabel": "Verkäufer",
@@ -579,6 +635,28 @@
     }
   },
   "es": {
+    "messages": {
+      "attachType": "Ese tipo de archivo no es compatible",
+      "removeAttachment": "Quitar el archivo adjunto",
+      "attach": "Adjuntar un archivo",
+      "attachFailed": "No se pudo subir el archivo",
+      "inbox": "Bandeja de entrada",
+      "searchPlaceholder": "Buscar por producto o vendedor",
+      "composerPlaceholder": "Escribe tu mensaje...",
+      "you": "Tú",
+      "seller": "Vendedor",
+      "soldBy": "Vendido por",
+      "qty": "Cant.",
+      "send": "Enviar",
+      "sendFailed": "No enviado",
+      "delivered": "Entregado",
+      "seen": "Visto",
+      "sellerTyping": "El vendedor está escribiendo...",
+      "backToList": "Volver a todos los mensajes",
+      "emptyListTitle": "Aún no hay mensajes",
+      "emptyListText": "Las conversaciones con vendedores aparecerán aquí.",
+      "noThreadTitle": "Selecciona un chat para empezar a escribir"
+    },
     "sellers": {
       "searchVendors": "Buscar vendedores...",
       "searchVendor": "Buscar vendedor",
@@ -639,6 +717,7 @@
         "zipcode": "Código postal: {pincode}"
       },
       "vendorDetails": {
+        "chatWithSeller": "Chatear con el vendedor",
         "filter": {
           "allCategories": "Todas las categorías",
           "done": "Listo",
@@ -853,9 +932,14 @@
       "invalidEmail": "Introduce una dirección de correo electrónico válida.",
       "invalidCode": "Código no válido. Inténtalo de nuevo.",
       "emailVerified": "Código verificado correctamente",
-      "verifyEmailFirst": "Verifica tu correo electrónico antes de enviar."
+      "verifyEmailFirst": "Verifica tu correo electrónico antes de enviar.",
+      "recaptchaRequired": "Por favor, completa el CAPTCHA.",
+      "recaptchaExpired": "El CAPTCHA ha caducado. Por favor, complétalo de nuevo."
     },
     "live-chat": {
+      "attachFailed": "No se pudo subir el archivo",
+      "attachType": "Ese tipo de archivo no es compatible",
+      "removeAttachment": "Quitar el archivo adjunto",
       "scopeNote": "Esta conversación es solo sobre {product}",
       "customerLabel": "Cliente",
       "sellerLabel": "Vendedor",
@@ -869,6 +953,28 @@
     }
   },
   "nl": {
+    "messages": {
+      "attachType": "Dit bestandstype wordt niet ondersteund",
+      "removeAttachment": "Bijlage verwijderen",
+      "attach": "Bestand bijvoegen",
+      "attachFailed": "Bestand kon niet worden geüpload",
+      "inbox": "Postvak IN",
+      "searchPlaceholder": "Zoek op product of verkoper",
+      "composerPlaceholder": "Schrijf je bericht...",
+      "you": "Jij",
+      "seller": "Verkoper",
+      "soldBy": "Verkocht door",
+      "qty": "Aantal",
+      "send": "Verzenden",
+      "sendFailed": "Niet verzonden",
+      "delivered": "Afgeleverd",
+      "seen": "Gezien",
+      "sellerTyping": "Verkoper is aan het typen...",
+      "backToList": "Terug naar alle berichten",
+      "emptyListTitle": "Nog geen berichten",
+      "emptyListText": "Gesprekken met verkopers verschijnen hier.",
+      "noThreadTitle": "Selecteer een chat om te beginnen"
+    },
     "sellers": {
       "searchVendors": "Zoek verkopers...",
       "searchVendor": "Zoek verkoper",
@@ -929,6 +1035,7 @@
         "zipcode": "Postcode: {pincode}"
       },
       "vendorDetails": {
+        "chatWithSeller": "Chat met verkoper",
         "filter": {
           "allCategories": "Alle categorieën",
           "done": "Klaar",
@@ -1139,9 +1246,14 @@
       "invalidEmail": "Voer een geldig e-mailadres in.",
       "invalidCode": "Ongeldige code. Probeer het opnieuw.",
       "emailVerified": "Code succesvol geverifieerd",
-      "verifyEmailFirst": "Verifieer uw e-mailadres voordat u verzendt."
+      "verifyEmailFirst": "Verifieer uw e-mailadres voordat u verzendt.",
+      "recaptchaRequired": "Voltooi de CAPTCHA.",
+      "recaptchaExpired": "De CAPTCHA is verlopen. Voltooi deze opnieuw."
     },
     "live-chat": {
+      "attachFailed": "Bestand kon niet worden geüpload",
+      "attachType": "Dit bestandstype wordt niet ondersteund",
+      "removeAttachment": "Bijlage verwijderen",
       "scopeNote": "Dit gesprek gaat alleen over {product}",
       "customerLabel": "Klant",
       "sellerLabel": "Verkoper",
@@ -1155,6 +1267,28 @@
     }
   },
   "pt": {
+    "messages": {
+      "attachType": "Esse tipo de ficheiro não é suportado",
+      "removeAttachment": "Remover o anexo",
+      "attach": "Anexar um ficheiro",
+      "attachFailed": "Não foi possível carregar o ficheiro",
+      "inbox": "Caixa de entrada",
+      "searchPlaceholder": "Pesquisar por produto ou vendedor",
+      "composerPlaceholder": "Escreva a sua mensagem...",
+      "you": "Você",
+      "seller": "Vendedor",
+      "soldBy": "Vendido por",
+      "qty": "Qtd.",
+      "send": "Enviar",
+      "sendFailed": "Não enviada",
+      "delivered": "Entregue",
+      "seen": "Visto",
+      "sellerTyping": "O vendedor está a escrever...",
+      "backToList": "Voltar a todas as mensagens",
+      "emptyListTitle": "Ainda não há mensagens",
+      "emptyListText": "As conversas com vendedores aparecerão aqui.",
+      "noThreadTitle": "Selecione uma conversa para começar"
+    },
     "sellers": {
       "searchVendors": "Pesquisar vendedores...",
       "searchVendor": "Pesquisar vendedor",
@@ -1215,6 +1349,7 @@
         "zipcode": "Código postal: {pincode}"
       },
       "vendorDetails": {
+        "chatWithSeller": "Conversar com o vendedor",
         "filter": {
           "allCategories": "Todas as categorias",
           "done": "Concluído",
@@ -1425,9 +1560,14 @@
       "invalidEmail": "Introduza um endereço de email válido.",
       "invalidCode": "Código inválido. Tente novamente.",
       "emailVerified": "Código verificado com sucesso",
-      "verifyEmailFirst": "Verifique o seu email antes de submeter."
+      "verifyEmailFirst": "Verifique o seu email antes de submeter.",
+      "recaptchaRequired": "Por favor, complete o CAPTCHA.",
+      "recaptchaExpired": "O CAPTCHA expirou. Por favor, complete-o novamente."
     },
     "live-chat": {
+      "attachFailed": "Não foi possível carregar o ficheiro",
+      "attachType": "Esse tipo de ficheiro não é suportado",
+      "removeAttachment": "Remover o anexo",
       "scopeNote": "Esta conversa é apenas sobre {product}",
       "customerLabel": "Cliente",
       "sellerLabel": "Vendedor",
@@ -1441,6 +1581,28 @@
     }
   },
   "no": {
+    "messages": {
+      "attachType": "Denne filtypen støttes ikke",
+      "removeAttachment": "Fjern vedlegget",
+      "attach": "Legg ved en fil",
+      "attachFailed": "Kunne ikke laste opp filen",
+      "inbox": "Innboks",
+      "searchPlaceholder": "Søk etter produkt eller selger",
+      "composerPlaceholder": "Skriv meldingen din...",
+      "you": "Du",
+      "seller": "Selger",
+      "soldBy": "Solgt av",
+      "qty": "Ant.",
+      "send": "Send",
+      "sendFailed": "Ikke sendt",
+      "delivered": "Levert",
+      "seen": "Sett",
+      "sellerTyping": "Selgeren skriver...",
+      "backToList": "Tilbake til alle meldinger",
+      "emptyListTitle": "Ingen meldinger ennå",
+      "emptyListText": "Samtaler med selgere vises her.",
+      "noThreadTitle": "Velg en samtale for å begynne"
+    },
     "sellers": {
       "searchVendors": "Søk leverandører...",
       "searchVendor": "Søk leverandør",
@@ -1501,6 +1663,7 @@
         "zipcode": "Postnummer: {pincode}"
       },
       "vendorDetails": {
+        "chatWithSeller": "Chat med selgeren",
         "filter": {
           "allCategories": "Alle kategorier",
           "done": "Ferdig",
@@ -1711,9 +1874,14 @@
       "invalidEmail": "Skriv inn en gyldig e-postadresse.",
       "invalidCode": "Ugyldig kode. Prøv igjen.",
       "emailVerified": "Koden er bekreftet",
-      "verifyEmailFirst": "Bekreft e-postadressen din før du sender."
+      "verifyEmailFirst": "Bekreft e-postadressen din før du sender.",
+      "recaptchaRequired": "Vennligst fullfør CAPTCHA-en.",
+      "recaptchaExpired": "CAPTCHA-en har utløpt. Vennligst fullfør den på nytt."
     },
     "live-chat": {
+      "attachFailed": "Kunne ikke laste opp filen",
+      "attachType": "Denne filtypen støttes ikke",
+      "removeAttachment": "Fjern vedlegget",
       "scopeNote": "Denne samtalen handler bare om {product}",
       "customerLabel": "Kunde",
       "sellerLabel": "Selger",
@@ -1727,6 +1895,28 @@
     }
   },
   "ro": {
+    "messages": {
+      "attachType": "Acest tip de fișier nu este acceptat",
+      "removeAttachment": "Elimină atașamentul",
+      "attach": "Atașează un fișier",
+      "attachFailed": "Fișierul nu a putut fi încărcat",
+      "inbox": "Inbox",
+      "searchPlaceholder": "Caută după produs sau vânzător",
+      "composerPlaceholder": "Scrie mesajul tău...",
+      "you": "Tu",
+      "seller": "Vânzător",
+      "soldBy": "Vândut de",
+      "qty": "Cant.",
+      "send": "Trimite",
+      "sendFailed": "Netrimis",
+      "delivered": "Livrat",
+      "seen": "Văzut",
+      "sellerTyping": "Vânzătorul scrie...",
+      "backToList": "Înapoi la toate mesajele",
+      "emptyListTitle": "Încă nu există mesaje",
+      "emptyListText": "Conversațiile cu vânzătorii vor apărea aici.",
+      "noThreadTitle": "Selectează o conversație pentru a începe"
+    },
     "sellers": {
       "searchVendors": "Caută vânzători...",
       "searchVendor": "Caută vânzător",
@@ -1787,6 +1977,7 @@
         "zipcode": "Cod poștal: {pincode}"
       },
       "vendorDetails": {
+        "chatWithSeller": "Discută cu vânzătorul",
         "filter": {
           "allCategories": "Toate categoriile",
           "done": "Gata",
@@ -1997,9 +2188,14 @@
       "invalidEmail": "Te rugăm să introduci o adresă de e-mail validă.",
       "invalidCode": "Cod invalid. Te rugăm să încerci din nou.",
       "emailVerified": "Codul a fost verificat cu succes",
-      "verifyEmailFirst": "Te rugăm să îți verifici e-mailul înainte de a trimite."
+      "verifyEmailFirst": "Te rugăm să îți verifici e-mailul înainte de a trimite.",
+      "recaptchaRequired": "Te rugăm să completezi CAPTCHA-ul.",
+      "recaptchaExpired": "CAPTCHA-ul a expirat. Te rugăm să îl completezi din nou."
     },
     "live-chat": {
+      "attachFailed": "Fișierul nu a putut fi încărcat",
+      "attachType": "Acest tip de fișier nu este acceptat",
+      "removeAttachment": "Elimină atașamentul",
       "scopeNote": "Această conversație este doar despre {product}",
       "customerLabel": "Client",
       "sellerLabel": "Vânzător",
